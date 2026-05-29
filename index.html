@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Shopyacu online store for practical home, kitchen, bathroom, fitness, office, and outdoor products." />
+    <title>Shopyacu Online Store</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#">SHOPYACU</a>
+      <nav>
+        <a href="#products">Products</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="cart-button" type="button" data-open-cart>Cart <span id="cart-count">0</span></button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Kigali online store</p>
+          <h1>Smart home finds, delivered fast.</h1>
+          <p class="lede">Shop practical kitchen, bathroom, fitness, office, and outdoor products selected from the Shopyacu catalog.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#products">Browse products</a>
+            <a class="secondary-link" href="https://wa.me/250788000000">WhatsApp us</a>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img class="hero-main" src="./public/products/product-21.jpg" alt="Corner shower caddy" />
+          <div class="hero-side">
+            <img src="./public/products/product-19.jpg" alt="Silver Crest air fryer" />
+            <div class="stat">
+              <strong>33</strong>
+              <span>ready-to-order products</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="products" class="catalog">
+        <div class="toolbar">
+          <div id="category-filters" class="filters" aria-label="Product categories"></div>
+          <label>
+            <span class="sr-only">Search products</span>
+            <input id="search-input" type="search" placeholder="Search products" />
+          </label>
+        </div>
+        <div id="product-grid" class="product-grid"></div>
+      </section>
+
+      <section id="delivery" class="delivery">
+        <article>
+          <span>01</span>
+          <h2>Order on the site</h2>
+          <p>Choose products and build your cart from the catalog.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>Confirm on WhatsApp</h2>
+          <p>Send your order list instantly for fast confirmation.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>Fast Kigali delivery</h2>
+          <p>Simple delivery for home essentials and daily-use products.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer id="contact">
+      <p>Shopyacu Online Store</p>
+      <p>Kigali, Rwanda · WhatsApp orders · Home essentials</p>
+    </footer>
+
+    <div id="cart-panel" class="cart-panel" hidden>
+      <div class="cart-backdrop" data-close-cart></div>
+      <aside class="cart-drawer" aria-label="Shopping cart">
+        <div class="cart-heading">
+          <h2>Your cart</h2>
+          <button type="button" data-close-cart aria-label="Close cart">x</button>
+        </div>
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Total</span>
+            <strong id="cart-total">RWF 0</strong>
+          </div>
+          <a id="checkout-link" class="checkout-link" href="#products">Send order on WhatsApp</a>
+        </div>
+      </aside>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
