@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { m } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { A11y, Keyboard, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { categories, formatPrice, type Product } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
@@ -24,7 +26,6 @@ export function Storefront({ products }: { products: Product[] }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [slideIndexes, setSlideIndexes] = useState<Record<number, number>>({});
   const [toast, setToast] = useState("");
 
   const filteredProducts = useMemo(() => {
@@ -96,14 +97,6 @@ export function Storefront({ products }: { products: Product[] }) {
     `Hello Shopyacu, I want to order:\n${cart
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
       .join("\n")}\nTotal: ${formatPrice(cartTotal)}`;
-
-  function setProductSlide(product: Product, nextIndex: number) {
-    const images = product.images?.length ? product.images : [product.image];
-    setSlideIndexes((indexes) => ({
-      ...indexes,
-      [product.id]: (nextIndex + images.length) % images.length,
-    }));
-  }
 
   return (
     <main className="min-h-screen bg-[#f6f1e9] text-[#1f2933]">
@@ -285,7 +278,6 @@ export function Storefront({ products }: { products: Product[] }) {
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => {
               const images = product.images?.length ? product.images : [product.image];
-              const activeSlide = slideIndexes[product.id] || 0;
 
               return (
                 <m.article
@@ -297,9 +289,25 @@ export function Storefront({ products }: { products: Product[] }) {
                   className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm"
                 >
                   <div className="relative aspect-square overflow-hidden bg-[#e9e4dc]">
-                    <Link href={`/products/${product.slug}`} className="block h-full">
-                      <Image src={images[activeSlide]} alt={product.name} width={700} height={700} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
-                    </Link>
+                    <Swiper
+                      modules={[Navigation, Pagination, Keyboard, A11y]}
+                      slidesPerView={1}
+                      loop={images.length > 1}
+                      speed={360}
+                      grabCursor
+                      keyboard={{ enabled: true }}
+                      pagination={images.length > 1 ? { clickable: true } : false}
+                      navigation={images.length > 1}
+                      className="h-full w-full product-swiper"
+                    >
+                      {images.map((image, index) => (
+                        <SwiperSlide key={image}>
+                          <Link href={`/products/${product.slug}`} className="block h-full">
+                            <Image src={image} alt={`${product.name}${index > 0 ? ` view ${index + 1}` : ""}`} width={700} height={700} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                          </Link>
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
                     <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-[#0f3d3e]">
                       In stock
                     </span>
@@ -307,37 +315,6 @@ export function Storefront({ products }: { products: Product[] }) {
                       <span className="absolute right-3 top-3 z-10 rounded-full bg-[#f6c453] px-3 py-1 text-xs font-black text-[#1f2933]">
                         {product.badge}
                       </span>
-                    )}
-                    {images.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => setProductSlide(product, activeSlide - 1)}
-                          className="absolute left-3 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[#13292f]/85 text-xl font-black text-white opacity-0 transition group-hover:opacity-100"
-                          aria-label="Previous image"
-                        >
-                          {"<"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setProductSlide(product, activeSlide + 1)}
-                          className="absolute right-3 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[#13292f]/85 text-xl font-black text-white opacity-0 transition group-hover:opacity-100"
-                          aria-label="Next image"
-                        >
-                          {">"}
-                        </button>
-                        <div className="absolute inset-x-3 bottom-3 z-10 flex justify-center gap-1.5">
-                          {images.map((_, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => setProductSlide(product, index)}
-                              className={`h-2 rounded-full bg-white transition ${activeSlide === index ? "w-5" : "w-2 opacity-70"}`}
-                              aria-label={`Show image ${index + 1}`}
-                            />
-                          ))}
-                        </div>
-                      </>
                     )}
                   </div>
                   <div className="p-4">

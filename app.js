@@ -92,6 +92,8 @@ let activeCategory = "All";
 let cart = [];
 let isLoadingProducts = true;
 let toastTimeout = 0;
+let swiperLoaderPromise = null;
+let productSwipers = [];
 
 function formatPrice(price) {
   return new Intl.NumberFormat("en-RW", {
@@ -147,12 +149,14 @@ function renderProducts() {
     .map(
       (product) => `
         <article class="product-card" data-card-id="${product.id}" style="--slide-count: ${product.images.length}">
-          <div class="product-gallery" data-slide="0">
-            <div class="product-track">
+          <div class="product-gallery swiper">
+            <div class="product-track swiper-wrapper">
               ${product.images
                 .map(
                   (image, index) => `
-                    <img class="product-image" src="${image}" alt="${product.name}${index > 0 ? ` view ${index + 1}` : ""}" loading="lazy">
+                    <div class="swiper-slide">
+                      <img class="product-image" src="${image}" alt="${product.name}${index > 0 ? ` view ${index + 1}` : ""}" loading="lazy">
+                    </div>
                   `,
                 )
                 .join("")}
@@ -161,11 +165,9 @@ function renderProducts() {
             ${
               product.images.length > 1
                 ? `
-                  <button class="gallery-button prev" type="button" data-slide-action="prev" aria-label="Previous image">&lsaquo;</button>
-                  <button class="gallery-button next" type="button" data-slide-action="next" aria-label="Next image">&rsaquo;</button>
-                  <div class="gallery-dots">
-                    ${product.images.map((_, index) => `<button class="${index === 0 ? "active" : ""}" type="button" data-slide-dot="${index}" aria-label="Show image ${index + 1}"></button>`).join("")}
-                  </div>
+                  <button class="gallery-button prev swiper-button-prev" type="button" aria-label="Previous image"></button>
+                  <button class="gallery-button next swiper-button-next" type="button" aria-label="Next image"></button>
+                  <div class="gallery-dots swiper-pagination"></div>
                 `
                 : ""
             }
@@ -180,6 +182,7 @@ function renderProducts() {
       `,
     )
     .join("");
+  initProductSwipers();
 }
 
 function showToast(message) {
@@ -245,18 +248,6 @@ function renderCart() {
   checkoutLink.href = `https://wa.me/${whatsappNumber}?text=${message}`;
 }
 
-function setCardSlide(card, nextIndex) {
-  const gallery = card.querySelector(".product-gallery");
-  const track = card.querySelector(".product-track");
-  const dots = [...card.querySelectorAll("[data-slide-dot]")];
-  const count = Number(card.style.getPropertyValue("--slide-count")) || 1;
-  const normalized = (nextIndex + count) % count;
-
-  gallery.dataset.slide = normalized;
-  track.style.transform = `translateX(-${normalized * 100}%)`;
-  dots.forEach((dot, index) => dot.classList.toggle("active", index === normalized));
-}
-
 function initSmoothScroll() {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduceMotion) return;
@@ -284,6 +275,51 @@ function initSmoothScroll() {
       if (!rafId) rafId = requestAnimationFrame(animate);
     });
   });
+}
+
+function loadSwiper() {
+  if (window.Swiper) return Promise.resolve(window.Swiper);
+  if (swiperLoaderPromise) return swiperLoaderPromise;
+
+  swiperLoaderPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js";
+    script.onload = () => resolve(window.Swiper);
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
+
+  return swiperLoaderPromise;
+}
+
+async function initProductSwipers() {
+  productSwipers.forEach((swiper) => swiper.destroy(true, true));
+  productSwipers = [];
+
+  const galleries = [...document.querySelectorAll(".product-gallery.swiper")].filter((gallery) => gallery.querySelectorAll(".swiper-slide").length > 1);
+  if (!galleries.length) return;
+
+  try {
+    const Swiper = await loadSwiper();
+    productSwipers = galleries.map((gallery) => new Swiper(gallery, {
+      grabCursor: true,
+      loop: true,
+      speed: 360,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      keyboard: { enabled: true },
+      pagination: {
+        el: gallery.querySelector(".swiper-pagination"),
+        clickable: true,
+      },
+      navigation: {
+        nextEl: gallery.querySelector(".swiper-button-next"),
+        prevEl: gallery.querySelector(".swiper-button-prev"),
+      },
+    }));
+  } catch {
+    productSwipers = [];
+  }
 }
 
 function initInstagramEmbed() {
@@ -331,21 +367,6 @@ filterContainer.addEventListener("click", (event) => {
 });
 
 grid.addEventListener("click", (event) => {
-  const slideButton = event.target.closest("[data-slide-action]");
-  if (slideButton) {
-    const card = slideButton.closest(".product-card");
-    const current = Number(card.querySelector(".product-gallery").dataset.slide || 0);
-    setCardSlide(card, current + (slideButton.dataset.slideAction === "next" ? 1 : -1));
-    return;
-  }
-
-  const dot = event.target.closest("[data-slide-dot]");
-  if (dot) {
-    const card = dot.closest(".product-card");
-    setCardSlide(card, Number(dot.dataset.slideDot));
-    return;
-  }
-
   const button = event.target.closest("[data-product-id]");
   if (!button) return;
   addToCart(Number(button.dataset.productId));

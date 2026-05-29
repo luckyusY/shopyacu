@@ -563,11 +563,15 @@ select:focus {
 .product-track {
   display: flex;
   height: 100%;
-  transition: transform 320ms ease;
 }
 
-.product-track img {
+.product-track img,
+.swiper-slide img {
   flex: 0 0 100%;
+  height: 100%;
+}
+
+.swiper-slide {
   height: 100%;
 }
 
@@ -604,6 +608,11 @@ select:focus {
   transition: opacity 180ms ease, background 180ms ease;
 }
 
+.gallery-button::after {
+  font-size: 18px;
+  font-weight: 950;
+}
+
 .gallery-button.prev {
   left: 10px;
 }
@@ -632,6 +641,7 @@ select:focus {
   gap: 6px;
 }
 
+.gallery-dots .swiper-pagination-bullet,
 .gallery-dots button {
   width: 7px;
   height: 7px;
@@ -639,9 +649,11 @@ select:focus {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.62);
   cursor: pointer;
+  opacity: 1;
   padding: 0;
 }
 
+.gallery-dots .swiper-pagination-bullet-active,
 .gallery-dots button.active {
   width: 18px;
   background: white;

@@ -33,3 +33,44 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+
+.product-swiper {
+  --swiper-navigation-size: 18px;
+  --swiper-navigation-color: #ffffff;
+  --swiper-pagination-color: #ffffff;
+  --swiper-pagination-bullet-inactive-color: rgba(255, 255, 255, 0.62);
+  --swiper-pagination-bullet-inactive-opacity: 1;
+}
+
+.product-swiper .swiper-button-prev,
+.product-swiper .swiper-button-next {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(19, 41, 47, 0.84);
+  opacity: 0;
+  transition: opacity 180ms ease, background 180ms ease;
+}
+
+.product-swiper:hover .swiper-button-prev,
+.product-swiper:hover .swiper-button-next,
+.product-swiper:focus-within .swiper-button-prev,
+.product-swiper:focus-within .swiper-button-next {
+  opacity: 1;
+}
+
+.product-swiper .swiper-button-prev:hover,
+.product-swiper .swiper-button-next:hover {
+  background: #c95d35;
+}
+
+.product-swiper .swiper-pagination-bullet {
+  width: 7px;
+  height: 7px;
+  transition: width 180ms ease;
+}
+
+.product-swiper .swiper-pagination-bullet-active {
+  width: 18px;
+  border-radius: 999px;
+}
