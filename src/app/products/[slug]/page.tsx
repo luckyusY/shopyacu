@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatPrice, getProduct, products } from "@/lib/products";
+import { whatsappLink } from "@/lib/whatsapp";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -61,7 +62,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <div className="bg-white p-4">Quality checked</div>
           </div>
           <a
-            href={`https://wa.me/250788000000?text=${encodeURIComponent(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}`}
+            href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
             className="mt-8 inline-flex w-fit rounded-full bg-[#d25f36] px-7 py-4 text-sm font-black text-white transition hover:bg-[#b94f2d]"
           >
             Order on WhatsApp

@@ -10,6 +10,12 @@ The working no-build version is available at:
 http://127.0.0.1:4173/index.html
 ```
 
+The static admin panel is available at:
+
+```text
+http://127.0.0.1:4173/admin.html
+```
+
 Start it from this folder with:
 
 ```bash
@@ -19,9 +25,13 @@ python -m http.server 4173 -b 127.0.0.1
 The static site uses:
 
 - `index.html`
+- `admin.html`
 - `styles.css`
 - `app.js`
+- `admin.js`
 - `public/products/*.jpg`
+
+Orders are sent through WhatsApp at `0789448107`.
 
 ## Next.js App
 
@@ -33,6 +43,8 @@ After freeing disk space, install dependencies and run:
 npm install
 npm run dev
 ```
+
+The Next.js app includes Lenis smooth scrolling and Framer Motion page/product animations.
 
 ## Product Import
 

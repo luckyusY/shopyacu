@@ -264,6 +264,7 @@ input:focus {
   overflow: hidden;
   background: white;
   box-shadow: 0 16px 40px rgba(19, 41, 47, 0.08);
+  animation: card-rise 420ms ease both;
 }
 
 .product-card img {
@@ -461,6 +462,161 @@ footer {
   text-align: center;
 }
 
+.admin-store-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.admin-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px clamp(16px, 4vw, 56px) 72px;
+}
+
+.admin-hero h1 {
+  max-width: 860px;
+  font-size: clamp(40px, 6vw, 72px);
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.admin-stats article {
+  border-radius: 8px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 16px 40px rgba(19, 41, 47, 0.08);
+}
+
+.admin-stats span {
+  color: var(--orange);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.admin-stats strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--green);
+  font-size: 26px;
+}
+
+.admin-tools {
+  display: flex;
+  gap: 12px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-tools select,
+.admin-tools button,
+.admin-row select {
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: white;
+  padding: 0 16px;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.admin-tools button {
+  background: var(--ink);
+  color: white;
+  cursor: pointer;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  margin-top: 24px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 16px 40px rgba(19, 41, 47, 0.08);
+}
+
+.admin-table-head,
+.admin-row {
+  display: grid;
+  grid-template-columns: 90px minmax(240px, 1.4fr) 140px 140px 150px 130px;
+  align-items: center;
+  gap: 16px;
+  min-width: 960px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-table-head {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.admin-row img {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.admin-row input {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.admin-row label input {
+  height: 36px;
+  border: 0;
+  padding: 0;
+  font-weight: 900;
+}
+
+.admin-row small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.admin-row small input {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-row a {
+  border-radius: 999px;
+  background: var(--orange);
+  padding: 12px 14px;
+  color: white;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -480,7 +636,8 @@ footer {
 
   .hero,
   .product-grid,
-  .delivery {
+  .delivery,
+  .admin-stats {
     grid-template-columns: 1fr;
   }
 
@@ -488,7 +645,8 @@ footer {
     min-height: 360px;
   }
 
-  .toolbar {
+  .toolbar,
+  .admin-tools {
     align-items: stretch;
     flex-direction: column;
   }

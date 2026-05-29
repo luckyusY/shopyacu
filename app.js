@@ -40,6 +40,7 @@ const products = [
   image: `./public/products/${image}`,
 }));
 
+const whatsappNumber = "250789448107";
 const grid = document.querySelector("#product-grid");
 const filterContainer = document.querySelector("#category-filters");
 const searchInput = document.querySelector("#search-input");
@@ -144,7 +145,36 @@ function renderCart() {
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
       .join("\n")}\nTotal: ${formatPrice(total)}`,
   );
-  checkoutLink.href = `https://wa.me/250788000000?text=${message}`;
+  checkoutLink.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+}
+
+function initSmoothScroll() {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion) return;
+
+  let currentY = window.scrollY;
+  let targetY = window.scrollY;
+  let rafId = 0;
+
+  function animate() {
+    currentY += (targetY - currentY) * 0.16;
+    window.scrollTo(0, currentY);
+    if (Math.abs(targetY - currentY) > 0.5) {
+      rafId = requestAnimationFrame(animate);
+    } else {
+      rafId = 0;
+    }
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const target = document.querySelector(link.getAttribute("href"));
+      if (!target) return;
+      event.preventDefault();
+      targetY = target.getBoundingClientRect().top + window.scrollY - 72;
+      if (!rafId) rafId = requestAnimationFrame(animate);
+    });
+  });
 }
 
 function openCart() {
@@ -182,3 +212,4 @@ document.querySelectorAll("[data-close-cart]").forEach((button) => button.addEve
 renderFilters();
 renderProducts();
 renderCart();
+initSmoothScroll();

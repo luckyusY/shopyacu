@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin | Shopyacu</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./index.html">SHOPYACU</a>
+      <nav>
+        <a href="./index.html#products">Products</a>
+        <a href="./admin.html">Admin</a>
+        <a href="https://wa.me/250789448107">WhatsApp 0789448107</a>
+      </nav>
+      <a class="cart-button admin-store-link" href="./index.html">Store</a>
+    </header>
+
+    <main class="admin-page">
+      <section class="admin-hero">
+        <p class="eyebrow">Control panel</p>
+        <h1>Manage Shopyacu products and WhatsApp orders.</h1>
+        <p class="lede">Edit product names, prices, stock labels, and featured status locally before publishing updates to the main app.</p>
+      </section>
+
+      <section class="admin-stats">
+        <article><span>Products</span><strong id="admin-product-count">0</strong></article>
+        <article><span>Categories</span><strong id="admin-category-count">0</strong></article>
+        <article><span>Catalog value</span><strong id="admin-catalog-value">RWF 0</strong></article>
+        <article><span>Orders</span><strong>0789448107</strong></article>
+      </section>
+
+      <section class="admin-tools">
+        <input id="admin-search" type="search" placeholder="Search products" />
+        <select id="admin-category"></select>
+        <button id="admin-reset" type="button">Reset changes</button>
+      </section>
+
+      <section class="admin-table-wrap">
+        <div class="admin-table-head">
+          <span>Image</span>
+          <span>Product</span>
+          <span>Category</span>
+          <span>Price</span>
+          <span>Status</span>
+          <span>Action</span>
+        </div>
+        <div id="admin-table"></div>
+      </section>
+    </main>
+
+    <script src="./admin.js"></script>
+  </body>
+</html>

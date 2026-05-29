@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { m } from "framer-motion";
 import { useMemo, useState } from "react";
 import { categories, formatPrice, type Product } from "@/lib/products";
+import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
 type CartItem = Product & { quantity: number };
 
@@ -39,11 +41,10 @@ export function Storefront({ products }: { products: Product[] }) {
     setCart((items) => items.filter((item) => item.id !== productId));
   }
 
-  const whatsappText = encodeURIComponent(
+  const whatsappText =
     `Hello Shopyacu, I want to order:\n${cart
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
-      .join("\n")}\nTotal: ${formatPrice(cartTotal)}`,
-  );
+      .join("\n")}\nTotal: ${formatPrice(cartTotal)}`;
 
   return (
     <main className="min-h-screen bg-[#f7f4ef] text-[#1f2933]">
@@ -54,6 +55,7 @@ export function Storefront({ products }: { products: Product[] }) {
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-semibold text-[#435466] md:flex">
             <a href="#products">Products</a>
+            <Link href="/admin">Admin</Link>
             <a href="#delivery">Delivery</a>
             <a href="#contact">Contact</a>
           </nav>
@@ -83,8 +85,8 @@ export function Storefront({ products }: { products: Product[] }) {
             <a href="#products" className="rounded-full bg-[#d25f36] px-6 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#b94f2d]">
               Browse products
             </a>
-            <a href="https://wa.me/250788000000" className="rounded-full border border-[#0f3d3e]/25 px-6 py-3 text-sm font-black text-[#0f3d3e] transition hover:border-[#0f3d3e]">
-              WhatsApp us
+            <a href={whatsappLink()} className="rounded-full border border-[#0f3d3e]/25 px-6 py-3 text-sm font-black text-[#0f3d3e] transition hover:border-[#0f3d3e]">
+              WhatsApp {whatsappDisplay}
             </a>
           </div>
         </div>
@@ -133,7 +135,14 @@ export function Storefront({ products }: { products: Product[] }) {
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
-            <article key={product.id} className="group overflow-hidden rounded-[8px] bg-white shadow-sm">
+            <m.article
+              key={product.id}
+              layout
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, ease: "easeOut" }}
+              className="group overflow-hidden rounded-[8px] bg-white shadow-sm"
+            >
               <Link href={`/products/${product.slug}`} className="block">
                 <div className="relative aspect-square overflow-hidden bg-[#e9e4dc]">
                   {product.badge && (
@@ -158,7 +167,7 @@ export function Storefront({ products }: { products: Product[] }) {
                   Add to cart
                 </button>
               </div>
-            </article>
+            </m.article>
           ))}
         </div>
       </section>
@@ -177,7 +186,7 @@ export function Storefront({ products }: { products: Product[] }) {
 
       <footer id="contact" className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm font-semibold text-[#51616f] sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
         <p>Shopyacu Online Store</p>
-        <p>Kigali, Rwanda · WhatsApp orders · Home essentials</p>
+        <p>Kigali, Rwanda · WhatsApp {whatsappDisplay} · Home essentials</p>
       </footer>
 
       {cartOpen && (
@@ -209,7 +218,7 @@ export function Storefront({ products }: { products: Product[] }) {
                 <span>{formatPrice(cartTotal)}</span>
               </div>
               <a
-                href={cart.length ? `https://wa.me/250788000000?text=${whatsappText}` : "#products"}
+                href={cart.length ? whatsappLink(whatsappText) : "#products"}
                 className="mt-4 block rounded-full bg-[#0f3d3e] px-5 py-3 text-center text-sm font-black text-white transition hover:bg-[#145c5e]"
               >
                 Send order on WhatsApp
