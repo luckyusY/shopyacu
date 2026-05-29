@@ -77,6 +77,9 @@ const whatsappNumber = "250789448107";
 const grid = document.querySelector("#product-grid");
 const filterContainer = document.querySelector("#category-filters");
 const searchInput = document.querySelector("#search-input");
+const searchControls = document.querySelectorAll("[data-search-input]");
+const searchForms = document.querySelectorAll("[data-search-form]");
+const searchSuggestions = document.querySelector("#search-suggestions");
 const cartPanel = document.querySelector("#cart-panel");
 const cartItems = document.querySelector("#cart-items");
 const cartCount = document.querySelector("#cart-count");
@@ -87,9 +90,15 @@ const productEmpty = document.querySelector("#product-empty");
 const mobileNav = document.querySelector("#mobile-nav");
 const mobileMenuButton = document.querySelector("[data-toggle-nav]");
 const cartToast = document.querySelector("#cart-toast");
+const assistantCopy = document.querySelector("#assistant-copy");
+const smartCopy = document.querySelector("#smart-copy");
+const smartPickGrid = document.querySelector("#smart-pick-grid");
+const resetCatalogButton = document.querySelector("[data-reset-catalog]");
+const clearCartButton = document.querySelector("[data-clear-cart]");
+const cartStorageKey = "shopyacu_cart_v1";
 
 let activeCategory = "All";
-let cart = [];
+let cart = loadCart();
 let isLoadingProducts = true;
 let toastTimeout = 0;
 let swiperLoaderPromise = null;
@@ -101,6 +110,65 @@ function formatPrice(price) {
     currency: "RWF",
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+function loadCart() {
+  try {
+    const savedCart = window.localStorage.getItem(cartStorageKey);
+    if (!savedCart) return [];
+
+    const parsed = JSON.parse(savedCart);
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.flatMap((item) => {
+      const product = products.find((candidate) => candidate.id === Number(item.id));
+      const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
+      return product ? [{ ...product, quantity }] : [];
+    });
+  } catch {
+    window.localStorage.removeItem(cartStorageKey);
+    return [];
+  }
+}
+
+function persistCart() {
+  const savedCart = cart.map((item) => ({ id: item.id, quantity: item.quantity }));
+  if (savedCart.length) {
+    window.localStorage.setItem(cartStorageKey, JSON.stringify(savedCart));
+  } else {
+    window.localStorage.removeItem(cartStorageKey);
+  }
+}
+
+function getSearchQuery() {
+  return searchInput.value.trim().toLowerCase();
+}
+
+function syncSearchInputs(value) {
+  searchControls.forEach((control) => {
+    if (control.value !== value) control.value = value;
+  });
+}
+
+function scrollToCatalog() {
+  document.querySelector("#products")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function applySmartSearch(query, category = "All") {
+  activeCategory = category;
+  syncSearchInputs(query);
+  renderFilters();
+  renderProducts();
+  scrollToCatalog();
+}
+
+function getAssistantCopy(visibleCount) {
+  const count = cart.reduce((total, item) => total + item.quantity, 0);
+  const query = getSearchQuery();
+
+  if (count) return `${count} item${count === 1 ? "" : "s"} saved. Your cart stays after refresh.`;
+  if (query) return `${visibleCount} match${visibleCount === 1 ? "" : "es"} ready in the catalog.`;
+  return "Try bathroom storage, kitchen deals, rainy day, or work setup.";
 }
 
 function renderFilters() {
@@ -128,6 +196,90 @@ function renderSkeletons() {
     .join("");
 }
 
+function getSearchSuggestions() {
+  const query = getSearchQuery();
+
+  return products
+    .map((product) => {
+      const name = product.name.toLowerCase();
+      const haystack = `${product.name} ${product.category}`.toLowerCase();
+      let score = 0;
+
+      if (query) {
+        if (name.startsWith(query)) score += 8;
+        if (name.includes(query)) score += 5;
+        if (haystack.includes(query)) score += 3;
+      } else if ([21, 19, 1, 31].includes(product.id)) {
+        score += 4;
+      }
+
+      return { product, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || a.product.price - b.product.price)
+    .slice(0, 4)
+    .map(({ product }) => product);
+}
+
+function renderSearchSuggestions() {
+  if (!searchSuggestions) return;
+
+  const suggestions = getSearchSuggestions();
+  searchSuggestions.innerHTML = suggestions
+    .map(
+      (product) => `
+        <button type="button" data-smart-query="${product.name}">
+          <span>${product.name}</span>
+          <strong>${formatPrice(product.price)}</strong>
+        </button>
+      `,
+    )
+    .join("");
+}
+
+function getSmartPicks() {
+  const query = getSearchQuery();
+  const cartIds = new Set(cart.map((item) => item.id));
+  const preferredCategory = cart[0]?.category || (activeCategory !== "All" ? activeCategory : "");
+
+  return products
+    .filter((product) => !cartIds.has(product.id))
+    .map((product) => {
+      const searchMatch = query && `${product.name} ${product.category}`.toLowerCase().includes(query);
+      return {
+        product,
+        score: (product.category === preferredCategory ? 5 : 0) + (searchMatch ? 3 : 0) + ([21, 19, 1, 31].includes(product.id) ? 2 : 0),
+      };
+    })
+    .sort((a, b) => b.score - a.score || a.product.price - b.product.price)
+    .slice(0, 3)
+    .map(({ product }) => product);
+}
+
+function renderSmartPicks(visibleCount = products.length) {
+  const copy = getAssistantCopy(visibleCount);
+  if (assistantCopy) assistantCopy.textContent = copy;
+  if (smartCopy) smartCopy.textContent = copy;
+  if (!smartPickGrid) return;
+
+  smartPickGrid.innerHTML = getSmartPicks()
+    .map(
+      (product) => `
+        <article>
+          <button type="button" data-smart-query="${product.name}">
+            <img src="${product.image}" alt="${product.name}">
+            <span>
+              <small>${product.category}</small>
+              <strong>${product.name}</strong>
+              <b>${formatPrice(product.price)}</b>
+            </span>
+          </button>
+        </article>
+      `,
+    )
+    .join("");
+}
+
 function renderProducts() {
   if (isLoadingProducts) {
     productResultCount.textContent = "Loading catalog...";
@@ -136,14 +288,16 @@ function renderProducts() {
     return;
   }
 
-  const query = searchInput.value.trim().toLowerCase();
+  const query = getSearchQuery();
   const visibleProducts = products.filter((product) => {
     const categoryMatch = activeCategory === "All" || product.category === activeCategory;
-    const queryMatch = product.name.toLowerCase().includes(query);
+    const queryMatch = !query || `${product.name} ${product.category}`.toLowerCase().includes(query);
     return categoryMatch && queryMatch;
   });
 
   productResultCount.textContent = `${visibleProducts.length} ${visibleProducts.length === 1 ? "product" : "products"} shown`;
+  renderSearchSuggestions();
+  renderSmartPicks(visibleProducts.length);
   productEmpty.hidden = visibleProducts.length > 0;
   grid.innerHTML = visibleProducts
     .map(
@@ -212,15 +366,32 @@ function removeFromCart(productId) {
   renderCart();
 }
 
+function updateCartQuantity(productId, change) {
+  cart = cart.flatMap((item) => {
+    if (item.id !== productId) return [item];
+    const quantity = item.quantity + change;
+    return quantity > 0 ? [{ ...item, quantity }] : [];
+  });
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  renderCart();
+  showToast("Cart cleared");
+}
+
 function renderCart() {
   const count = cart.reduce((total, item) => total + item.quantity, 0);
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  persistCart();
+  renderSmartPicks();
   cartCount.textContent = count;
   cartTotal.textContent = formatPrice(total);
 
   if (cart.length === 0) {
-    cartItems.innerHTML = "<p>Your cart is empty.</p>";
+    cartItems.innerHTML = '<p>Your cart is empty.</p><small class="cart-save-note">Saved on this device, so refresh will not empty it.</small>';
     checkoutLink.href = "#products";
     return;
   }
@@ -233,7 +404,12 @@ function renderCart() {
           <div>
             <h3>${item.name}</h3>
             <p>Qty ${item.quantity} - ${formatPrice(item.price * item.quantity)}</p>
-            <button type="button" data-remove-id="${item.id}">Remove</button>
+            <div class="quantity-controls">
+              <button type="button" data-quantity-id="${item.id}" data-quantity-change="-1" aria-label="Decrease ${item.name}">-</button>
+              <span>${item.quantity}</span>
+              <button type="button" data-quantity-id="${item.id}" data-quantity-change="1" aria-label="Increase ${item.name}">+</button>
+              <button type="button" data-remove-id="${item.id}">Remove</button>
+            </div>
           </div>
         </div>
       `,
@@ -373,12 +549,38 @@ grid.addEventListener("click", (event) => {
 });
 
 cartItems.addEventListener("click", (event) => {
+  const quantityButton = event.target.closest("[data-quantity-id]");
+  if (quantityButton) {
+    updateCartQuantity(Number(quantityButton.dataset.quantityId), Number(quantityButton.dataset.quantityChange));
+    return;
+  }
+
   const button = event.target.closest("[data-remove-id]");
   if (!button) return;
   removeFromCart(Number(button.dataset.removeId));
 });
 
-searchInput.addEventListener("input", renderProducts);
+searchControls.forEach((control) => {
+  control.addEventListener("input", () => {
+    syncSearchInputs(control.value);
+    renderProducts();
+  });
+});
+searchForms.forEach((form) => {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    renderProducts();
+    scrollToCatalog();
+    setMobileNav(false);
+  });
+});
+document.addEventListener("click", (event) => {
+  const smartButton = event.target.closest("[data-smart-query]");
+  if (!smartButton) return;
+  applySmartSearch(smartButton.dataset.smartQuery || "", smartButton.dataset.smartCategory || "All");
+});
+resetCatalogButton?.addEventListener("click", () => applySmartSearch("", "All"));
+clearCartButton?.addEventListener("click", clearCart);
 document.querySelectorAll("[data-open-cart]").forEach((button) => button.addEventListener("click", openCart));
 document.querySelectorAll("[data-close-cart]").forEach((button) => button.addEventListener("click", closeCart));
 mobileMenuButton.addEventListener("click", () => setMobileNav(mobileNav.hidden));

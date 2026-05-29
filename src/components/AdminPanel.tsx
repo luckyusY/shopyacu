@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
@@ -34,9 +35,9 @@ export function AdminPanel({ products }: { products: Product[] }) {
             <p className="text-xs font-black uppercase tracking-[0.2em] text-[#d25f36]">Admin</p>
             <h1 className="text-2xl font-black">Shopyacu control panel</h1>
           </div>
-          <a href="/" className="rounded-full bg-[#0f3d3e] px-5 py-3 text-sm font-black text-white">
+          <Link href="/" className="rounded-full bg-[#0f3d3e] px-5 py-3 text-sm font-black text-white">
             Storefront
-          </a>
+          </Link>
         </div>
       </header>
 

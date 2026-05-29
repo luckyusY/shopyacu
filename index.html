@@ -19,6 +19,10 @@
           <span>Shopyacu</span>
           <small>Online store</small>
         </a>
+        <form class="nav-search" data-search-form>
+          <input data-search-input type="search" placeholder="Search caddy, air fryer, laptop table..." aria-label="Search Shopyacu products" />
+          <button type="submit">Search</button>
+        </form>
         <nav aria-label="Primary navigation">
           <a href="#products">Products</a>
           <a href="#instagram">Instagram</a>
@@ -33,6 +37,10 @@
         </button>
       </div>
       <div id="mobile-nav" class="mobile-nav" hidden>
+        <form class="mobile-search" data-search-form>
+          <input data-search-input type="search" placeholder="Search products" aria-label="Search Shopyacu products" />
+          <button type="submit">Go</button>
+        </form>
         <a href="#products">Products</a>
         <a href="#instagram">Instagram</a>
         <a href="#delivery">How it works</a>
@@ -47,6 +55,19 @@
           <p class="eyebrow">Kigali online essentials</p>
           <h1>Useful products for a cleaner, easier home.</h1>
           <p class="lede">Shop Shopyacu's practical picks for kitchens, bathrooms, fitness corners, work setups, and rainy-day errands. Add items to cart, then confirm your order on WhatsApp.</p>
+          <form class="hero-search" data-search-form>
+            <div>
+              <input data-search-input type="search" placeholder="What are you looking for today?" aria-label="Search products" />
+              <button type="submit">Find products</button>
+            </div>
+            <div class="quick-searches" aria-label="Popular searches">
+              <button type="button" data-smart-query="shower caddy" data-smart-category="Bathroom">Bathroom storage</button>
+              <button type="button" data-smart-query="air fryer" data-smart-category="Kitchen">Kitchen deals</button>
+              <button type="button" data-smart-query="laptop table" data-smart-category="Office">Work setup</button>
+              <button type="button" data-smart-query="rain coat" data-smart-category="Outdoor">Rainy day</button>
+            </div>
+            <div id="search-suggestions" class="search-suggestions" aria-label="Product suggestions"></div>
+          </form>
           <div class="hero-actions">
             <a class="primary-link" href="#products">Shop catalog</a>
             <a class="secondary-link" href="https://wa.me/250789448107">Order on WhatsApp</a>
@@ -61,6 +82,15 @@
         <div class="hero-media" aria-label="Featured Shopyacu products">
           <div class="hero-main-card">
             <img class="hero-main" src="./public/products/product-21.jpg" alt="Corner shower caddy" />
+            <div class="shop-guide" aria-live="polite">
+              <span class="guide-face" aria-hidden="true">
+                <span></span>
+              </span>
+              <span>
+                <small>Shop guide</small>
+                <strong id="assistant-copy">Try bathroom storage, kitchen deals, rainy day, or work setup.</strong>
+              </span>
+            </div>
             <div class="hero-product-label">
               <span>Featured</span>
               <strong>Corner Shower Caddy</strong>
@@ -96,6 +126,16 @@
         </article>
       </section>
 
+      <section class="smart-picks" aria-label="Smart product recommendations">
+        <div class="smart-copy">
+          <p class="eyebrow">Smart picks</p>
+          <h2>The catalog reacts to your search and cart.</h2>
+          <p id="smart-copy">Try a search or add a product to get better recommendations.</p>
+          <button type="button" data-reset-catalog>Reset catalog</button>
+        </div>
+        <div id="smart-pick-grid" class="smart-pick-grid"></div>
+      </section>
+
       <section id="products" class="catalog">
         <div class="section-heading">
           <p class="eyebrow">Catalog</p>
@@ -108,7 +148,7 @@
           <div id="category-filters" class="filters" aria-label="Product categories"></div>
           <label>
             <span class="sr-only">Search products</span>
-            <input id="search-input" type="search" placeholder="Search products" />
+            <input id="search-input" data-search-input type="search" placeholder="Search products" />
           </label>
         </div>
         <p id="product-result-count" class="result-count">Loading catalog...</p>
@@ -204,6 +244,7 @@
         </div>
         <div id="cart-items" class="cart-items"></div>
         <div class="cart-footer">
+          <button class="clear-cart" type="button" data-clear-cart>Clear cart</button>
           <div class="cart-total">
             <span>Total</span>
             <strong id="cart-total">RWF 0</strong>

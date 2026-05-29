@@ -3,41 +3,143 @@
 import Image from "next/image";
 import Link from "next/link";
 import { m } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { A11y, Keyboard, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { categories, formatPrice, type Product } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
 type CartItem = Product & { quantity: number };
+type SavedCartItem = { id: number; quantity: number };
 
 const highlights = ["33 products", "Local delivery", "WhatsApp checkout"];
+const cartStorageKey = "shopyacu_cart_v1";
 const promises = [
   ["Browse fast", "Search by product or category."],
   ["Confirm clearly", "Your cart becomes a WhatsApp order."],
   ["Shop locally", "Selected for everyday Kigali homes."],
   ["Manage easily", "Admin panel for quick product updates."],
 ];
+const quickSearches = [
+  { label: "Bathroom storage", query: "shower caddy", category: "Bathroom" },
+  { label: "Kitchen deals", query: "air fryer", category: "Kitchen" },
+  { label: "Work setup", query: "laptop table", category: "Office" },
+  { label: "Rainy day", query: "rain coat", category: "Outdoor" },
+];
 
 export function Storefront({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartHydrated, setCartHydrated] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState("");
+  const normalizedQuery = query.trim().toLowerCase();
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const categoryMatch = activeCategory === "All" || product.category === activeCategory;
-      const searchMatch = `${product.name} ${product.description}`.toLowerCase().includes(query.toLowerCase());
+      const searchMatch =
+        !normalizedQuery ||
+        `${product.name} ${product.description} ${product.category} ${product.badge || ""}`.toLowerCase().includes(normalizedQuery);
       return categoryMatch && searchMatch;
     });
-  }, [activeCategory, products, query]);
+  }, [activeCategory, normalizedQuery, products]);
+
+  const searchSuggestions = useMemo(() => {
+    const scored = products
+      .map((product) => {
+        const haystack = `${product.name} ${product.description} ${product.category} ${product.badge || ""}`.toLowerCase();
+        const name = product.name.toLowerCase();
+        let score = product.badge ? 1 : 0;
+
+        if (normalizedQuery) {
+          if (name.startsWith(normalizedQuery)) score += 8;
+          if (name.includes(normalizedQuery)) score += 5;
+          if (haystack.includes(normalizedQuery)) score += 3;
+          if (product.category.toLowerCase().includes(normalizedQuery)) score += 2;
+        } else if (["Featured", "Hot deal", "Popular"].includes(product.badge || "")) {
+          score += 4;
+        }
+
+        return { product, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score || a.product.price - b.product.price);
+
+    return scored.slice(0, 5).map(({ product }) => product);
+  }, [normalizedQuery, products]);
+
+  const recommendedProducts = useMemo(() => {
+    const cartIds = new Set(cart.map((item) => item.id));
+    const preferredCategory = cart[0]?.category || (activeCategory !== "All" ? activeCategory : "");
+
+    return products
+      .filter((product) => !cartIds.has(product.id))
+      .map((product) => ({
+        product,
+        score:
+          (product.category === preferredCategory ? 5 : 0) +
+          (product.badge ? 2 : 0) +
+          (normalizedQuery && `${product.name} ${product.description}`.toLowerCase().includes(normalizedQuery) ? 3 : 0),
+      }))
+      .sort((a, b) => b.score - a.score || a.product.price - b.product.price)
+      .slice(0, 3)
+      .map(({ product }) => product);
+  }, [activeCategory, cart, normalizedQuery, products]);
 
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const assistantCopy = cart.length
+    ? `${itemCount} item${itemCount === 1 ? "" : "s"} saved. Your cart stays after refresh.`
+    : normalizedQuery
+      ? `${filteredProducts.length} match${filteredProducts.length === 1 ? "" : "es"} ready in the catalog.`
+      : "Try bathroom storage, kitchen deals, rainy day, or work setup.";
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const timeout = window.setTimeout(() => {
+      try {
+        const savedCart = window.localStorage.getItem(cartStorageKey);
+        if (!savedCart) {
+          if (!cancelled) setCartHydrated(true);
+          return;
+        }
+
+        const parsed = JSON.parse(savedCart) as Array<Partial<SavedCartItem>>;
+        const restored = parsed.flatMap((item) => {
+          const product = products.find((candidate) => candidate.id === Number(item.id));
+          const quantity = Math.max(1, Math.min(99, Number(item.quantity) || 1));
+          return product ? [{ ...product, quantity }] : [];
+        });
+
+        if (!cancelled) setCart(restored);
+      } catch {
+        window.localStorage.removeItem(cartStorageKey);
+      } finally {
+        if (!cancelled) setCartHydrated(true);
+      }
+    }, 0);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+    };
+  }, [products]);
+
+  useEffect(() => {
+    if (!cartHydrated) return;
+
+    const savedCart: SavedCartItem[] = cart.map((item) => ({ id: item.id, quantity: item.quantity }));
+    if (savedCart.length) {
+      window.localStorage.setItem(cartStorageKey, JSON.stringify(savedCart));
+    } else {
+      window.localStorage.removeItem(cartStorageKey);
+    }
+  }, [cart, cartHydrated]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setIsLoading(false), 650);
@@ -93,6 +195,32 @@ export function Storefront({ products }: { products: Product[] }) {
     setCart((items) => items.filter((item) => item.id !== productId));
   }
 
+  function updateCartQuantity(productId: number, change: number) {
+    setCart((items) =>
+      items.flatMap((item) => {
+        if (item.id !== productId) return [item];
+        const quantity = item.quantity + change;
+        return quantity > 0 ? [{ ...item, quantity }] : [];
+      }),
+    );
+  }
+
+  function clearCart() {
+    setCart([]);
+    setToast("Cart cleared");
+  }
+
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function applySmartSearch(nextQuery: string, nextCategory = "All") {
+    setQuery(nextQuery);
+    setActiveCategory(nextCategory);
+    document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   const whatsappText =
     `Hello Shopyacu, I want to order:\n${cart
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
@@ -109,6 +237,18 @@ export function Storefront({ products }: { products: Product[] }) {
             <span className="text-xl font-black uppercase tracking-[0.08em]">Shopyacu</span>
             <span className="text-[11px] font-black uppercase tracking-[0.14em] text-[#667680]">Online store</span>
           </Link>
+          <form onSubmit={submitSearch} className="hidden min-w-[280px] flex-1 items-center rounded-full border border-black/10 bg-white/75 p-1 shadow-sm lg:flex xl:max-w-lg">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search caddy, air fryer, laptop table..."
+              aria-label="Search Shopyacu products"
+              className="h-10 min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm font-bold text-[#1f2933] outline-none"
+            />
+            <button type="submit" className="h-10 rounded-full bg-[#0f3d3e] px-4 text-sm font-black text-white transition hover:bg-[#145c5e]">
+              Search
+            </button>
+          </form>
           <nav className="hidden items-center gap-2 rounded-full border border-black/10 bg-white/60 p-1 text-sm font-black text-[#435466] md:flex">
             <a className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="#products">Products</a>
             <a className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="#instagram">Instagram</a>
@@ -137,6 +277,18 @@ export function Storefront({ products }: { products: Product[] }) {
         </div>
         {isMenuOpen && (
           <div className="grid gap-2 border-t border-black/10 px-4 py-3 md:hidden">
+            <form onSubmit={submitSearch} className="flex rounded-full border border-black/10 bg-white p-1">
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search products"
+                aria-label="Search Shopyacu products"
+                className="h-10 min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm font-bold text-[#1f2933] outline-none"
+              />
+              <button type="submit" onClick={() => setIsMenuOpen(false)} className="h-10 rounded-full bg-[#0f3d3e] px-4 text-sm font-black text-white">
+                Go
+              </button>
+            </form>
             {[
               ["Products", "#products"],
               ["Instagram", "#instagram"],
@@ -168,6 +320,47 @@ export function Storefront({ products }: { products: Product[] }) {
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#51616f]">
             Shop practical picks for kitchens, bathrooms, fitness corners, work setups, and rainy-day errands. Add items to cart, then confirm your order on WhatsApp.
           </p>
+          <form onSubmit={submitSearch} className="mt-7 rounded-[8px] border border-black/10 bg-white/75 p-2 shadow-sm">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="What are you looking for today?"
+                aria-label="Search products"
+                className="h-12 min-w-0 flex-1 rounded-full border border-transparent bg-white px-5 text-sm font-bold text-[#1f2933] outline-none transition focus:border-[#0f3d3e]"
+              />
+              <button type="submit" className="h-12 rounded-full bg-[#13292f] px-6 text-sm font-black text-white transition hover:bg-[#c95d35]">
+                Find products
+              </button>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {quickSearches.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => applySmartSearch(item.query, item.category)}
+                  className="rounded-full border border-[#0f3d3e]/15 bg-[#f6f1e9] px-3 py-2 text-xs font-black text-[#344851] transition hover:border-[#0f3d3e] hover:text-[#0f3d3e]"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            {searchSuggestions.length > 0 && (
+              <div className="mt-3 grid gap-2 border-t border-black/10 pt-3 sm:grid-cols-2">
+                {searchSuggestions.slice(0, 4).map((product) => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => applySmartSearch(product.name)}
+                    className="flex items-center justify-between gap-3 rounded-[8px] bg-[#f7f4ef] px-3 py-2 text-left text-xs font-bold text-[#51616f] transition hover:bg-[#e8efe8]"
+                  >
+                    <span className="min-w-0 truncate">{product.name}</span>
+                    <span className="shrink-0 font-black text-[#0f3d3e]">{formatPrice(product.price)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </form>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#products" className="rounded-full bg-[#c95d35] px-6 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#b94f2d]">
               Shop catalog
@@ -187,6 +380,23 @@ export function Storefront({ products }: { products: Product[] }) {
         <div className="grid min-h-[560px] grid-cols-[1fr_0.72fr] gap-4 max-md:min-h-0 max-md:grid-cols-1">
           <div className="relative overflow-hidden rounded-[8px] bg-white shadow-xl">
             <Image src="/products/product-21.jpg" alt="Corner shower caddy" width={900} height={900} priority className="h-full min-h-[420px] w-full object-cover" />
+            <m.div
+              animate={{ y: [0, -9, 0], rotate: [0, -1.5, 1.5, 0] }}
+              transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute left-4 top-4 z-10 flex max-w-[260px] items-center gap-3 rounded-[8px] border border-white/35 bg-white/90 p-3 text-[#13292f] shadow-xl backdrop-blur"
+            >
+              <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[8px] bg-[#f2bd4b] shadow-inner" aria-hidden="true">
+                <span className="absolute -top-2 h-4 w-7 rounded-t-full border-4 border-[#13292f] border-b-0" />
+                <span className="mt-1 flex gap-1">
+                  <span className="h-2 w-2 rounded-full bg-[#13292f]" />
+                  <span className="h-2 w-2 rounded-full bg-[#13292f]" />
+                </span>
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-[#c95d35]">Shop guide</span>
+                <span className="block text-sm font-black leading-5">{assistantCopy}</span>
+              </span>
+            </m.div>
             <div className="absolute inset-x-4 bottom-4 rounded-[8px] bg-[#0f3d3e]/85 p-4 text-white backdrop-blur">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2bd4b]">Featured</p>
               <p className="mt-1 text-lg font-black">Corner Shower Caddy</p>
@@ -214,6 +424,39 @@ export function Storefront({ products }: { products: Product[] }) {
             <p className="mt-2 text-sm leading-6 text-[#667680]">{copy}</p>
           </div>
         ))}
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-14 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
+        <div className="rounded-[8px] border border-black/10 bg-[#13292f] p-6 text-white">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f2bd4b]">Smart picks</p>
+          <h2 className="mt-3 text-3xl font-black leading-tight">The catalog reacts to your search and cart.</h2>
+          <p className="mt-4 text-sm font-semibold leading-6 text-white/70">{assistantCopy}</p>
+          <button
+            type="button"
+            onClick={() => applySmartSearch("", "All")}
+            className="mt-6 rounded-full bg-white px-5 py-3 text-sm font-black text-[#13292f] transition hover:bg-[#f2bd4b]"
+          >
+            Reset catalog
+          </button>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {recommendedProducts.map((product) => (
+            <m.article
+              key={product.id}
+              layout
+              className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm"
+            >
+              <button type="button" onClick={() => applySmartSearch(product.name)} className="block w-full text-left">
+                <Image src={product.image} alt={product.name} width={420} height={320} className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105" />
+                <span className="block p-4">
+                  <span className="text-[11px] font-black uppercase tracking-[0.16em] text-[#c95d35]">{product.category}</span>
+                  <span className="mt-2 block min-h-12 text-sm font-black leading-5 text-[#13292f]">{product.name}</span>
+                  <span className="mt-2 block text-lg font-black text-[#0f3d3e]">{formatPrice(product.price)}</span>
+                </span>
+              </button>
+            </m.article>
+          ))}
+        </div>
       </section>
 
       <section id="products" className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
@@ -426,6 +669,9 @@ export function Storefront({ products }: { products: Product[] }) {
               </div>
               <button type="button" onClick={() => setCartOpen(false)} className="h-10 w-10 rounded-full bg-[#f1eee8] text-xl font-black text-[#13292f]">x</button>
             </div>
+            <p className="mt-4 rounded-[8px] bg-[#e8efe8] p-3 text-sm font-bold text-[#0f3d3e]">
+              {cartHydrated ? "Saved on this device, so refresh will not empty it." : "Loading saved cart..."}
+            </p>
             <div className="mt-6 flex-1 space-y-4 overflow-auto">
               {cart.length === 0 ? (
                 <p className="rounded-[8px] bg-[#f7f4ef] p-4 text-sm font-semibold text-[#51616f]">Your cart is empty.</p>
@@ -436,13 +682,27 @@ export function Storefront({ products }: { products: Product[] }) {
                     <div className="min-w-0 flex-1">
                       <p className="font-black text-[#13292f]">{item.name}</p>
                       <p className="mt-1 text-sm font-semibold text-[#51616f]">Qty {item.quantity} - {formatPrice(item.price * item.quantity)}</p>
-                      <button type="button" onClick={() => removeFromCart(item.id)} className="mt-2 text-sm font-black text-[#d25f35]">Remove</button>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <button type="button" onClick={() => updateCartQuantity(item.id, -1)} className="grid h-8 w-8 place-items-center rounded-full bg-[#f1eee8] text-lg font-black text-[#13292f]" aria-label={`Decrease ${item.name}`}>
+                          -
+                        </button>
+                        <span className="min-w-8 text-center text-sm font-black text-[#13292f]">{item.quantity}</span>
+                        <button type="button" onClick={() => updateCartQuantity(item.id, 1)} className="grid h-8 w-8 place-items-center rounded-full bg-[#13292f] text-lg font-black text-white" aria-label={`Increase ${item.name}`}>
+                          +
+                        </button>
+                        <button type="button" onClick={() => removeFromCart(item.id)} className="ml-auto text-sm font-black text-[#d25f35]">Remove</button>
+                      </div>
                     </div>
                   </div>
                 ))
               )}
             </div>
             <div className="border-t border-black/10 pt-5">
+              {cart.length > 0 && (
+                <button type="button" onClick={clearCart} className="mb-3 text-sm font-black text-[#d25f35]">
+                  Clear cart
+                </button>
+              )}
               <div className="flex items-center justify-between text-lg font-black text-[#13292f]">
                 <span>Total</span>
                 <span>{formatPrice(cartTotal)}</span>
