@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { m } from "framer-motion";
+import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { A11y, Keyboard, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,7 +12,6 @@ import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 type CartItem = Product & { quantity: number };
 type SavedCartItem = { id: number; quantity: number };
 
-const highlights = ["33 products", "Local delivery", "WhatsApp checkout"];
 const cartStorageKey = "shopyacu_cart_v1";
 const promises = [
   ["Browse fast", "Search by product or category."],
@@ -36,7 +35,9 @@ export function Storefront({ products }: { products: Product[] }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState("");
+  const reduceMotion = useReducedMotion();
   const normalizedQuery = query.trim().toLowerCase();
+  const highlights = [`${products.length} products`, "Local delivery", "WhatsApp checkout"];
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -157,6 +158,15 @@ export function Storefront({ products }: { products: Product[] }) {
     return () => {
       document.body.style.overflow = "";
     };
+  }, [cartOpen]);
+
+  useEffect(() => {
+    if (!cartOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCartOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [cartOpen]);
 
   useEffect(() => {
@@ -381,8 +391,8 @@ export function Storefront({ products }: { products: Product[] }) {
           <div className="relative overflow-hidden rounded-[8px] bg-white shadow-xl">
             <Image src="/products/product-21.jpg" alt="Corner shower caddy" width={900} height={900} priority className="h-full min-h-[420px] w-full object-cover" />
             <m.div
-              animate={{ y: [0, -9, 0], rotate: [0, -1.5, 1.5, 0] }}
-              transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+              animate={reduceMotion ? undefined : { y: [0, -9, 0], rotate: [0, -1.5, 1.5, 0] }}
+              transition={reduceMotion ? undefined : { duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
               className="absolute left-4 top-4 z-10 flex max-w-[260px] items-center gap-3 rounded-[8px] border border-white/35 bg-white/90 p-3 text-[#13292f] shadow-xl backdrop-blur"
             >
               <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[8px] bg-[#f2bd4b] shadow-inner" aria-hidden="true">
@@ -419,7 +429,7 @@ export function Storefront({ products }: { products: Product[] }) {
 
       <section className="mx-auto grid max-w-7xl gap-3 px-4 pb-12 sm:px-6 md:grid-cols-4 lg:px-8">
         {promises.map(([title, copy]) => (
-          <div key={title} className="rounded-[8px] border border-black/10 bg-white/70 p-5">
+          <div key={title} className="rounded-[8px] border border-black/10 bg-white/70 p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#0f3d3e]/30 hover:shadow-md">
             <p className="font-black text-[#13292f]">{title}</p>
             <p className="mt-2 text-sm leading-6 text-[#667680]">{copy}</p>
           </div>
@@ -444,7 +454,8 @@ export function Storefront({ products }: { products: Product[] }) {
             <m.article
               key={product.id}
               layout
-              className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm"
+              whileHover={reduceMotion ? undefined : { y: -4 }}
+              className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg"
             >
               <button type="button" onClick={() => applySmartSearch(product.name)} className="block w-full text-left">
                 <Image src={product.image} alt={product.name} width={420} height={320} className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105" />
@@ -528,8 +539,9 @@ export function Storefront({ products }: { products: Product[] }) {
                   layout
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
+                  whileHover={reduceMotion ? undefined : { y: -4 }}
                   transition={{ duration: 0.28, ease: "easeOut" }}
-                  className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm"
+                  className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg"
                 >
                   <div className="relative aspect-square overflow-hidden bg-[#e9e4dc]">
                     <Swiper
@@ -653,21 +665,50 @@ export function Storefront({ products }: { products: Product[] }) {
         <span>{whatsappDisplay}</span>
       </a>
 
-      {toast && (
-        <div className="fixed bottom-24 left-1/2 z-[60] max-w-[92vw] -translate-x-1/2 rounded-full bg-[#13292f] px-5 py-3 text-sm font-black text-white shadow-2xl">
-          {toast}
-        </div>
-      )}
+      <div className="pointer-events-none fixed bottom-24 left-1/2 z-[60] max-w-[92vw] -translate-x-1/2" aria-live="polite">
+        <AnimatePresence>
+          {toast && (
+            <m.div
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="rounded-full bg-[#13292f] px-5 py-3 text-sm font-black text-white shadow-2xl"
+            >
+              {toast}
+            </m.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-      {cartOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40" onClick={() => setCartOpen(false)}>
-          <aside className="ml-auto flex h-full w-full max-w-md flex-col bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+      <AnimatePresence>
+        {cartOpen && (
+          <m.div
+            key="cart"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-black/40"
+            onClick={() => setCartOpen(false)}
+          >
+            <m.aside
+              role="dialog"
+              aria-modal="true"
+              aria-label="Shopping cart"
+              initial={reduceMotion ? { opacity: 0 } : { x: "100%" }}
+              animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { x: "100%" }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="ml-auto flex h-full w-full max-w-md flex-col bg-white p-5 shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#c95d35]">Checkout</p>
                 <h2 className="text-3xl font-black text-[#13292f]">Your cart</h2>
               </div>
-              <button type="button" onClick={() => setCartOpen(false)} className="h-10 w-10 rounded-full bg-[#f1eee8] text-xl font-black text-[#13292f]">x</button>
+              <button type="button" onClick={() => setCartOpen(false)} aria-label="Close cart" className="grid h-10 w-10 place-items-center rounded-full bg-[#f1eee8] text-xl font-black text-[#13292f] transition hover:bg-[#e4ddd2]">&times;</button>
             </div>
             <p className="mt-4 rounded-[8px] bg-[#e8efe8] p-3 text-sm font-bold text-[#0f3d3e]">
               {cartHydrated ? "Saved on this device, so refresh will not empty it." : "Loading saved cart..."}
@@ -714,9 +755,10 @@ export function Storefront({ products }: { products: Product[] }) {
                 Send order on WhatsApp
               </a>
             </div>
-          </aside>
-        </div>
-      )}
+            </m.aside>
+          </m.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

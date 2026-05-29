@@ -72,7 +72,8 @@ export function AdminPanel({ products }: { products: Product[] }) {
           </div>
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-[8px] bg-white shadow-sm">
+        <div className="mt-6 overflow-x-auto rounded-[8px] bg-white shadow-sm">
+          <div className="min-w-[760px]">
           <div className="grid grid-cols-[90px_1.4fr_0.75fr_0.7fr_0.7fr_130px] gap-4 border-b border-black/10 px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#51616f]">
             <span>Image</span>
             <span>Product</span>
@@ -124,6 +125,7 @@ export function AdminPanel({ products }: { products: Product[] }) {
               </a>
             </div>
           ))}
+          </div>
         </div>
       </section>
     </main>

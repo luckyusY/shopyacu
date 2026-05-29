@@ -57,9 +57,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <p className="mt-5 text-3xl font-black text-[#0f3d3e]">{formatPrice(product.price)}</p>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#51616f]">{product.description}</p>
           <div className="mt-8 grid gap-3 text-sm font-semibold text-[#435466] sm:grid-cols-3">
-            <div className="bg-white p-4">Local delivery</div>
-            <div className="bg-white p-4">WhatsApp confirmation</div>
-            <div className="bg-white p-4">Quality checked</div>
+            <div className="rounded-[8px] border border-black/10 bg-white p-4 shadow-sm">Local delivery</div>
+            <div className="rounded-[8px] border border-black/10 bg-white p-4 shadow-sm">WhatsApp confirmation</div>
+            <div className="rounded-[8px] border border-black/10 bg-white p-4 shadow-sm">Quality checked</div>
           </div>
           <a
             href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
@@ -75,8 +75,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <h2 className="text-2xl font-black text-[#13292f]">Related products</h2>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((item) => (
-              <Link key={item.id} href={`/products/${item.slug}`} className="overflow-hidden rounded-[8px] bg-white shadow-sm">
-                <Image src={item.image} alt={item.name} width={500} height={500} className="aspect-square w-full object-cover" />
+              <Link key={item.id} href={`/products/${item.slug}`} className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg">
+                <Image src={item.image} alt={item.name} width={500} height={500} className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
                 <div className="p-4">
                   <p className="font-black text-[#13292f]">{item.name}</p>
                   <p className="mt-1 font-black text-[#0f3d3e]">{formatPrice(item.price)}</p>
