@@ -8,20 +8,34 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="./index.html">SHOPYACU</a>
-      <nav>
-        <a href="./index.html#products">Products</a>
-        <a href="./admin.html">Admin</a>
-        <a href="https://wa.me/250789448107">WhatsApp 0789448107</a>
-      </nav>
-      <a class="cart-button admin-store-link" href="./index.html">Store</a>
+      <div class="announcement">
+        <span>Admin preview for product updates</span>
+        <span>Orders confirmed on WhatsApp 0789448107</span>
+      </div>
+      <div class="nav-bar">
+        <a class="brand" href="./index.html">
+          <span>Shopyacu</span>
+          <small>Admin</small>
+        </a>
+        <nav>
+          <a href="./index.html#products">Products</a>
+          <a href="./admin.html">Admin</a>
+          <a href="https://wa.me/250789448107">WhatsApp</a>
+        </nav>
+        <a class="cart-button admin-store-link" href="./index.html">Store</a>
+      </div>
     </header>
 
     <main class="admin-page">
       <section class="admin-hero">
-        <p class="eyebrow">Control panel</p>
-        <h1>Manage Shopyacu products and WhatsApp orders.</h1>
-        <p class="lede">Edit product names, prices, stock labels, and featured status locally before publishing updates to the main app.</p>
+        <div>
+          <p class="eyebrow">Control panel</p>
+          <h1>Manage products before customers order.</h1>
+          <p class="lede">Edit names, prices, stock labels, and featured status locally before publishing updates to the main app.</p>
+        </div>
+        <aside class="admin-panel-note">
+          This panel saves edits in this browser with local storage. It is useful for preparing catalog changes before syncing them into the main product source.
+        </aside>
       </section>
 
       <section class="admin-stats">

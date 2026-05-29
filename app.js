@@ -132,7 +132,7 @@ function renderCart() {
           <img src="${item.image}" alt="${item.name}">
           <div>
             <h3>${item.name}</h3>
-            <p>Qty ${item.quantity} · ${formatPrice(item.price * item.quantity)}</p>
+            <p>Qty ${item.quantity} - ${formatPrice(item.price * item.quantity)}</p>
             <button type="button" data-remove-id="${item.id}">Remove</button>
           </div>
         </div>

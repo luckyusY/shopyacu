@@ -9,40 +9,91 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="#">SHOPYACU</a>
-      <nav>
-        <a href="#products">Products</a>
-        <a href="./admin.html">Admin</a>
-        <a href="#delivery">Delivery</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <button class="cart-button" type="button" data-open-cart>Cart <span id="cart-count">0</span></button>
+      <div class="announcement">
+        <span>Orders confirmed on WhatsApp 0789448107</span>
+        <span>Kigali delivery available</span>
+      </div>
+      <div class="nav-bar">
+        <a class="brand" href="#">
+          <span>Shopyacu</span>
+          <small>Online store</small>
+        </a>
+        <nav aria-label="Primary navigation">
+          <a href="#products">Products</a>
+          <a href="#delivery">How it works</a>
+          <a href="./admin.html">Admin</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <button class="cart-button" type="button" data-open-cart>
+          <span class="cart-label">Cart</span>
+          <span id="cart-count">0</span>
+        </button>
+      </div>
     </header>
 
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Kigali online store</p>
-          <h1>Smart home finds, delivered fast.</h1>
-          <p class="lede">Shop practical kitchen, bathroom, fitness, office, and outdoor products selected from the Shopyacu catalog.</p>
+          <p class="eyebrow">Kigali online essentials</p>
+          <h1>Useful products for a cleaner, easier home.</h1>
+          <p class="lede">Shop Shopyacu's practical picks for kitchens, bathrooms, fitness corners, work setups, and rainy-day errands. Add items to cart, then confirm your order on WhatsApp.</p>
           <div class="hero-actions">
-            <a class="primary-link" href="#products">Browse products</a>
-            <a class="secondary-link" href="https://wa.me/250789448107">WhatsApp 0789448107</a>
+            <a class="primary-link" href="#products">Shop catalog</a>
+            <a class="secondary-link" href="https://wa.me/250789448107">Order on WhatsApp</a>
+          </div>
+          <div class="hero-points" aria-label="Store highlights">
+            <span>33 products</span>
+            <span>Local delivery</span>
+            <span>WhatsApp checkout</span>
           </div>
         </div>
-        <div class="hero-media">
-          <img class="hero-main" src="./public/products/product-21.jpg" alt="Corner shower caddy" />
+
+        <div class="hero-media" aria-label="Featured Shopyacu products">
+          <div class="hero-main-card">
+            <img class="hero-main" src="./public/products/product-21.jpg" alt="Corner shower caddy" />
+            <div class="hero-product-label">
+              <span>Featured</span>
+              <strong>Corner Shower Caddy</strong>
+            </div>
+          </div>
           <div class="hero-side">
             <img src="./public/products/product-19.jpg" alt="Silver Crest air fryer" />
+            <img src="./public/products/product-31.jpg" alt="Portable laptop table" />
             <div class="stat">
-              <strong>33</strong>
-              <span>ready-to-order products</span>
+              <strong>0789448107</strong>
+              <span>orders through WhatsApp</span>
             </div>
           </div>
         </div>
       </section>
 
+      <section class="promise-strip" aria-label="Shopping benefits">
+        <article>
+          <strong>Browse fast</strong>
+          <span>Search by product or category.</span>
+        </article>
+        <article>
+          <strong>Confirm clearly</strong>
+          <span>Your cart becomes a WhatsApp order.</span>
+        </article>
+        <article>
+          <strong>Shop locally</strong>
+          <span>Selected for everyday Kigali homes.</span>
+        </article>
+        <article>
+          <strong>Manage easily</strong>
+          <span>Admin panel for quick product updates.</span>
+        </article>
+      </section>
+
       <section id="products" class="catalog">
+        <div class="section-heading">
+          <p class="eyebrow">Catalog</p>
+          <div>
+            <h2>Shop by need, room, or routine.</h2>
+            <p>Filter the catalog, add products to cart, and send the order list directly to WhatsApp.</p>
+          </div>
+        </div>
         <div class="toolbar">
           <div id="category-filters" class="filters" aria-label="Product categories"></div>
           <label>
@@ -54,34 +105,54 @@
       </section>
 
       <section id="delivery" class="delivery">
-        <article>
-          <span>01</span>
-          <h2>Order on the site</h2>
-          <p>Choose products and build your cart from the catalog.</p>
-        </article>
-        <article>
-          <span>02</span>
-          <h2>Confirm on WhatsApp</h2>
-          <p>Send your order list instantly for fast confirmation.</p>
-        </article>
-        <article>
-          <span>03</span>
-          <h2>Fast Kigali delivery</h2>
-          <p>Simple delivery for home essentials and daily-use products.</p>
-        </article>
+        <div class="delivery-copy">
+          <p class="eyebrow">How ordering works</p>
+          <h2>Simple cart, human confirmation.</h2>
+          <p>Shopyacu keeps checkout simple: choose products on the website, send your cart to WhatsApp, then confirm availability, delivery, and payment details with the seller.</p>
+          <a class="primary-link" href="https://wa.me/250789448107">Start WhatsApp order</a>
+        </div>
+        <div class="delivery-steps">
+          <article>
+            <span>01</span>
+            <h3>Choose products</h3>
+            <p>Use filters and search to find the exact item you want.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Send cart</h3>
+            <p>Your selected items and total are prepared for WhatsApp.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Confirm delivery</h3>
+            <p>Finalize location, delivery time, and payment through chat.</p>
+          </article>
+        </div>
       </section>
     </main>
 
     <footer id="contact">
-      <p>Shopyacu Online Store</p>
-      <p>Kigali, Rwanda · WhatsApp 0789448107 · Home essentials</p>
+      <div>
+        <a class="brand footer-brand" href="#">
+          <span>Shopyacu</span>
+          <small>Online store</small>
+        </a>
+        <p>Home, kitchen, bathroom, office, fitness, and outdoor essentials for everyday use.</p>
+      </div>
+      <div class="footer-contact">
+        <span>WhatsApp orders</span>
+        <a href="https://wa.me/250789448107">0789448107</a>
+      </div>
     </footer>
 
     <div id="cart-panel" class="cart-panel" hidden>
       <div class="cart-backdrop" data-close-cart></div>
       <aside class="cart-drawer" aria-label="Shopping cart">
         <div class="cart-heading">
-          <h2>Your cart</h2>
+          <div>
+            <p class="eyebrow">Checkout</p>
+            <h2>Your cart</h2>
+          </div>
           <button type="button" data-close-cart aria-label="Close cart">x</button>
         </div>
         <div id="cart-items" class="cart-items"></div>
