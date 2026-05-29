@@ -22,6 +22,10 @@ export function Storefront({ products }: { products: Product[] }) {
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [slideIndexes, setSlideIndexes] = useState<Record<number, number>>({});
+  const [toast, setToast] = useState("");
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -33,6 +37,24 @@ export function Storefront({ products }: { products: Product[] }) {
 
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setIsLoading(false), 650);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timeout = window.setTimeout(() => setToast(""), 2200);
+    return () => window.clearTimeout(timeout);
+  }, [toast]);
+
+  useEffect(() => {
+    document.body.style.overflow = cartOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [cartOpen]);
 
   useEffect(() => {
     const processEmbeds = () => window.instgrm?.Embeds?.process?.();
@@ -62,6 +84,7 @@ export function Storefront({ products }: { products: Product[] }) {
       }
       return [...items, { ...product, quantity: 1 }];
     });
+    setToast(`${product.name} added to cart`);
     setCartOpen(true);
   }
 
@@ -73,6 +96,14 @@ export function Storefront({ products }: { products: Product[] }) {
     `Hello Shopyacu, I want to order:\n${cart
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
       .join("\n")}\nTotal: ${formatPrice(cartTotal)}`;
+
+  function setProductSlide(product: Product, nextIndex: number) {
+    const images = product.images?.length ? product.images : [product.image];
+    setSlideIndexes((indexes) => ({
+      ...indexes,
+      [product.id]: (nextIndex + images.length) % images.length,
+    }));
+  }
 
   return (
     <main className="min-h-screen bg-[#f6f1e9] text-[#1f2933]">
@@ -94,6 +125,14 @@ export function Storefront({ products }: { products: Product[] }) {
           </nav>
           <button
             type="button"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            className="h-11 rounded-full border border-black/10 bg-white/70 px-4 text-sm font-black text-[#0f3d3e] md:hidden"
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? "Close" : "Menu"}
+          </button>
+          <button
+            type="button"
             onClick={() => setCartOpen(true)}
             className="relative h-11 rounded-full bg-[#c95d35] px-5 text-sm font-black text-white shadow-sm transition hover:bg-[#b94f2d]"
           >
@@ -103,6 +142,28 @@ export function Storefront({ products }: { products: Product[] }) {
             )}
           </button>
         </div>
+        {isMenuOpen && (
+          <div className="grid gap-2 border-t border-black/10 px-4 py-3 md:hidden">
+            {[
+              ["Products", "#products"],
+              ["Instagram", "#instagram"],
+              ["How it works", "#delivery"],
+              ["Contact", "#contact"],
+            ].map(([label, href]) => (
+              <a
+                key={label}
+                href={href}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-[8px] border border-black/10 bg-white px-4 py-3 text-sm font-black text-[#344851]"
+              >
+                {label}
+              </a>
+            ))}
+            <Link onClick={() => setIsMenuOpen(false)} className="rounded-[8px] border border-black/10 bg-white px-4 py-3 text-sm font-black text-[#344851]" href="/admin">
+              Admin
+            </Link>
+          </div>
+        )}
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-20">
@@ -195,47 +256,109 @@ export function Storefront({ products }: { products: Product[] }) {
             />
           </label>
         </div>
+        <p className="mt-4 text-sm font-black text-[#667680]">
+          {isLoading ? "Loading catalog..." : `${filteredProducts.length} ${filteredProducts.length === 1 ? "product" : "products"} shown`}
+        </p>
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <m.article
-              key={product.id}
-              layout
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.28, ease: "easeOut" }}
-              className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm"
-            >
-              <Link href={`/products/${product.slug}`} className="block">
-                <div className="relative aspect-square overflow-hidden bg-[#e9e4dc]">
-                  <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-[#0f3d3e]">
-                    In stock
-                  </span>
-                  {product.badge && (
-                    <span className="absolute right-3 top-3 z-10 rounded-full bg-[#f6c453] px-3 py-1 text-xs font-black text-[#1f2933]">
-                      {product.badge}
-                    </span>
-                  )}
-                  <Image src={product.image} alt={product.name} width={700} height={700} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+        {isLoading ? (
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm">
+                <div className="aspect-square animate-pulse bg-black/10" />
+                <div className="space-y-3 p-4">
+                  <div className="h-3 w-1/3 rounded-full bg-black/10" />
+                  <div className="h-5 w-4/5 rounded-full bg-black/10" />
+                  <div className="h-5 w-1/2 rounded-full bg-black/10" />
+                  <div className="h-11 rounded-full bg-black/10" />
                 </div>
-              </Link>
-              <div className="p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#c95d35]">{product.category}</p>
-                <Link href={`/products/${product.slug}`} className="mt-2 block min-h-12 text-base font-black leading-6 text-[#13292f] hover:text-[#0f3d3e]">
-                  {product.name}
-                </Link>
-                <p className="mt-3 text-xl font-black text-[#0f3d3e]">{formatPrice(product.price)}</p>
-                <button
-                  type="button"
-                  onClick={() => addToCart(product)}
-                  className="mt-4 h-11 w-full rounded-full bg-[#13292f] text-sm font-black text-white transition hover:bg-[#c95d35]"
-                >
-                  Add to cart
-                </button>
               </div>
-            </m.article>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="mt-8 grid min-h-60 place-items-center rounded-[8px] border border-dashed border-black/15 bg-white/60 p-8 text-center">
+            <div>
+              <p className="text-2xl font-black text-[#13292f]">No products found</p>
+              <p className="mt-2 font-bold text-[#667680]">Try another category or clear the search.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredProducts.map((product) => {
+              const images = product.images?.length ? product.images : [product.image];
+              const activeSlide = slideIndexes[product.id] || 0;
+
+              return (
+                <m.article
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  className="group overflow-hidden rounded-[8px] border border-black/10 bg-white shadow-sm"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-[#e9e4dc]">
+                    <Link href={`/products/${product.slug}`} className="block h-full">
+                      <Image src={images[activeSlide]} alt={product.name} width={700} height={700} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                    </Link>
+                    <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-[#0f3d3e]">
+                      In stock
+                    </span>
+                    {product.badge && (
+                      <span className="absolute right-3 top-3 z-10 rounded-full bg-[#f6c453] px-3 py-1 text-xs font-black text-[#1f2933]">
+                        {product.badge}
+                      </span>
+                    )}
+                    {images.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setProductSlide(product, activeSlide - 1)}
+                          className="absolute left-3 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[#13292f]/85 text-xl font-black text-white opacity-0 transition group-hover:opacity-100"
+                          aria-label="Previous image"
+                        >
+                          {"<"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setProductSlide(product, activeSlide + 1)}
+                          className="absolute right-3 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[#13292f]/85 text-xl font-black text-white opacity-0 transition group-hover:opacity-100"
+                          aria-label="Next image"
+                        >
+                          {">"}
+                        </button>
+                        <div className="absolute inset-x-3 bottom-3 z-10 flex justify-center gap-1.5">
+                          {images.map((_, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => setProductSlide(product, index)}
+                              className={`h-2 rounded-full bg-white transition ${activeSlide === index ? "w-5" : "w-2 opacity-70"}`}
+                              aria-label={`Show image ${index + 1}`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-[#c95d35]">{product.category}</p>
+                    <Link href={`/products/${product.slug}`} className="mt-2 block min-h-12 text-base font-black leading-6 text-[#13292f] hover:text-[#0f3d3e]">
+                      {product.name}
+                    </Link>
+                    <p className="mt-3 text-xl font-black text-[#0f3d3e]">{formatPrice(product.price)}</p>
+                    <button
+                      type="button"
+                      onClick={() => addToCart(product)}
+                      className="mt-4 h-11 w-full rounded-full bg-[#13292f] text-sm font-black text-white transition hover:bg-[#c95d35]"
+                    >
+                      Add to cart
+                    </button>
+                  </div>
+                </m.article>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <section id="instagram" className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 sm:px-6 md:grid-cols-[0.85fr_1fr] lg:px-8">
@@ -300,6 +423,21 @@ export function Storefront({ products }: { products: Product[] }) {
         </div>
         <p className="text-lg font-black text-[#0f3d3e]">WhatsApp {whatsappDisplay}</p>
       </footer>
+
+      <a
+        href={whatsappLink()}
+        className="fixed bottom-4 right-4 z-40 grid rounded-full bg-[#1f9d58] px-5 py-3 text-sm font-black text-white shadow-2xl"
+        aria-label="Order on WhatsApp"
+      >
+        <span className="text-[11px] uppercase tracking-[0.14em] text-white/80">WhatsApp</span>
+        <span>{whatsappDisplay}</span>
+      </a>
+
+      {toast && (
+        <div className="fixed bottom-24 left-1/2 z-[60] max-w-[92vw] -translate-x-1/2 rounded-full bg-[#13292f] px-5 py-3 text-sm font-black text-white shadow-2xl">
+          {toast}
+        </div>
+      )}
 
       {cartOpen && (
         <div className="fixed inset-0 z-50 bg-black/40" onClick={() => setCartOpen(false)}>

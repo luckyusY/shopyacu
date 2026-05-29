@@ -25,10 +25,18 @@
           <a href="./admin.html">Admin</a>
           <a href="#contact">Contact</a>
         </nav>
+        <button class="mobile-menu-button" type="button" data-toggle-nav aria-controls="mobile-nav" aria-expanded="false">Menu</button>
         <button class="cart-button" type="button" data-open-cart>
           <span class="cart-label">Cart</span>
           <span id="cart-count">0</span>
         </button>
+      </div>
+      <div id="mobile-nav" class="mobile-nav" hidden>
+        <a href="#products">Products</a>
+        <a href="#instagram">Instagram</a>
+        <a href="#delivery">How it works</a>
+        <a href="./admin.html">Admin</a>
+        <a href="#contact">Contact</a>
       </div>
     </header>
 
@@ -102,7 +110,12 @@
             <input id="search-input" type="search" placeholder="Search products" />
           </label>
         </div>
+        <p id="product-result-count" class="result-count">Loading catalog...</p>
         <div id="product-grid" class="product-grid"></div>
+        <div id="product-empty" class="empty-state" hidden>
+          <strong>No products found</strong>
+          <span>Try another category or clear the search.</span>
+        </div>
       </section>
 
       <section id="instagram" class="instagram-section">
@@ -175,6 +188,8 @@
       <span>WhatsApp</span>
       <strong>0789448107</strong>
     </a>
+
+    <div id="cart-toast" class="cart-toast" role="status" aria-live="polite"></div>
 
     <div id="cart-panel" class="cart-panel" hidden>
       <div class="cart-backdrop" data-close-cart></div>

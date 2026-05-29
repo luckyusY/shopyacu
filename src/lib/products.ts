@@ -5,11 +5,12 @@ export type Product = {
   category: string;
   price: number;
   image: string;
+  images?: string[];
   badge?: string;
   description: string;
 };
 
-export const products: Product[] = [
+const productSeed: Product[] = [
   { id: 1, slug: "multi-function-chopping-vegetable-cutter", name: "Multi-function Chopping Vegetable Cutter", category: "Kitchen", price: 18000, image: "/products/product-01.jpg", badge: "Popular", description: "A compact kitchen helper for slicing, dicing, and prepping vegetables faster." },
   { id: 2, slug: "toilet-paper-basket-holder", name: "Toilet Paper Basket Holder", category: "Bathroom", price: 22000, image: "/products/product-02.jpg", description: "A neat organizer for tissue rolls, bathroom essentials, and small toiletries." },
   { id: 3, slug: "double-pole-telescopic-clothes-rack", name: "Double Pole Telescopic Clothes Rack", category: "Home", price: 45000, image: "/products/product-03.jpg", badge: "Space saver", description: "Adjustable clothes storage for bedrooms, laundry areas, and rentals." },
@@ -44,6 +45,39 @@ export const products: Product[] = [
   { id: 32, slug: "roller-sunshade", name: "Roller Sunshade", category: "Outdoor", price: 28000, image: "/products/product-32.jpg", description: "Easy shade for windows and outdoor comfort during bright sunny days." },
   { id: 33, slug: "rain-coat", name: "Rain Coat", category: "Outdoor", price: 20000, image: "/products/product-33.jpg", description: "Reusable rain coat for daily commutes and rainy-season errands." },
 ];
+
+const galleryImages: Record<number, string[]> = {
+  1: ["product-01-2.jpg", "product-01-3.jpg"],
+  2: ["product-02-2.jpg", "product-02-3.jpg"],
+  4: ["product-04-2.jpg"],
+  5: ["product-05-2.jpg"],
+  6: ["product-06-2.jpg"],
+  8: ["product-08-2.jpg", "product-08-3.jpg"],
+  9: ["product-09-2.jpg", "product-09-3.jpg"],
+  10: ["product-10-2.jpg", "product-10-3.jpg"],
+  11: ["product-11-2.jpg", "product-11-3.jpg"],
+  12: ["product-12-2.jpg", "product-12-3.jpg"],
+  13: ["product-13-2.jpg"],
+  14: ["product-14-2.jpg"],
+  15: ["product-15-2.jpg", "product-15-3.jpg"],
+  16: ["product-16-2.jpg"],
+  18: ["product-18-2.jpg"],
+  19: ["product-19-2.jpg", "product-19-3.jpg"],
+  20: ["product-20-2.jpg"],
+  22: ["product-22-2.jpg"],
+  23: ["product-23-2.jpg"],
+  24: ["product-24-2.jpg", "product-24-3.jpg"],
+  27: ["product-27-2.jpg"],
+  29: ["product-29-2.jpg"],
+  30: ["product-30-2.jpg", "product-30-3.jpg"],
+  31: ["product-31-2.jpg", "product-31-3.jpg"],
+  32: ["product-32-2.jpg", "product-32-3.jpg"],
+};
+
+export const products: Product[] = productSeed.map((product) => ({
+  ...product,
+  images: [product.image, ...(galleryImages[product.id] || []).map((image) => `/products/${image}`)],
+}));
 
 export const categories = ["All", ...Array.from(new Set(products.map((product) => product.category)))];
 
