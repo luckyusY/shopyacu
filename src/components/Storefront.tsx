@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { m } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { categories, formatPrice, type Product } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
@@ -33,6 +33,26 @@ export function Storefront({ products }: { products: Product[] }) {
 
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  useEffect(() => {
+    const processEmbeds = () => window.instgrm?.Embeds?.process?.();
+
+    if (window.instgrm?.Embeds) {
+      processEmbeds();
+      return;
+    }
+
+    if (document.querySelector('script[src*="instagram.com/embed.js"]')) {
+      window.setTimeout(processEmbeds, 800);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.instagram.com/embed.js";
+    script.onload = processEmbeds;
+    document.body.appendChild(script);
+  }, []);
 
   function addToCart(product: Product) {
     setCart((items) => {
@@ -67,6 +87,7 @@ export function Storefront({ products }: { products: Product[] }) {
           </Link>
           <nav className="hidden items-center gap-2 rounded-full border border-black/10 bg-white/60 p-1 text-sm font-black text-[#435466] md:flex">
             <a className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="#products">Products</a>
+            <a className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="#instagram">Instagram</a>
             <a className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="#delivery">How it works</a>
             <Link className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="/admin">Admin</Link>
             <a className="rounded-full px-4 py-2 hover:bg-[#0f3d3e] hover:text-white" href="#contact">Contact</a>
@@ -214,6 +235,37 @@ export function Storefront({ products }: { products: Product[] }) {
               </div>
             </m.article>
           ))}
+        </div>
+      </section>
+
+      <section id="instagram" className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 sm:px-6 md:grid-cols-[0.85fr_1fr] lg:px-8">
+        <div className="flex flex-col justify-center">
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-[#c95d35]">Instagram</p>
+          <h2 className="mt-4 max-w-3xl text-4xl font-black leading-tight text-[#13292f] md:text-5xl">Follow the newest arrivals from @shopyacu.</h2>
+          <p className="mt-5 max-w-2xl leading-7 text-[#667680]">
+            See product videos, restocks, and daily-use demos directly from the Shopyacu Instagram profile.
+          </p>
+          <a href="https://www.instagram.com/shopyacu/" target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex w-fit rounded-full border border-[#0f3d3e]/25 bg-white/40 px-6 py-3 text-sm font-black text-[#0f3d3e]">
+            Open Instagram
+          </a>
+        </div>
+        <div className="relative min-h-[440px] overflow-hidden rounded-[8px] border border-black/10 bg-white p-5 shadow-xl">
+          <blockquote
+            className="instagram-media relative z-10 mx-auto w-full max-w-[540px]"
+            data-instgrm-permalink="https://www.instagram.com/shopyacu/"
+            data-instgrm-version="14"
+          >
+            <a href="https://www.instagram.com/shopyacu/" target="_blank" rel="noopener noreferrer">
+              View @shopyacu on Instagram
+            </a>
+          </blockquote>
+          <div className="absolute inset-5 z-0 grid place-items-center rounded-[8px] border border-dashed border-black/15 p-8 text-center">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#c95d35]">@shopyacu</p>
+              <p className="mx-auto mt-3 max-w-sm text-2xl font-black leading-tight text-[#13292f]">Latest product drops, demos, and offers</p>
+              <p className="mt-3 text-sm font-bold text-[#667680]">Instagram embed loading...</p>
+            </div>
+          </div>
         </div>
       </section>
 
