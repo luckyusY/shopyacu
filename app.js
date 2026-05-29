@@ -38,7 +38,40 @@ const products = [
   category,
   price,
   image: `./public/products/${image}`,
+  images: [`./public/products/${image}`],
 }));
+
+const galleryImages = {
+  1: ["product-01-2.jpg", "product-01-3.jpg"],
+  2: ["product-02-2.jpg", "product-02-3.jpg"],
+  4: ["product-04-2.jpg"],
+  5: ["product-05-2.jpg"],
+  6: ["product-06-2.jpg"],
+  8: ["product-08-2.jpg", "product-08-3.jpg"],
+  9: ["product-09-2.jpg", "product-09-3.jpg"],
+  10: ["product-10-2.jpg", "product-10-3.jpg"],
+  11: ["product-11-2.jpg", "product-11-3.jpg"],
+  12: ["product-12-2.jpg", "product-12-3.jpg"],
+  13: ["product-13-2.jpg"],
+  14: ["product-14-2.jpg"],
+  15: ["product-15-2.jpg", "product-15-3.jpg"],
+  16: ["product-16-2.jpg"],
+  18: ["product-18-2.jpg"],
+  19: ["product-19-2.jpg", "product-19-3.jpg"],
+  20: ["product-20-2.jpg"],
+  22: ["product-22-2.jpg"],
+  23: ["product-23-2.jpg"],
+  24: ["product-24-2.jpg", "product-24-3.jpg"],
+  27: ["product-27-2.jpg"],
+  29: ["product-29-2.jpg"],
+  30: ["product-30-2.jpg", "product-30-3.jpg"],
+  31: ["product-31-2.jpg", "product-31-3.jpg"],
+  32: ["product-32-2.jpg", "product-32-3.jpg"],
+};
+
+products.forEach((product) => {
+  product.images = [product.image, ...(galleryImages[product.id] || []).map((image) => `./public/products/${image}`)];
+});
 
 const whatsappNumber = "250789448107";
 const grid = document.querySelector("#product-grid");
@@ -52,6 +85,7 @@ const checkoutLink = document.querySelector("#checkout-link");
 
 let activeCategory = "All";
 let cart = [];
+let isLoadingProducts = true;
 
 function formatPrice(price) {
   return new Intl.NumberFormat("en-RW", {
@@ -68,7 +102,30 @@ function renderFilters() {
     .join("");
 }
 
+function renderSkeletons() {
+  grid.innerHTML = Array.from({ length: 8 })
+    .map(
+      () => `
+        <article class="product-card skeleton-card" aria-hidden="true">
+          <div class="skeleton-media"></div>
+          <div class="product-info">
+            <span class="skeleton-line short"></span>
+            <span class="skeleton-line title"></span>
+            <span class="skeleton-line price-skeleton"></span>
+            <span class="skeleton-button"></span>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
 function renderProducts() {
+  if (isLoadingProducts) {
+    renderSkeletons();
+    return;
+  }
+
   const query = searchInput.value.trim().toLowerCase();
   const visibleProducts = products.filter((product) => {
     const categoryMatch = activeCategory === "All" || product.category === activeCategory;
@@ -79,8 +136,30 @@ function renderProducts() {
   grid.innerHTML = visibleProducts
     .map(
       (product) => `
-        <article class="product-card">
-          <img src="${product.image}" alt="${product.name}" loading="lazy">
+        <article class="product-card" data-card-id="${product.id}" style="--slide-count: ${product.images.length}">
+          <div class="product-gallery" data-slide="0">
+            <div class="product-track">
+              ${product.images
+                .map(
+                  (image, index) => `
+                    <img class="product-image" src="${image}" alt="${product.name}${index > 0 ? ` view ${index + 1}` : ""}" loading="lazy">
+                  `,
+                )
+                .join("")}
+            </div>
+            <span class="stock-badge">In stock</span>
+            ${
+              product.images.length > 1
+                ? `
+                  <button class="gallery-button prev" type="button" data-slide-action="prev" aria-label="Previous image">&lsaquo;</button>
+                  <button class="gallery-button next" type="button" data-slide-action="next" aria-label="Next image">&rsaquo;</button>
+                  <div class="gallery-dots">
+                    ${product.images.map((_, index) => `<button class="${index === 0 ? "active" : ""}" type="button" data-slide-dot="${index}" aria-label="Show image ${index + 1}"></button>`).join("")}
+                  </div>
+                `
+                : ""
+            }
+          </div>
           <div class="product-info">
             <p class="category">${product.category}</p>
             <h2>${product.name}</h2>
@@ -148,6 +227,18 @@ function renderCart() {
   checkoutLink.href = `https://wa.me/${whatsappNumber}?text=${message}`;
 }
 
+function setCardSlide(card, nextIndex) {
+  const gallery = card.querySelector(".product-gallery");
+  const track = card.querySelector(".product-track");
+  const dots = [...card.querySelectorAll("[data-slide-dot]")];
+  const count = Number(card.style.getPropertyValue("--slide-count")) || 1;
+  const normalized = (nextIndex + count) % count;
+
+  gallery.dataset.slide = normalized;
+  track.style.transform = `translateX(-${normalized * 100}%)`;
+  dots.forEach((dot, index) => dot.classList.toggle("active", index === normalized));
+}
+
 function initSmoothScroll() {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduceMotion) return;
@@ -194,6 +285,21 @@ filterContainer.addEventListener("click", (event) => {
 });
 
 grid.addEventListener("click", (event) => {
+  const slideButton = event.target.closest("[data-slide-action]");
+  if (slideButton) {
+    const card = slideButton.closest(".product-card");
+    const current = Number(card.querySelector(".product-gallery").dataset.slide || 0);
+    setCardSlide(card, current + (slideButton.dataset.slideAction === "next" ? 1 : -1));
+    return;
+  }
+
+  const dot = event.target.closest("[data-slide-dot]");
+  if (dot) {
+    const card = dot.closest(".product-card");
+    setCardSlide(card, Number(dot.dataset.slideDot));
+    return;
+  }
+
   const button = event.target.closest("[data-product-id]");
   if (!button) return;
   addToCart(Number(button.dataset.productId));
@@ -213,3 +319,8 @@ renderFilters();
 renderProducts();
 renderCart();
 initSmoothScroll();
+
+window.setTimeout(() => {
+  isLoadingProducts = false;
+  renderProducts();
+}, 650);

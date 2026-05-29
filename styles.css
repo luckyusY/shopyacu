@@ -468,20 +468,6 @@ select:focus {
   animation: card-rise 420ms ease both;
 }
 
-.product-card::before {
-  content: "In stock";
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 1;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 7px 10px;
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 950;
-}
-
 .product-card img {
   width: 100%;
   aspect-ratio: 1;
@@ -492,6 +478,154 @@ select:focus {
 
 .product-card:hover img {
   transform: scale(1.04);
+}
+
+.product-gallery {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #e9e4dc;
+}
+
+.product-track {
+  display: flex;
+  height: 100%;
+  transition: transform 320ms ease;
+}
+
+.product-track img {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+.stock-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 7px 10px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.gallery-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(19, 41, 47, 0.82);
+  color: white;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 180ms ease, background 180ms ease;
+}
+
+.gallery-button.prev {
+  left: 10px;
+}
+
+.gallery-button.next {
+  right: 10px;
+}
+
+.product-card:hover .gallery-button,
+.product-card:focus-within .gallery-button {
+  opacity: 1;
+}
+
+.gallery-button:hover {
+  background: var(--orange);
+}
+
+.gallery-dots {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.gallery-dots button {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  cursor: pointer;
+  padding: 0;
+}
+
+.gallery-dots button.active {
+  width: 18px;
+  background: white;
+}
+
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-media,
+.skeleton-line,
+.skeleton-button {
+  display: block;
+  overflow: hidden;
+  position: relative;
+  background: rgba(19, 41, 47, 0.08);
+}
+
+.skeleton-media::after,
+.skeleton-line::after,
+.skeleton-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.68), transparent);
+  animation: skeleton-shimmer 1.15s infinite;
+  transform: translateX(-100%);
+}
+
+.skeleton-media {
+  aspect-ratio: 1;
+}
+
+.skeleton-line {
+  height: 13px;
+  border-radius: 999px;
+  margin-top: 12px;
+}
+
+.skeleton-line.short {
+  width: 36%;
+}
+
+.skeleton-line.title {
+  width: 82%;
+  height: 18px;
+}
+
+.skeleton-line.price-skeleton {
+  width: 44%;
+  height: 18px;
+}
+
+.skeleton-button {
+  height: 44px;
+  border-radius: 999px;
+  margin-top: 16px;
 }
 
 .product-info {
@@ -739,6 +873,39 @@ footer > div:first-child {
   text-align: center;
 }
 
+.floating-whatsapp {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 25;
+  display: grid;
+  gap: 2px;
+  min-width: 168px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: #1f9d58;
+  color: white;
+  padding: 12px 18px;
+  box-shadow: 0 18px 42px rgba(19, 41, 47, 0.28);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.floating-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 52px rgba(19, 41, 47, 0.32);
+}
+
+.floating-whatsapp span {
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.floating-whatsapp strong {
+  font-size: 15px;
+}
+
 .admin-store-link {
   display: inline-flex;
   align-items: center;
@@ -915,6 +1082,12 @@ footer > div:first-child {
   }
 }
 
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1025,5 +1198,16 @@ footer > div:first-child {
 
   .hero-side img {
     min-height: 240px;
+  }
+
+  .floating-whatsapp {
+    right: 12px;
+    bottom: 12px;
+    min-width: 0;
+    padding: 11px 14px;
+  }
+
+  .floating-whatsapp span {
+    display: none;
   }
 }
