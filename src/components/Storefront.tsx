@@ -36,9 +36,9 @@ const marketplaceCategories = [
   {
     label: "Wedding",
     category: "Wedding",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
-    description: "Wedding supplies, decor, outfits, gifts, beauty, and event support.",
-    tag: "Events",
+    image: "/categories/wedding-aisle.jpeg",
+    description: "Past wedding decor, stages, bridal setups, gifts, beauty, and event support.",
+    tag: "Past weddings",
   },
   {
     label: "Cars for Sale",
@@ -106,7 +106,7 @@ const marketplaceCategories = [
   {
     label: "Events",
     category: "Events",
-    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=80",
+    image: "/categories/wedding-stage.jfif",
     description: "Party supplies, event vendors, experiences, tickets, and local happenings.",
     tag: "Local fun",
   },
@@ -130,6 +130,21 @@ export function Storefront({ products }: { products: Product[] }) {
     [storeCategories],
   );
   const selectedMarketplaceCategory = marketplaceCategories.find((item) => item.category === activeCategory);
+  const categoryShowcase = useMemo(
+    () =>
+      marketplaceCategories.map((item) => {
+        const categoryProducts = products.filter((product) => product.category === item.category);
+        const leadProduct = categoryProducts.find((product) => product.image) || categoryProducts[0];
+
+        return {
+          ...item,
+          image: leadProduct?.image || item.image,
+          listingCount: categoryProducts.length,
+        };
+      }),
+    [products],
+  );
+  const categoryBannerItems = categoryShowcase.filter((item) => ["Wedding", "Cars for Sale", "Home"].includes(item.category));
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -541,56 +556,94 @@ export function Storefront({ products }: { products: Product[] }) {
       </section>
 
       <section id="categories" className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">Shop by categories</p>
-            <h2 className="mt-3 max-w-3xl font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">
-              Browse products, listings, services, and opportunities.
-            </h2>
-          </div>
-          <a href="/admin" className="w-fit rounded-full border border-ink/20 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white">
-            Add category item
-          </a>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
-          {marketplaceCategories.map((item, index) => {
-            const listingCount = products.filter((product) => product.category === item.category).length;
+        <div className="relative overflow-hidden rounded-[2rem] bg-ink px-4 py-6 text-white shadow-xl sm:px-6 lg:p-8">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.14),transparent_44%)]" />
+          <div className="relative grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.22em] text-accent">Shop by categories</p>
+              <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
+                Pick a circle. Jump straight to what you need.
+              </h2>
+              <p className="mt-4 max-w-xl text-sm font-medium leading-7 text-white/70">
+                Categories now work like a marketplace banner: real product photos where available, past wedding visuals for events, and fast filtering into the catalog.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href="#products" className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-ink transition hover:bg-accent/85">
+                  Browse catalog
+                </a>
+                <a href="/admin" className="rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-ink">
+                  Add category item
+                </a>
+              </div>
+            </div>
 
-            return (
-              <m.button
-                key={item.category}
-                type="button"
-                onClick={() => exploreMarketplaceCategory(item.category)}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.28, delay: Math.min(index * 0.025, 0.18), ease: "easeOut" }}
-                whileHover={reduceMotion ? undefined : { y: -4 }}
-                className={`group relative min-h-[210px] overflow-hidden rounded-2xl bg-ink text-left text-white shadow-sm ${index === 0 ? "md:col-span-2" : ""}`}
-              >
-                <Image
-                  src={item.image}
-                  alt={`${item.label} category`}
-                  fill
-                  sizes={index === 0 ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 50vw"}
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                />
-                <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
-                <span className="relative z-10 flex h-full min-h-[210px] flex-col justify-between p-4 sm:p-5">
-                  <span className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-accent px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink">{item.tag}</span>
-                    <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-ink">
-                      {listingCount ? `${listingCount} live` : "Open"}
-                    </span>
+            <div className="relative min-h-[250px]">
+              {categoryBannerItems.map((item, index) => (
+                <m.button
+                  key={item.category}
+                  type="button"
+                  onClick={() => exploreMarketplaceCategory(item.category)}
+                  initial={{ opacity: 0, scale: 0.92, y: 16 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.35, delay: index * 0.08, ease: "easeOut" }}
+                  whileHover={reduceMotion ? undefined : { y: -6, scale: 1.02 }}
+                  className={`group absolute overflow-hidden rounded-full border-4 border-white/80 bg-white shadow-2xl outline-none transition focus-visible:ring-4 focus-visible:ring-accent/70 ${
+                    index === 0
+                      ? "left-1 top-5 h-40 w-40 sm:left-8 sm:h-52 sm:w-52"
+                      : index === 1
+                        ? "right-2 top-0 h-36 w-36 sm:right-12 sm:h-48 sm:w-48"
+                        : "bottom-0 left-1/2 h-32 w-32 -translate-x-1/2 sm:h-44 sm:w-44"
+                  }`}
+                  aria-label={`Open ${item.label} category`}
+                >
+                  <Image
+                    src={item.image}
+                    alt={`${item.label} category`}
+                    fill
+                    sizes="(min-width: 1024px) 220px, 44vw"
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <span className="absolute inset-x-0 bottom-0 px-4 pb-5 text-center">
+                    <span className="block font-display text-lg font-bold leading-tight">{item.label}</span>
+                    <span className="mt-1 block text-xs font-bold text-white/85">{item.listingCount ? `${item.listingCount} live` : item.tag}</span>
                   </span>
-                  <span>
-                    <span className="block font-display text-2xl font-bold leading-tight sm:text-3xl">{item.label}</span>
-                    <span className="mt-2 block text-sm font-medium leading-6 text-white/80">{item.description}</span>
+                </m.button>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative mt-8 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex min-w-max gap-4 pr-4">
+              {categoryShowcase.map((item, index) => (
+                <m.button
+                  key={item.category}
+                  type="button"
+                  onClick={() => exploreMarketplaceCategory(item.category)}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.24, delay: Math.min(index * 0.02, 0.16), ease: "easeOut" }}
+                  whileHover={reduceMotion ? undefined : { y: -5 }}
+                  className="group w-28 shrink-0 text-center outline-none sm:w-32"
+                >
+                  <span className="relative mx-auto block h-24 w-24 overflow-hidden rounded-full border-4 border-white/80 bg-white shadow-lg ring-1 ring-black/10 transition group-hover:border-accent group-focus-visible:ring-4 group-focus-visible:ring-accent/70 sm:h-28 sm:w-28">
+                    <Image
+                      src={item.image}
+                      alt={`${item.label} category`}
+                      fill
+                      sizes="128px"
+                      className="object-cover transition duration-500 group-hover:scale-110"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent opacity-80" />
                   </span>
-                </span>
-              </m.button>
-            );
-          })}
+                  <span className="mt-3 block text-sm font-bold leading-5 text-white">{item.label}</span>
+                  <span className="mt-1 block text-xs font-semibold text-white/60">{item.listingCount ? `${item.listingCount} live` : item.tag}</span>
+                </m.button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
