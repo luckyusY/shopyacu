@@ -71,7 +71,7 @@ function CategoryRow({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="overflow-hidden rounded-[1.75rem] border border-ink/10 bg-white shadow-sm transition hover:shadow-md"
+      className="overflow-hidden rounded-[1.75rem] border-2 border-ink/15 bg-white shadow-sm transition hover:border-ink/25 hover:shadow-md"
     >
       <div className="flex items-center justify-between gap-3 border-b border-ink/10 bg-gradient-to-r from-surface to-white px-4 py-3.5 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
@@ -787,7 +787,7 @@ export function Storefront({ products }: { products: Product[] }) {
                 key={product.id}
                 layout
                 whileHover={reduceMotion ? undefined : { y: -4 }}
-                className="group relative overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg"
+                className="group relative overflow-hidden rounded-2xl border-2 border-ink/10 bg-white shadow-sm transition-all duration-200 hover:border-accent/60 hover:shadow-lg"
               >
                 <span className="absolute left-2 top-2 z-10 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-black text-white shadow-sm">
                   -{discount}%

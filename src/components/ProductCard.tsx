@@ -87,7 +87,7 @@ export function ProductCard({
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.25, delay: Math.min(index * 0.02, 0.14), ease: "easeOut" }}
       whileHover={reduceMotion ? undefined : { y: -4 }}
-      className={`group relative flex w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white transition-shadow duration-200 hover:border-ink/25 hover:shadow-lg ${
+      className={`group relative flex w-full shrink-0 flex-col overflow-hidden rounded-2xl border-2 border-ink/10 bg-white transition-shadow duration-200 hover:border-accent/60 hover:shadow-lg ${
         fluid ? "" : "lg:w-48 lg:snap-start"
       } ${hideOnMobile ? "hidden lg:flex" : ""}`}
     >
