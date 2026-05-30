@@ -1,10 +1,13 @@
 import { AdminPanel } from "@/components/AdminPanel";
-import { products } from "@/lib/products";
+import { getProducts } from "@/lib/product-store";
 
 export const metadata = {
   title: "Admin | Shopyacu",
 };
 
-export default function AdminPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage() {
+  const products = await getProducts({ includeInactive: true });
   return <AdminPanel products={products} />;
 }

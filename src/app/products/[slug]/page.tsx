@@ -1,16 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatPrice, getProduct, products } from "@/lib/products";
+import { getProductBySlug, getProducts } from "@/lib/product-store";
+import { formatPrice, products } from "@/lib/products";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return { title: "Product not found | Shopyacu" };
@@ -24,15 +26,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const related = products
+  const allProducts = await getProducts();
+  const related = allProducts
     .filter((item) => item.category === product.category && item.id !== product.id)
     .slice(0, 4);
+  const media = product.media?.length ? product.media : [{ type: "image" as const, url: product.image }];
 
   return (
     <main className="min-h-screen bg-paper text-ink">
@@ -48,8 +52,23 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-16">
-        <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-          <Image src={product.image} alt={product.name} width={1000} height={1000} priority className="aspect-square h-auto w-full object-cover" />
+        <div className="grid gap-3">
+          {media.map((item, index) => (
+            <div key={`${item.url}-${index}`} className="overflow-hidden rounded-3xl bg-white shadow-sm">
+              {item.type === "video" ? (
+                <video
+                  src={item.url}
+                  poster={item.poster || product.image}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="aspect-square h-auto w-full bg-black object-cover"
+                />
+              ) : (
+                <Image src={item.url} alt={`${product.name}${index > 0 ? ` view ${index + 1}` : ""}`} width={1000} height={1000} priority={index === 0} className="aspect-square h-auto w-full object-cover" />
+              )}
+            </div>
+          ))}
         </div>
         <div className="flex flex-col justify-center">
           <p className="inline-flex w-fit items-center rounded-full bg-ink px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{product.category}</p>

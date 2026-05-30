@@ -1,3 +1,16 @@
+export type ProductMedia = {
+  type: "image" | "video";
+  url: string;
+  publicId?: string;
+  poster?: string;
+  thumbnail?: string;
+  width?: number;
+  height?: number;
+  duration?: number;
+  bytes?: number;
+  format?: string;
+};
+
 export type Product = {
   id: number;
   slug: string;
@@ -6,8 +19,17 @@ export type Product = {
   price: number;
   image: string;
   images?: string[];
+  videos?: ProductMedia[];
+  media?: ProductMedia[];
   badge?: string;
   description: string;
+  stock?: string;
+  active?: boolean;
+  featured?: boolean;
+  cloudinaryPublicId?: string;
+  sourceFolder?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 const productSeed: Product[] = [
@@ -74,12 +96,101 @@ const galleryImages: Record<number, string[]> = {
   32: ["product-32-2.jpg", "product-32-3.jpg"],
 };
 
-export const products: Product[] = productSeed.map((product) => ({
-  ...product,
-  images: [product.image, ...(galleryImages[product.id] || []).map((image) => `/products/${image}`)],
-}));
+export function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
-export const categories = ["All", ...Array.from(new Set(products.map((product) => product.category)))];
+function addCloudinaryTransform(url: string, type: "image" | "video") {
+  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) return url;
+
+  const transform = type === "video" ? "q_auto:eco,f_auto,w_1080,c_limit" : "q_auto:good,f_auto,w_1600,c_limit";
+  if (url.includes(`/upload/${transform}/`)) return url;
+  return url.replace("/upload/", `/upload/${transform}/`);
+}
+
+function cloudinaryVideoPoster(url: string) {
+  if (!url.includes("res.cloudinary.com") || !url.includes("/video/upload/")) return undefined;
+
+  const transformed = url.replace("/video/upload/", "/video/upload/q_auto:good,f_jpg,w_900,c_limit/");
+  return transformed.replace(/\.[a-z0-9]+($|\?)/i, ".jpg$1");
+}
+
+function normalizeMedia(media: Partial<ProductMedia> | string, fallbackType: "image" | "video" = "image"): ProductMedia | null {
+  if (typeof media === "string") {
+    return { type: fallbackType, url: addCloudinaryTransform(media, fallbackType) };
+  }
+
+  if (!media?.url) return null;
+  const type = media.type === "video" ? "video" : "image";
+  const url = addCloudinaryTransform(media.url, type);
+
+  return {
+    type,
+    url,
+    publicId: media.publicId,
+    poster: type === "video" ? media.poster || media.thumbnail || cloudinaryVideoPoster(media.url) : media.poster,
+    thumbnail: media.thumbnail,
+    width: media.width,
+    height: media.height,
+    duration: media.duration,
+    bytes: media.bytes,
+    format: media.format,
+  };
+}
+
+export function normalizeProduct(product: Partial<Product>): Product {
+  const id = Number(product.id) || Date.now();
+  const name = product.name?.trim() || `Product ${id}`;
+  const slug = product.slug?.trim() || slugify(name);
+  const imageUrls = (product.images?.length ? product.images : product.image ? [product.image] : [])
+    .map((image) => addCloudinaryTransform(image, "image"));
+  const media = [
+    ...(product.media || []).map((item) => normalizeMedia(item)),
+    ...imageUrls.map((image) => normalizeMedia(image, "image")),
+    ...(product.videos || []).map((item) => normalizeMedia(item, "video")),
+  ].filter((item): item is ProductMedia => Boolean(item));
+  const dedupedMedia = Array.from(new Map(media.map((item) => [item.url, item])).values());
+  const images = dedupedMedia.filter((item) => item.type === "image").map((item) => item.url);
+  const videos = dedupedMedia.filter((item) => item.type === "video");
+  const image = images[0] || videos[0]?.poster || "/products/product-21.jpg";
+
+  return {
+    id,
+    slug,
+    name,
+    category: product.category?.trim() || "Home",
+    price: Number(product.price) || 0,
+    image,
+    images: images.length ? images : [image],
+    videos,
+    media: dedupedMedia.length ? dedupedMedia : [{ type: "image", url: image }],
+    badge: product.badge?.trim() || undefined,
+    description: product.description?.trim() || `${name} is available from Shopyacu for local online ordering and delivery.`,
+    stock: product.stock || "In stock",
+    active: product.active !== false,
+    featured: Boolean(product.featured || product.badge),
+    cloudinaryPublicId: product.cloudinaryPublicId,
+    sourceFolder: product.sourceFolder,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  };
+}
+
+export const products: Product[] = productSeed.map((product) =>
+  normalizeProduct({
+    ...product,
+    images: [product.image, ...(galleryImages[product.id] || []).map((image) => `/products/${image}`)],
+  }),
+);
+
+export function getCategories(productList: Product[] = products) {
+  return ["All", ...Array.from(new Set(productList.map((product) => product.category)))];
+}
+
+export const categories = getCategories(products);
 
 export function getProduct(slug: string) {
   return products.find((product) => product.slug === slug);

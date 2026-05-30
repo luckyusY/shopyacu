@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server";
-import { products } from "@/lib/products";
-import { getMongoClient } from "@/lib/mongodb";
+import { getProducts, saveProduct } from "@/lib/product-store";
 
-export async function GET() {
+export const runtime = "nodejs";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const products = await getProducts({ includeInactive: searchParams.get("all") === "1" });
+  return NextResponse.json(products);
+}
+
+export async function POST(request: Request) {
   try {
-    const client = await getMongoClient();
-    const remoteProducts = await client
-      .db("shopyacu")
-      .collection("products")
-      .find({})
-      .sort({ id: 1 })
-      .toArray();
-
-    return NextResponse.json(remoteProducts.length > 0 ? remoteProducts : products);
-  } catch {
-    return NextResponse.json(products);
+    const product = await saveProduct(await request.json());
+    return NextResponse.json(product, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unable to save product." },
+      { status: 500 },
+    );
   }
 }

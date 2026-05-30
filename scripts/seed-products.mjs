@@ -6,6 +6,7 @@ import path from "node:path";
 const productRoot = process.env.PRODUCTS_DIR || "C:\\Users\\HP\\Videos\\products";
 const mongoUri = process.env.MONGODB_URI;
 const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const videoExtensions = new Set([".mp4", ".mov", ".webm", ".m4v", ".avi"]);
 
 if (!process.env.CLOUDINARY_URL) {
   throw new Error("CLOUDINARY_URL is required.");
@@ -63,25 +64,68 @@ const folders = entries
 
 const products = [];
 
+function transformedCloudinaryUrl(url, type) {
+  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) return url;
+  const transform = type === "video" ? "q_auto:eco,f_auto,w_1080,c_limit" : "q_auto:good,f_auto,w_1600,c_limit";
+  return url.replace("/upload/", `/upload/${transform}/`);
+}
+
+function videoPoster(url) {
+  if (!url.includes("res.cloudinary.com") || !url.includes("/video/upload/")) return undefined;
+  return url
+    .replace("/video/upload/", "/video/upload/q_auto:good,f_jpg,w_900,c_limit/")
+    .replace(/\.[a-z0-9]+($|\?)/i, ".jpg$1");
+}
+
+async function uploadMedia(filePath, slug, index, type) {
+  const upload = await cloudinary.uploader.upload(filePath, {
+    folder: `shopyacu/products/${slug}`,
+    public_id: `${slug}-${index + 1}`,
+    overwrite: true,
+    resource_type: type,
+    transformation: type === "image" ? [{ width: 1600, height: 1600, crop: "limit", quality: "auto:good", fetch_format: "auto" }] : undefined,
+    eager: type === "video" ? [{ width: 1080, crop: "limit", quality: "auto:eco", format: "mp4" }] : undefined,
+    eager_async: type === "video",
+  });
+
+  return {
+    type,
+    url: transformedCloudinaryUrl(upload.secure_url, type),
+    publicId: upload.public_id,
+    poster: type === "video" ? videoPoster(upload.secure_url) : undefined,
+    thumbnail: type === "video" ? videoPoster(upload.secure_url) : undefined,
+    width: upload.width,
+    height: upload.height,
+    duration: upload.duration,
+    bytes: upload.bytes,
+    format: upload.format,
+  };
+}
+
 for (const folder of folders) {
   const id = Number(folder.name.match(/^\d+/)[0]);
   const folderPath = path.join(productRoot, folder.name);
   const files = await readdir(folderPath, { withFileTypes: true });
-  const firstImage = files.find((file) => file.isFile() && imageExtensions.has(path.extname(file.name).toLowerCase()));
+  const mediaFiles = files
+    .filter((file) => file.isFile())
+    .map((file) => ({ file, extension: path.extname(file.name).toLowerCase() }))
+    .filter(({ extension }) => imageExtensions.has(extension) || videoExtensions.has(extension));
 
-  if (!firstImage) {
+  if (!mediaFiles.length) {
     continue;
   }
 
   const name = cleanName(folder.name) || `Product ${id}`;
   const slug = slugify(name);
-  const upload = await cloudinary.uploader.upload(path.join(folderPath, firstImage.name), {
-    folder: "shopyacu/products",
-    public_id: slug,
-    overwrite: true,
-    resource_type: "image",
-    transformation: [{ width: 1200, height: 1200, crop: "limit", quality: "auto", fetch_format: "auto" }],
-  });
+  const media = [];
+
+  for (const [index, { file, extension }] of mediaFiles.entries()) {
+    const type = videoExtensions.has(extension) ? "video" : "image";
+    media.push(await uploadMedia(path.join(folderPath, file.name), slug, index, type));
+  }
+
+  const images = media.filter((item) => item.type === "image").map((item) => item.url);
+  const videos = media.filter((item) => item.type === "video");
 
   products.push({
     id,
@@ -89,10 +133,15 @@ for (const folder of folders) {
     name,
     category: categoryFor(name),
     price: priceFor(name),
-    image: upload.secure_url,
-    cloudinaryPublicId: upload.public_id,
+    image: images[0] || videos[0]?.poster,
+    images,
+    videos,
+    media,
+    cloudinaryPublicId: media[0]?.publicId,
     sourceFolder: folder.name,
     description: `${name} is available from Shopyacu for local online ordering and delivery.`,
+    active: true,
+    stock: "In stock",
     updatedAt: new Date(),
   });
 

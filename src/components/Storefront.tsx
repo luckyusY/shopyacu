@@ -6,7 +6,7 @@ import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { A11y, Keyboard, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { categories, formatPrice, type Product } from "@/lib/products";
+import { formatPrice, getCategories, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
 type CartItem = Product & { quantity: number };
@@ -38,6 +38,7 @@ export function Storefront({ products }: { products: Product[] }) {
   const reduceMotion = useReducedMotion();
   const normalizedQuery = query.trim().toLowerCase();
   const highlights = [`${products.length} products`, "Local delivery", "WhatsApp checkout"];
+  const storeCategories = useMemo(() => getCategories(products), [products]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -484,7 +485,7 @@ export function Storefront({ products }: { products: Product[] }) {
         </div>
         <div className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-white p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
-            {categories.map((category) => (
+            {storeCategories.map((category) => (
               <button
                 key={category}
                 type="button"
@@ -535,7 +536,9 @@ export function Storefront({ products }: { products: Product[] }) {
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => {
-              const images = product.images?.length ? product.images : [product.image];
+              const media: ProductMedia[] = product.media?.length
+                ? product.media
+                : (product.images?.length ? product.images : [product.image]).map((image) => ({ type: "image", url: image }));
 
               return (
                 <m.article
@@ -551,18 +554,30 @@ export function Storefront({ products }: { products: Product[] }) {
                     <Swiper
                       modules={[Navigation, Pagination, Keyboard, A11y]}
                       slidesPerView={1}
-                      loop={images.length > 1}
+                      loop={media.length > 1}
                       speed={360}
                       grabCursor
                       keyboard={{ enabled: true }}
-                      pagination={images.length > 1 ? { clickable: true } : false}
-                      navigation={images.length > 1}
+                      pagination={media.length > 1 ? { clickable: true } : false}
+                      navigation={media.length > 1}
                       className="h-full w-full product-swiper"
                     >
-                      {images.map((image, index) => (
-                        <SwiperSlide key={image}>
+                      {media.map((item, index) => (
+                        <SwiperSlide key={item.url}>
                           <Link href={`/products/${product.slug}`} className="block h-full">
-                            <Image src={image} alt={`${product.name}${index > 0 ? ` view ${index + 1}` : ""}`} width={700} height={700} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                            {item.type === "video" ? (
+                              <video
+                                src={item.url}
+                                poster={item.poster || product.image}
+                                muted
+                                playsInline
+                                loop
+                                preload="metadata"
+                                className="h-full w-full bg-black object-cover transition duration-300 group-hover:scale-105"
+                              />
+                            ) : (
+                              <Image src={item.url} alt={`${product.name}${index > 0 ? ` view ${index + 1}` : ""}`} width={700} height={700} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                            )}
                           </Link>
                         </SwiperSlide>
                       ))}

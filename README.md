@@ -45,14 +45,31 @@ npm run dev
 ```
 
 The Next.js app includes Lenis smooth scrolling and Framer Motion page/product animations.
+The admin panel at `/admin` can create and update products in MongoDB, with signed image/video uploads going directly to Cloudinary.
+
+Required Vercel/local environment variables:
+
+```text
+CLOUDINARY_URL
+MONGODB_URI
+```
+
+Admin media flow:
+
+- Images and videos upload directly to Cloudinary through a short-lived signed request.
+- Product documents are saved in the `shopyacu.products` MongoDB collection.
+- Video delivery URLs use Cloudinary automatic compression and a 1080px delivery limit.
+- Video poster frames are generated from Cloudinary video thumbnails.
 
 ## Product Import
 
-Secrets live in `.env.local`, which is ignored by git. To upload product images to Cloudinary and upsert product documents into MongoDB:
+Secrets live in `.env.local`, which is ignored by git. To upload product images/videos to Cloudinary and upsert product documents into MongoDB:
 
 ```bash
 npm run seed:products
 ```
+
+The importer uploads all supported images and videos in each product folder. Videos are stored as Cloudinary video assets with eager MP4 compression requested.
 
 The importer scans:
 
