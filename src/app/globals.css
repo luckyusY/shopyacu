@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #ffd60a;
-  --surface: #fbf6e9;
-  --ink: #111114;
-  --accent: #ffd60a;
-  --muted: #5a5a4a;
-  --line: rgba(17, 17, 20, 0.1);
+  /* Jumia-style palette: orange brand, neutral gray page, white cards. */
+  --paper: #f1f2f4;
+  --surface: #f6f7f9;
+  --ink: #1f2128;
+  --accent: #f68b1e;
+  --muted: #6b7280;
+  --line: rgba(31, 33, 40, 0.1);
 
   --background: var(--paper);
   --foreground: var(--ink);
