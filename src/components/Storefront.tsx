@@ -278,7 +278,7 @@ export function Storefront({ products }: { products: Product[] }) {
             <button
               type="button"
               onClick={() => setCartOpen(true)}
-              className="relative h-11 rounded-full bg-ink px-5 text-sm font-semibold text-white transition hover:bg-ink/85"
+              className="relative h-11 rounded-full bg-ink px-4 text-sm font-semibold text-white transition hover:bg-ink/85 sm:px-5"
             >
               Cart
               {itemCount > 0 && (
@@ -287,20 +287,22 @@ export function Storefront({ products }: { products: Product[] }) {
             </button>
           </div>
         </div>
+        <div className="px-4 pb-3 lg:hidden">
+          <form onSubmit={submitSearch} className="flex items-center rounded-full border border-ink/15 bg-white p-1">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search products..."
+              aria-label="Search Shopyacu products"
+              className="h-10 min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm font-medium text-ink outline-none placeholder:text-ink/40"
+            />
+            <button type="submit" className="h-10 shrink-0 rounded-full bg-ink px-5 text-sm font-semibold text-white transition hover:bg-ink/85">
+              Search
+            </button>
+          </form>
+        </div>
         {isMenuOpen && (
           <div className="grid gap-2 border-t border-ink/10 px-4 py-3 md:hidden">
-            <form onSubmit={submitSearch} className="flex rounded-full border border-ink/15 bg-white p-1">
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search products"
-                aria-label="Search Shopyacu products"
-                className="h-10 min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm font-medium text-ink outline-none placeholder:text-ink/40"
-              />
-              <button type="submit" onClick={() => setIsMenuOpen(false)} className="h-10 rounded-full bg-ink px-4 text-sm font-semibold text-white">
-                Go
-              </button>
-            </form>
             {[
               ["Products", "#products"],
               ["Instagram", "#instagram"],
@@ -323,13 +325,13 @@ export function Storefront({ products }: { products: Product[] }) {
         )}
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-12 px-4 py-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-20">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:gap-12 sm:px-6 sm:py-12 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-20">
         <div className="flex flex-col justify-center">
           <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">Kigali online essentials</p>
-          <h1 className="max-w-3xl font-display text-5xl font-bold leading-[0.95] text-ink sm:text-6xl lg:text-7xl">
+          <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.02] text-ink sm:text-6xl sm:leading-[0.95] lg:text-7xl">
             Useful products for a cleaner, easier home.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
             Shop practical picks for kitchens, bathrooms, fitness corners, work setups, and rainy-day errands. Add items to cart, then confirm your order on WhatsApp.
           </p>
           <form onSubmit={submitSearch} className="mt-7 rounded-2xl border border-ink/10 bg-white p-2 shadow-sm">
@@ -439,9 +441,9 @@ export function Storefront({ products }: { products: Product[] }) {
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-14 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
-        <div className="rounded-3xl bg-ink p-6 text-white">
+        <div className="rounded-3xl bg-ink p-5 text-white sm:p-6">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Smart picks</p>
-          <h2 className="mt-3 font-display text-3xl font-bold leading-tight">The catalog reacts to your search and cart.</h2>
+          <h2 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-3xl">The catalog reacts to your search and cart.</h2>
           <p className="mt-4 text-sm leading-6 text-white/70">{assistantCopy}</p>
           <button
             type="button"
@@ -451,7 +453,7 @@ export function Storefront({ products }: { products: Product[] }) {
             Reset catalog
           </button>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {recommendedProducts.map((product) => (
             <m.article
               key={product.id}
@@ -476,18 +478,18 @@ export function Storefront({ products }: { products: Product[] }) {
         <div className="mb-6 grid gap-6 md:grid-cols-[190px_1fr]">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">Catalog</p>
           <div>
-            <h2 className="max-w-3xl font-display text-4xl font-bold leading-tight text-ink md:text-5xl">Shop by need, room, or routine.</h2>
+            <h2 className="max-w-3xl font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">Shop by need, room, or routine.</h2>
             <p className="mt-4 max-w-2xl leading-7 text-muted">Filter the catalog, add products to cart, and send the order list directly to WhatsApp.</p>
           </div>
         </div>
-        <div className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-white p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
             {categories.map((category) => (
               <button
                 key={category}
                 type="button"
                 onClick={() => setActiveCategory(category)}
-                className={`h-10 rounded-full px-4 text-sm font-semibold transition ${
+                className={`h-10 shrink-0 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition ${
                   activeCategory === category ? "bg-ink text-white" : "bg-surface text-ink/70 hover:bg-ink hover:text-white"
                 }`}
               >
@@ -510,15 +512,15 @@ export function Storefront({ products }: { products: Product[] }) {
         </p>
 
         {isLoading ? (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm">
                 <div className="aspect-square animate-pulse bg-ink/10" />
-                <div className="space-y-3 p-4">
+                <div className="space-y-3 p-3 sm:p-4">
                   <div className="h-3 w-1/3 rounded-full bg-ink/10" />
                   <div className="h-5 w-4/5 rounded-full bg-ink/10" />
                   <div className="h-5 w-1/2 rounded-full bg-ink/10" />
-                  <div className="h-11 rounded-full bg-ink/10" />
+                  <div className="h-10 rounded-full bg-ink/10 sm:h-11" />
                 </div>
               </div>
             ))}
@@ -531,7 +533,7 @@ export function Storefront({ products }: { products: Product[] }) {
             </div>
           </div>
         ) : (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => {
               const images = product.images?.length ? product.images : [product.image];
 
@@ -565,25 +567,25 @@ export function Storefront({ products }: { products: Product[] }) {
                         </SwiperSlide>
                       ))}
                     </Swiper>
-                    <span className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-ink">
+                    <span className="absolute left-2 top-2 z-10 hidden rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-ink sm:left-3 sm:top-3 sm:inline-block sm:px-3 sm:text-xs">
                       In stock
                     </span>
                     {product.badge && (
-                      <span className="absolute right-3 top-3 z-10 rounded-full bg-accent px-3 py-1 text-xs font-bold text-ink">
+                      <span className="absolute right-2 top-2 z-10 rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold text-ink sm:right-3 sm:top-3 sm:px-3 sm:py-1 sm:text-xs">
                         {product.badge}
                       </span>
                     )}
                   </div>
-                  <div className="p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">{product.category}</p>
-                    <Link href={`/products/${product.slug}`} className="mt-2 block min-h-12 text-base font-semibold leading-6 text-ink hover:text-ink/70">
+                  <div className="p-3 sm:p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted sm:text-xs sm:tracking-[0.18em]">{product.category}</p>
+                    <Link href={`/products/${product.slug}`} className="mt-1.5 block min-h-10 text-sm font-semibold leading-5 text-ink hover:text-ink/70 sm:mt-2 sm:min-h-12 sm:text-base sm:leading-6">
                       {product.name}
                     </Link>
-                    <p className="mt-3 font-display text-xl font-bold text-ink">{formatPrice(product.price)}</p>
+                    <p className="mt-2 font-display text-lg font-bold text-ink sm:mt-3 sm:text-xl">{formatPrice(product.price)}</p>
                     <button
                       type="button"
                       onClick={() => addToCart(product)}
-                      className="mt-4 h-11 w-full rounded-full bg-ink text-sm font-semibold text-white transition hover:bg-ink/85"
+                      className="mt-3 h-10 w-full rounded-full bg-ink text-sm font-semibold text-white transition hover:bg-ink/85 sm:mt-4 sm:h-11"
                     >
                       Add to cart
                     </button>
