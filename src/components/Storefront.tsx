@@ -25,6 +25,92 @@ const quickSearches = [
   { label: "Work setup", query: "laptop table", category: "Office" },
   { label: "Rainy day", query: "rain coat", category: "Outdoor" },
 ];
+const marketplaceCategories = [
+  {
+    label: "Home",
+    category: "Home",
+    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80",
+    description: "Household finds, furniture helpers, storage, decor, and daily-use essentials.",
+    tag: "Home goods",
+  },
+  {
+    label: "Wedding",
+    category: "Wedding",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
+    description: "Wedding supplies, decor, outfits, gifts, beauty, and event support.",
+    tag: "Events",
+  },
+  {
+    label: "Cars for Sale",
+    category: "Cars for Sale",
+    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80",
+    description: "Vehicle listings, deals, inspection-ready offers, and seller leads.",
+    tag: "Buy cars",
+  },
+  {
+    label: "Cars for Rent",
+    category: "Cars for Rent",
+    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=900&q=80",
+    description: "Short-term rentals, special day cars, travel cars, and driver options.",
+    tag: "Rentals",
+  },
+  {
+    label: "Jobs",
+    category: "Jobs",
+    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80",
+    description: "Open roles, hiring notices, service opportunities, and local work leads.",
+    tag: "Hiring",
+  },
+  {
+    label: "Scholarships",
+    category: "Scholarships",
+    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=80",
+    description: "Study opportunities, funding notices, school programs, and application leads.",
+    tag: "Education",
+  },
+  {
+    label: "Pets",
+    category: "Pets",
+    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=900&q=80",
+    description: "Pet supplies, adoption leads, care products, and animal services.",
+    tag: "Pet care",
+  },
+  {
+    label: "Electronics",
+    category: "Electronics",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+    description: "Phones, accessories, office tech, gadgets, and useful digital tools.",
+    tag: "Devices",
+  },
+  {
+    label: "Fashion",
+    category: "Fashion",
+    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=900&q=80",
+    description: "Clothes, shoes, bags, beauty picks, and occasion-ready outfits.",
+    tag: "Style",
+  },
+  {
+    label: "Real Estate",
+    category: "Real Estate",
+    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80",
+    description: "Homes, rentals, land, rooms, and property-related listings.",
+    tag: "Property",
+  },
+  {
+    label: "Services",
+    category: "Services",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80",
+    description: "Professional help, repairs, delivery, creative work, and business support.",
+    tag: "Help",
+  },
+  {
+    label: "Events",
+    category: "Events",
+    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=80",
+    description: "Party supplies, event vendors, experiences, tickets, and local happenings.",
+    tag: "Local fun",
+  },
+];
 
 export function Storefront({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -39,6 +125,11 @@ export function Storefront({ products }: { products: Product[] }) {
   const normalizedQuery = query.trim().toLowerCase();
   const highlights = [`${products.length} products`, "Local delivery", "WhatsApp checkout"];
   const storeCategories = useMemo(() => getCategories(products), [products]);
+  const catalogCategories = useMemo(
+    () => ["All", ...Array.from(new Set([...storeCategories.filter((category) => category !== "All"), ...marketplaceCategories.map((category) => category.category)]))],
+    [storeCategories],
+  );
+  const selectedMarketplaceCategory = marketplaceCategories.find((item) => item.category === activeCategory);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -232,6 +323,12 @@ export function Storefront({ products }: { products: Product[] }) {
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function exploreMarketplaceCategory(category: string) {
+    setQuery("");
+    setActiveCategory(category);
+    document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   const whatsappText =
     `Hello Shopyacu, I want to order:\n${cart
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
@@ -261,6 +358,7 @@ export function Storefront({ products }: { products: Product[] }) {
             </button>
           </form>
           <nav className="hidden items-center gap-6 text-sm font-medium text-ink/65 md:flex">
+            <a className="transition hover:text-ink" href="#categories">Categories</a>
             <a className="transition hover:text-ink" href="#products">Products</a>
             <a className="transition hover:text-ink" href="#instagram">Instagram</a>
             <a className="transition hover:text-ink" href="#delivery">How it works</a>
@@ -305,6 +403,7 @@ export function Storefront({ products }: { products: Product[] }) {
         {isMenuOpen && (
           <div className="grid gap-2 border-t border-ink/10 px-4 py-3 md:hidden">
             {[
+              ["Categories", "#categories"],
               ["Products", "#products"],
               ["Instagram", "#instagram"],
               ["How it works", "#delivery"],
@@ -441,6 +540,60 @@ export function Storefront({ products }: { products: Product[] }) {
         ))}
       </section>
 
+      <section id="categories" className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">Shop by categories</p>
+            <h2 className="mt-3 max-w-3xl font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">
+              Browse products, listings, services, and opportunities.
+            </h2>
+          </div>
+          <a href="/admin" className="w-fit rounded-full border border-ink/20 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white">
+            Add category item
+          </a>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+          {marketplaceCategories.map((item, index) => {
+            const listingCount = products.filter((product) => product.category === item.category).length;
+
+            return (
+              <m.button
+                key={item.category}
+                type="button"
+                onClick={() => exploreMarketplaceCategory(item.category)}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.28, delay: Math.min(index * 0.025, 0.18), ease: "easeOut" }}
+                whileHover={reduceMotion ? undefined : { y: -4 }}
+                className={`group relative min-h-[210px] overflow-hidden rounded-2xl bg-ink text-left text-white shadow-sm ${index === 0 ? "md:col-span-2" : ""}`}
+              >
+                <Image
+                  src={item.image}
+                  alt={`${item.label} category`}
+                  fill
+                  sizes={index === 0 ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 50vw"}
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
+                <span className="relative z-10 flex h-full min-h-[210px] flex-col justify-between p-4 sm:p-5">
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="rounded-full bg-accent px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink">{item.tag}</span>
+                    <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-ink">
+                      {listingCount ? `${listingCount} live` : "Open"}
+                    </span>
+                  </span>
+                  <span>
+                    <span className="block font-display text-2xl font-bold leading-tight sm:text-3xl">{item.label}</span>
+                    <span className="mt-2 block text-sm font-medium leading-6 text-white/80">{item.description}</span>
+                  </span>
+                </span>
+              </m.button>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-14 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
         <div className="rounded-3xl bg-ink p-5 text-white sm:p-6">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Smart picks</p>
@@ -485,7 +638,7 @@ export function Storefront({ products }: { products: Product[] }) {
         </div>
         <div className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-white p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
-            {storeCategories.map((category) => (
+            {catalogCategories.map((category) => (
               <button
                 key={category}
                 type="button"
@@ -529,8 +682,22 @@ export function Storefront({ products }: { products: Product[] }) {
         ) : filteredProducts.length === 0 ? (
           <div className="mt-8 grid min-h-60 place-items-center rounded-2xl border border-dashed border-ink/15 bg-white p-8 text-center">
             <div>
-              <p className="font-display text-2xl font-bold text-ink">No products found</p>
-              <p className="mt-2 font-semibold text-muted">Try another category or clear the search.</p>
+              <p className="font-display text-2xl font-bold text-ink">
+                {selectedMarketplaceCategory ? `No ${selectedMarketplaceCategory.label} listings yet` : "No products found"}
+              </p>
+              <p className="mt-2 font-semibold text-muted">
+                {selectedMarketplaceCategory
+                  ? "Add this category from the admin panel or message us on WhatsApp to request a listing."
+                  : "Try another category or clear the search."}
+              </p>
+              {selectedMarketplaceCategory && (
+                <a
+                  href={whatsappLink(`Hello Shopyacu, I want to ask about ${selectedMarketplaceCategory.label}.`)}
+                  className="mt-5 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink/85"
+                >
+                  Ask on WhatsApp
+                </a>
+              )}
             </div>
           </div>
         ) : (
