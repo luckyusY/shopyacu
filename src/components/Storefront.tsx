@@ -6,6 +6,7 @@ import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { A11y, Keyboard, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { categoryPath, getCategoryShowcase, marketplaceCategories } from "@/lib/categories";
 import { formatPrice, getCategories, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
@@ -25,93 +26,6 @@ const quickSearches = [
   { label: "Work setup", query: "laptop table", category: "Office" },
   { label: "Rainy day", query: "rain coat", category: "Outdoor" },
 ];
-const marketplaceCategories = [
-  {
-    label: "Home",
-    category: "Home",
-    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80",
-    description: "Household finds, furniture helpers, storage, decor, and daily-use essentials.",
-    tag: "Home goods",
-  },
-  {
-    label: "Wedding",
-    category: "Wedding",
-    image: "/categories/wedding-aisle.jpeg",
-    description: "Past wedding decor, stages, bridal setups, gifts, beauty, and event support.",
-    tag: "Past weddings",
-  },
-  {
-    label: "Cars for Sale",
-    category: "Cars for Sale",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80",
-    description: "Vehicle listings, deals, inspection-ready offers, and seller leads.",
-    tag: "Buy cars",
-  },
-  {
-    label: "Cars for Rent",
-    category: "Cars for Rent",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=900&q=80",
-    description: "Short-term rentals, special day cars, travel cars, and driver options.",
-    tag: "Rentals",
-  },
-  {
-    label: "Jobs",
-    category: "Jobs",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80",
-    description: "Open roles, hiring notices, service opportunities, and local work leads.",
-    tag: "Hiring",
-  },
-  {
-    label: "Scholarships",
-    category: "Scholarships",
-    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=80",
-    description: "Study opportunities, funding notices, school programs, and application leads.",
-    tag: "Education",
-  },
-  {
-    label: "Pets",
-    category: "Pets",
-    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=900&q=80",
-    description: "Pet supplies, adoption leads, care products, and animal services.",
-    tag: "Pet care",
-  },
-  {
-    label: "Electronics",
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
-    description: "Phones, accessories, office tech, gadgets, and useful digital tools.",
-    tag: "Devices",
-  },
-  {
-    label: "Fashion",
-    category: "Fashion",
-    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=900&q=80",
-    description: "Clothes, shoes, bags, beauty picks, and occasion-ready outfits.",
-    tag: "Style",
-  },
-  {
-    label: "Real Estate",
-    category: "Real Estate",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80",
-    description: "Homes, rentals, land, rooms, and property-related listings.",
-    tag: "Property",
-  },
-  {
-    label: "Services",
-    category: "Services",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80",
-    description: "Professional help, repairs, delivery, creative work, and business support.",
-    tag: "Help",
-  },
-  {
-    label: "Events",
-    category: "Events",
-    image: "/categories/wedding-stage.jfif",
-    description: "Party supplies, event vendors, experiences, tickets, and local happenings.",
-    tag: "Local fun",
-  },
-];
-
 export function Storefront({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [query, setQuery] = useState("");
@@ -130,20 +44,7 @@ export function Storefront({ products }: { products: Product[] }) {
     [storeCategories],
   );
   const selectedMarketplaceCategory = marketplaceCategories.find((item) => item.category === activeCategory);
-  const categoryShowcase = useMemo(
-    () =>
-      marketplaceCategories.map((item) => {
-        const categoryProducts = products.filter((product) => product.category === item.category);
-        const leadProduct = categoryProducts.find((product) => product.image) || categoryProducts[0];
-
-        return {
-          ...item,
-          image: leadProduct?.image || item.image,
-          listingCount: categoryProducts.length,
-        };
-      }),
-    [products],
-  );
+  const categoryShowcase = useMemo(() => getCategoryShowcase(products), [products]);
   const categoryBannerItems = categoryShowcase.filter((item) => ["Wedding", "Cars for Sale", "Home"].includes(item.category));
 
   const filteredProducts = useMemo(() => {
@@ -335,12 +236,6 @@ export function Storefront({ products }: { products: Product[] }) {
   function applySmartSearch(nextQuery: string, nextCategory = "All") {
     setQuery(nextQuery);
     setActiveCategory(nextCategory);
-    document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function exploreMarketplaceCategory(category: string) {
-    setQuery("");
-    setActiveCategory(category);
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -577,39 +472,38 @@ export function Storefront({ products }: { products: Product[] }) {
               </div>
             </div>
 
-            <div className="relative min-h-[250px]">
+            <div className="grid grid-cols-3 gap-3 sm:relative sm:min-h-[280px]">
               {categoryBannerItems.map((item, index) => (
-                <m.button
+                <m.div
                   key={item.category}
-                  type="button"
-                  onClick={() => exploreMarketplaceCategory(item.category)}
                   initial={{ opacity: 0, scale: 0.92, y: 16 }}
                   whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.35, delay: index * 0.08, ease: "easeOut" }}
                   whileHover={reduceMotion ? undefined : { y: -6, scale: 1.02 }}
-                  className={`group absolute overflow-hidden rounded-full border-4 border-white/80 bg-white shadow-2xl outline-none transition focus-visible:ring-4 focus-visible:ring-accent/70 ${
+                  className={`relative aspect-square overflow-hidden rounded-full border-4 border-white/80 bg-white shadow-2xl transition sm:absolute ${
                     index === 0
-                      ? "left-1 top-5 h-40 w-40 sm:left-8 sm:h-52 sm:w-52"
+                      ? "sm:left-8 sm:top-5 sm:h-52 sm:w-52"
                       : index === 1
-                        ? "right-2 top-0 h-36 w-36 sm:right-12 sm:h-48 sm:w-48"
-                        : "bottom-0 left-1/2 h-32 w-32 -translate-x-1/2 sm:h-44 sm:w-44"
+                        ? "sm:right-12 sm:top-0 sm:h-48 sm:w-48"
+                        : "sm:bottom-0 sm:left-1/2 sm:h-44 sm:w-44 sm:-translate-x-1/2"
                   }`}
-                  aria-label={`Open ${item.label} category`}
                 >
-                  <Image
-                    src={item.image}
-                    alt={`${item.label} category`}
-                    fill
-                    sizes="(min-width: 1024px) 220px, 44vw"
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <span className="absolute inset-x-0 bottom-0 px-4 pb-5 text-center">
-                    <span className="block font-display text-lg font-bold leading-tight">{item.label}</span>
-                    <span className="mt-1 block text-xs font-bold text-white/85">{item.listingCount ? `${item.listingCount} live` : item.tag}</span>
-                  </span>
-                </m.button>
+                  <Link href={categoryPath(item)} className="group block h-full w-full outline-none focus-visible:ring-4 focus-visible:ring-accent/70">
+                    <Image
+                      src={item.image}
+                      alt={`${item.label} category`}
+                      fill
+                      sizes="(min-width: 1024px) 220px, 30vw"
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 px-2 pb-3 text-center sm:px-4 sm:pb-5">
+                      <span className="block font-display text-xs font-bold leading-tight sm:text-lg">{item.label}</span>
+                      <span className="mt-1 block text-[10px] font-bold text-white/85 sm:text-xs">{item.listingCount ? `${item.listingCount} live` : item.tag}</span>
+                    </span>
+                  </Link>
+                </m.div>
               ))}
             </div>
           </div>
@@ -617,30 +511,30 @@ export function Storefront({ products }: { products: Product[] }) {
           <div className="relative mt-8 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex min-w-max gap-4 pr-4">
               {categoryShowcase.map((item, index) => (
-                <m.button
+                <m.div
                   key={item.category}
-                  type="button"
-                  onClick={() => exploreMarketplaceCategory(item.category)}
                   initial={{ opacity: 0, y: 12 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.24, delay: Math.min(index * 0.02, 0.16), ease: "easeOut" }}
                   whileHover={reduceMotion ? undefined : { y: -5 }}
-                  className="group w-28 shrink-0 text-center outline-none sm:w-32"
+                  className="w-24 shrink-0 text-center sm:w-32"
                 >
-                  <span className="relative mx-auto block h-24 w-24 overflow-hidden rounded-full border-4 border-white/80 bg-white shadow-lg ring-1 ring-black/10 transition group-hover:border-accent group-focus-visible:ring-4 group-focus-visible:ring-accent/70 sm:h-28 sm:w-28">
-                    <Image
-                      src={item.image}
-                      alt={`${item.label} category`}
-                      fill
-                      sizes="128px"
-                      className="object-cover transition duration-500 group-hover:scale-110"
-                    />
-                    <span className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent opacity-80" />
-                  </span>
-                  <span className="mt-3 block text-sm font-bold leading-5 text-white">{item.label}</span>
-                  <span className="mt-1 block text-xs font-semibold text-white/60">{item.listingCount ? `${item.listingCount} live` : item.tag}</span>
-                </m.button>
+                  <Link href={categoryPath(item)} className="group block outline-none">
+                    <span className="relative mx-auto block h-20 w-20 overflow-hidden rounded-full border-4 border-white/80 bg-white shadow-lg ring-1 ring-black/10 transition group-hover:border-accent group-focus-visible:ring-4 group-focus-visible:ring-accent/70 sm:h-28 sm:w-28">
+                      <Image
+                        src={item.image}
+                        alt={`${item.label} category`}
+                        fill
+                        sizes="128px"
+                        className="object-cover transition duration-500 group-hover:scale-110"
+                      />
+                      <span className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent opacity-80" />
+                    </span>
+                    <span className="mt-2 block text-xs font-bold leading-4 text-white sm:mt-3 sm:text-sm sm:leading-5">{item.label}</span>
+                    <span className="mt-1 block text-[11px] font-semibold text-white/60 sm:text-xs">{item.listingCount ? `${item.listingCount} live` : item.tag}</span>
+                  </Link>
+                </m.div>
               ))}
             </div>
           </div>
