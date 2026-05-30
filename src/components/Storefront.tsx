@@ -39,13 +39,34 @@ export function Storefront({ products }: { products: Product[] }) {
   const normalizedQuery = query.trim().toLowerCase();
   const highlights = [`${products.length} products`, "Local delivery", "WhatsApp checkout"];
   const storeCategories = useMemo(() => getCategories(products), [products]);
-  const catalogCategories = useMemo(
-    () => ["All", ...Array.from(new Set([...storeCategories.filter((category) => category !== "All"), ...marketplaceCategories.map((category) => category.category)]))],
-    [storeCategories],
-  );
+  // Catalog chips now reflect categories that actually have products, so empty
+  // marketplace categories (e.g. Cars for Sale when the DB is not connected) no
+  // longer render a chip that leads to an empty state.
+  const catalogCategories = useMemo(() => storeCategories, [storeCategories]);
   const selectedMarketplaceCategory = marketplaceCategories.find((item) => item.category === activeCategory);
   const categoryShowcase = useMemo(() => getCategoryShowcase(products), [products]);
   const categoryBannerItems = categoryShowcase.filter((item) => ["Wedding", "Cars for Sale", "Home"].includes(item.category));
+
+  // Group products by category and order marketplace categories first so the
+  // homepage renders one "aisle" (section) per category, Jumia-style.
+  const productsByCategory = useMemo(() => {
+    const groups = new Map<string, Product[]>();
+    for (const product of products) {
+      const list = groups.get(product.category) || [];
+      list.push(product);
+      groups.set(product.category, list);
+    }
+
+    const order = marketplaceCategories.map((category) => category.category);
+    return Array.from(groups.entries()).sort((a, b) => {
+      const indexA = order.indexOf(a[0]);
+      const indexB = order.indexOf(b[0]);
+      const rankA = indexA === -1 ? order.length : indexA;
+      const rankB = indexB === -1 ? order.length : indexB;
+      if (rankA !== rankB) return rankA - rankB;
+      return b[1].length - a[1].length;
+    });
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -541,7 +562,94 @@ export function Storefront({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-14 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
+      <section id="shop" className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
+        <div className="mb-6">
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">Shop by category</p>
+          <h2 className="mt-2 max-w-3xl font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">
+            Every category has its own aisle.
+          </h2>
+          <p className="mt-3 max-w-2xl leading-7 text-muted">Each section below is a single category. Scroll a row, or open the full category page.</p>
+        </div>
+
+        <div className="space-y-8">
+          {productsByCategory.map(([category, items]) => {
+            const marketplace = marketplaceCategories.find((entry) => entry.category === category);
+
+            return (
+              <m.div
+                key={category}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6"
+              >
+                <div className="mb-4 flex items-end justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">{category}</h3>
+                    <p className="text-xs font-semibold text-muted">
+                      {items.length} {items.length === 1 ? "item" : "items"} available
+                    </p>
+                  </div>
+                  {marketplace ? (
+                    <Link
+                      href={categoryPath(marketplace)}
+                      className="shrink-0 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
+                    >
+                      See all
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => applySmartSearch("", category)}
+                      className="shrink-0 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
+                    >
+                      See all
+                    </button>
+                  )}
+                </div>
+
+                <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {items.slice(0, 12).map((product) => (
+                    <article
+                      key={product.id}
+                      className="group w-40 shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-surface transition hover:shadow-md sm:w-48"
+                    >
+                      <Link href={`/products/${product.slug}`} className="block overflow-hidden">
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          width={320}
+                          height={320}
+                          className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105"
+                        />
+                      </Link>
+                      <div className="p-3">
+                        <Link
+                          href={`/products/${product.slug}`}
+                          className="block min-h-9 text-xs font-semibold leading-4 text-ink hover:text-ink/70 sm:text-sm sm:leading-5"
+                        >
+                          {product.name}
+                        </Link>
+                        <p className="mt-1.5 font-display text-base font-bold text-ink">{formatPrice(product.price)}</p>
+                        <button
+                          type="button"
+                          onClick={() => addToCart(product)}
+                          className="mt-2 h-9 w-full rounded-full bg-ink text-xs font-semibold text-white transition hover:bg-ink/85"
+                        >
+                          Add to cart
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </m.div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-14 pt-8 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
         <div className="rounded-3xl bg-ink p-5 text-white sm:p-6">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Smart picks</p>
           <h2 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-3xl">The catalog reacts to your search and cart.</h2>
