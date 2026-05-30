@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { categoryPath, getCategoryShowcase, getMarketplaceCategory, marketplaceCategories } from "@/lib/categories";
 import { getProducts } from "@/lib/product-store";
-import { formatPrice } from "@/lib/products";
 import { whatsappLink } from "@/lib/whatsapp";
+import { ProductCard } from "@/components/ProductCard";
 
 export const dynamic = "force-dynamic";
 
@@ -88,25 +88,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
         {categoryProducts.length ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
-            {categoryProducts.map((product) => (
-              <article key={product.slug} className="group overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg">
-                <Link href={`/products/${product.slug}`} className="block">
-                  <Image src={product.image} alt={product.name} width={700} height={700} className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
-                </Link>
-                <div className="p-3 sm:p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted sm:text-xs">{product.category}</p>
-                  <Link href={`/products/${product.slug}`} className="mt-2 block min-h-10 text-sm font-semibold leading-5 text-ink hover:text-ink/70 sm:min-h-12 sm:text-base sm:leading-6">
-                    {product.name}
-                  </Link>
-                  <p className="mt-2 font-display text-lg font-bold text-ink">{formatPrice(product.price)}</p>
-                  <a
-                    href={whatsappLink(`Hello Shopyacu, I want to ask about ${product.name} (${formatPrice(product.price)}).`)}
-                    className="mt-3 inline-flex w-full justify-center rounded-full bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-ink/85"
-                  >
-                    WhatsApp
-                  </a>
-                </div>
-              </article>
+            {categoryProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} fluid />
             ))}
           </div>
         ) : (

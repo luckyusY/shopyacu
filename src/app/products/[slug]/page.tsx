@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products } from "@/lib/products";
 import { whatsappLink } from "@/lib/whatsapp";
+import { ProductCard } from "@/components/ProductCard";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -93,14 +94,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
           <h2 className="font-display text-2xl font-bold text-ink">Related products</h2>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {related.map((item) => (
-              <Link key={item.id} href={`/products/${item.slug}`} className="group overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg">
-                <Image src={item.image} alt={item.name} width={500} height={500} className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
-                <div className="p-4">
-                  <p className="font-semibold text-ink">{item.name}</p>
-                  <p className="mt-1 font-display font-bold text-ink">{formatPrice(item.price)}</p>
-                </div>
-              </Link>
+            {related.map((item, index) => (
+              <ProductCard key={item.id} product={item} index={index} fluid />
             ))}
           </div>
         </section>
