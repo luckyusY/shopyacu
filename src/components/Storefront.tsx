@@ -61,7 +61,7 @@ function CategoryRow({
           <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">{category}</h3>
           <p className="flex items-center gap-2 text-xs font-semibold text-muted">
             <span>{items.length} {items.length === 1 ? "item" : "items"}</span>
-            <span aria-hidden className="hidden items-center gap-1 text-ink/40 sm:inline-flex">
+            <span aria-hidden className="hidden items-center gap-1 text-ink/40 lg:inline-flex">
               &middot; swipe to see more <span aria-hidden>&rarr;</span>
             </span>
           </p>
@@ -71,7 +71,7 @@ function CategoryRow({
             type="button"
             onClick={() => scrollByCards(-1)}
             aria-label={`Scroll ${category} left`}
-            className="hidden h-9 w-9 place-items-center rounded-full border border-ink/15 text-lg font-bold text-ink transition hover:bg-ink hover:text-white sm:grid"
+            className="hidden h-9 w-9 place-items-center rounded-full border border-ink/15 text-lg font-bold text-ink transition hover:bg-ink hover:text-white lg:grid"
           >
             &lsaquo;
           </button>
@@ -79,7 +79,7 @@ function CategoryRow({
             type="button"
             onClick={() => scrollByCards(1)}
             aria-label={`Scroll ${category} right`}
-            className="hidden h-9 w-9 place-items-center rounded-full border border-ink/15 text-lg font-bold text-ink transition hover:bg-ink hover:text-white sm:grid"
+            className="hidden h-9 w-9 place-items-center rounded-full border border-ink/15 text-lg font-bold text-ink transition hover:bg-ink hover:text-white lg:grid"
           >
             &rsaquo;
           </button>
@@ -103,25 +103,32 @@ function CategoryRow({
       </div>
 
       <div className="relative">
-        {/* Edge fades hint that the row scrolls horizontally. */}
-        <span className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 rounded-l-2xl bg-gradient-to-r from-white to-transparent" />
-        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 rounded-r-2xl bg-gradient-to-l from-white to-transparent" />
+        {/* Edge fades hint that the row scrolls horizontally (large screens only). */}
+        <span className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-6 rounded-l-2xl bg-gradient-to-r from-white to-transparent lg:block" />
+        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-10 rounded-r-2xl bg-gradient-to-l from-white to-transparent lg:block" />
 
+        {/*
+          Mobile: a clean 2-column grid showing 4 products per category (no
+          horizontal scroll). Large screens: a snap scroll row of up to 14.
+        */}
         <div
           ref={scrollerRef}
-          className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-1 grid grid-cols-2 gap-3 px-1 pb-1 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-auto lg:pb-2 lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
         >
-          {items.slice(0, 14).map((product) => (
+          {items.slice(0, 14).map((product, index) => (
             <article
               key={product.id}
-              className="group w-40 shrink-0 snap-start overflow-hidden rounded-2xl border border-ink/10 bg-surface transition hover:shadow-md sm:w-48"
+              className={`group w-full shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-surface transition hover:shadow-md lg:w-48 lg:snap-start ${
+                index >= 4 ? "hidden lg:block" : ""
+              }`}
             >
               <Link href={`/products/${product.slug}`} className="block overflow-hidden">
                 <Image
                   src={product.image}
                   alt={product.name}
-                  width={320}
-                  height={320}
+                  width={480}
+                  height={480}
+                  sizes="(min-width:1024px) 192px, 50vw"
                   className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105"
                 />
               </Link>
@@ -422,7 +429,6 @@ export function Storefront({ products }: { products: Product[] }) {
             <a className="transition hover:text-ink" href="#products">Products</a>
             <a className="transition hover:text-ink" href="#instagram">Instagram</a>
             <a className="transition hover:text-ink" href="#delivery">How it works</a>
-            <Link className="transition hover:text-ink" href="/admin">Admin</Link>
             <a className="transition hover:text-ink" href="#contact">Contact</a>
           </nav>
           <div className="flex items-center gap-2">
@@ -478,9 +484,6 @@ export function Storefront({ products }: { products: Product[] }) {
                 {label}
               </a>
             ))}
-            <Link onClick={() => setIsMenuOpen(false)} className="rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink" href="/admin">
-              Admin
-            </Link>
           </div>
         )}
       </header>
@@ -519,13 +522,24 @@ export function Storefront({ products }: { products: Product[] }) {
             >
               {bannerProducts.map((product, index) => (
                 <SwiperSlide key={product.id}>
-                  <div className="relative flex min-h-[300px] overflow-hidden bg-ink text-white sm:min-h-[360px]">
-                    <div className="flex flex-1 flex-col justify-center gap-3 p-6 sm:p-9">
+                  <div className="relative min-h-[340px] overflow-hidden bg-ink text-white sm:min-h-[400px]">
+                    {/* Full-bleed photography image, visible on every screen size */}
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      priority={index === 0}
+                      sizes="(min-width:1024px) 70vw, 100vw"
+                      className="object-cover"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10" />
+                    <span className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 to-transparent sm:hidden" />
+                    <div className="relative flex min-h-[340px] flex-col justify-end gap-3 p-6 sm:min-h-[400px] sm:max-w-lg sm:justify-center sm:p-10">
                       <span className="w-fit rounded-md bg-accent px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-ink">Flash sale &#9889;</span>
-                      <h1 className="max-w-md font-display text-2xl font-black leading-tight sm:text-4xl">{product.name}</h1>
+                      <h1 className="max-w-md font-display text-2xl font-black leading-tight drop-shadow-sm sm:text-4xl">{product.name}</h1>
                       <div className="flex flex-wrap items-baseline gap-3">
                         <span className="rounded-lg bg-white px-3 py-1.5 font-display text-xl font-black text-ink sm:text-2xl">{formatPrice(product.price)}</span>
-                        <span className="text-sm font-semibold text-white/45 line-through">{formatPrice(Math.round(product.price * 1.4))}</span>
+                        <span className="text-sm font-semibold text-white/55 line-through">{formatPrice(Math.round(product.price * 1.4))}</span>
                       </div>
                       <span className="text-xs font-bold uppercase tracking-[0.14em] text-accent">Limited stock &middot; Local delivery &middot; WhatsApp checkout</span>
                       <div className="mt-1 flex flex-wrap gap-2">
@@ -535,25 +549,15 @@ export function Storefront({ products }: { products: Product[] }) {
                         <button
                           type="button"
                           onClick={() => addToCart(product)}
-                          className="rounded-full border border-white/30 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white hover:text-ink"
+                          className="rounded-full border border-white/40 bg-white/5 px-5 py-2.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white hover:text-ink"
                         >
                           Add to cart
                         </button>
                       </div>
                     </div>
-                    <div className="relative hidden w-[44%] shrink-0 sm:block">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        priority={index === 0}
-                        sizes="(min-width:1024px) 38vw, 44vw"
-                        className="object-cover"
-                      />
-                      <span className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-ink">
-                        {product.badge || "Hot deal"}
-                      </span>
-                    </div>
+                    <span className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-ink">
+                      {product.badge || "Hot deal"}
+                    </span>
                   </div>
                 </SwiperSlide>
               ))}
@@ -639,8 +643,8 @@ export function Storefront({ products }: { products: Product[] }) {
                 <a href="#products" className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-ink transition hover:bg-accent/85">
                   Browse catalog
                 </a>
-                <a href="/admin" className="rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-ink">
-                  Add category item
+                <a href={whatsappLink()} className="rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-ink">
+                  Order on WhatsApp
                 </a>
               </div>
             </div>
