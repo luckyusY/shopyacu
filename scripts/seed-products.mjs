@@ -5,7 +5,7 @@ import path from "node:path";
 
 const productRoot = process.env.PRODUCTS_DIR || "C:\\Users\\HP\\Videos\\products";
 const mongoUri = process.env.MONGODB_URI;
-const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const imageExtensions = new Set([".jpg", ".jpeg", ".jfif", ".png", ".webp"]);
 const videoExtensions = new Set([".mp4", ".mov", ".webm", ".m4v", ".avi"]);
 
 if (!process.env.CLOUDINARY_URL) {
@@ -121,7 +121,16 @@ for (const folder of folders) {
 
   for (const [index, { file, extension }] of mediaFiles.entries()) {
     const type = videoExtensions.has(extension) ? "video" : "image";
-    media.push(await uploadMedia(path.join(folderPath, file.name), slug, index, type));
+    try {
+      media.push(await uploadMedia(path.join(folderPath, file.name), slug, index, type));
+    } catch (error) {
+      console.warn(`Skipped ${folder.name}/${file.name}: ${error?.message || "Cloudinary upload failed."}`);
+    }
+  }
+
+  if (!media.length) {
+    console.warn(`Skipped ${folder.name}: no media uploaded.`);
+    continue;
   }
 
   const images = media.filter((item) => item.type === "image").map((item) => item.url);

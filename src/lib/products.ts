@@ -197,6 +197,8 @@ export function getProduct(slug: string) {
 }
 
 export function formatPrice(price: number) {
+  if (!Number.isFinite(price) || price <= 0) return "Ask for price";
+
   return new Intl.NumberFormat("en-RW", {
     style: "currency",
     currency: "RWF",
