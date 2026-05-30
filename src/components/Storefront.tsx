@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { A11y, Keyboard, Navigation, Pagination } from "swiper/modules";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { A11y, Autoplay, Keyboard, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { categoryPath, getCategoryShowcase, marketplaceCategories } from "@/lib/categories";
+import { categoryPath, getCategoryShowcase, marketplaceCategories, type MarketplaceCategory } from "@/lib/categories";
 import { formatPrice, getCategories, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 
@@ -26,6 +26,129 @@ const quickSearches = [
   { label: "Work setup", query: "laptop table", category: "Office" },
   { label: "Rainy day", query: "rain coat", category: "Outdoor" },
 ];
+function CategoryRow({
+  category,
+  items,
+  marketplace,
+  onAddToCart,
+  onSeeAll,
+}: {
+  category: string;
+  items: Product[];
+  marketplace?: MarketplaceCategory;
+  onAddToCart: (product: Product) => void;
+  onSeeAll: () => void;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const scrollByCards = (direction: 1 | -1) => {
+    const node = scrollerRef.current;
+    if (!node) return;
+    const amount = Math.min(node.clientWidth * 0.85, 540);
+    node.scrollBy({ left: direction * amount, behavior: "smooth" });
+  };
+
+  return (
+    <m.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6"
+    >
+      <div className="mb-4 flex items-end justify-between gap-3">
+        <div>
+          <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">{category}</h3>
+          <p className="flex items-center gap-2 text-xs font-semibold text-muted">
+            <span>{items.length} {items.length === 1 ? "item" : "items"}</span>
+            <span aria-hidden className="hidden items-center gap-1 text-ink/40 sm:inline-flex">
+              &middot; swipe to see more <span aria-hidden>&rarr;</span>
+            </span>
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scrollByCards(-1)}
+            aria-label={`Scroll ${category} left`}
+            className="hidden h-9 w-9 place-items-center rounded-full border border-ink/15 text-lg font-bold text-ink transition hover:bg-ink hover:text-white sm:grid"
+          >
+            &lsaquo;
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByCards(1)}
+            aria-label={`Scroll ${category} right`}
+            className="hidden h-9 w-9 place-items-center rounded-full border border-ink/15 text-lg font-bold text-ink transition hover:bg-ink hover:text-white sm:grid"
+          >
+            &rsaquo;
+          </button>
+          {marketplace ? (
+            <Link
+              href={categoryPath(marketplace)}
+              className="rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
+            >
+              See all
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={onSeeAll}
+              className="rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
+            >
+              See all
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="relative">
+        {/* Edge fades hint that the row scrolls horizontally. */}
+        <span className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 rounded-l-2xl bg-gradient-to-r from-white to-transparent" />
+        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 rounded-r-2xl bg-gradient-to-l from-white to-transparent" />
+
+        <div
+          ref={scrollerRef}
+          className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {items.slice(0, 14).map((product) => (
+            <article
+              key={product.id}
+              className="group w-40 shrink-0 snap-start overflow-hidden rounded-2xl border border-ink/10 bg-surface transition hover:shadow-md sm:w-48"
+            >
+              <Link href={`/products/${product.slug}`} className="block overflow-hidden">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  width={320}
+                  height={320}
+                  className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105"
+                />
+              </Link>
+              <div className="p-3">
+                <Link
+                  href={`/products/${product.slug}`}
+                  className="block min-h-9 text-xs font-semibold leading-4 text-ink hover:text-ink/70 sm:text-sm sm:leading-5"
+                >
+                  {product.name}
+                </Link>
+                <p className="mt-1.5 font-display text-base font-bold text-ink">{formatPrice(product.price)}</p>
+                <button
+                  type="button"
+                  onClick={() => onAddToCart(product)}
+                  className="mt-2 h-9 w-full rounded-full bg-ink text-xs font-semibold text-white transition hover:bg-ink/85"
+                >
+                  Add to cart
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </m.div>
+  );
+}
+
 export function Storefront({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [query, setQuery] = useState("");
@@ -66,6 +189,12 @@ export function Storefront({ products }: { products: Product[] }) {
       if (rankA !== rankB) return rankA - rankB;
       return b[1].length - a[1].length;
     });
+  }, [products]);
+
+  // Featured products to rotate through the Jumia-style flash-sale hero banner.
+  const bannerProducts = useMemo(() => {
+    const featured = products.filter((product) => product.badge);
+    return (featured.length ? featured : products).slice(0, 5);
   }, [products]);
 
   const filteredProducts = useMemo(() => {
@@ -356,109 +485,132 @@ export function Storefront({ products }: { products: Product[] }) {
         )}
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:gap-12 sm:px-6 sm:py-12 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-20">
-        <div className="flex flex-col justify-center">
-          <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">Kigali online essentials</p>
-          <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.02] text-ink sm:text-6xl sm:leading-[0.95] lg:text-7xl">
-            Useful products for a cleaner, easier home.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
-            Shop practical picks for kitchens, bathrooms, fitness corners, work setups, and rainy-day errands. Add items to cart, then confirm your order on WhatsApp.
-          </p>
-          <form onSubmit={submitSearch} className="mt-7 rounded-2xl border border-ink/10 bg-white p-2 shadow-sm">
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="What are you looking for today?"
-                aria-label="Search products"
-                className="h-12 min-w-0 flex-1 rounded-xl border border-transparent bg-surface px-5 text-sm font-medium text-ink outline-none transition focus:border-ink"
-              />
-              <button type="submit" className="h-12 rounded-xl bg-ink px-6 text-sm font-semibold text-white transition hover:bg-ink/85">
-                Find products
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {quickSearches.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => applySmartSearch(item.query, item.category)}
-                  className="rounded-full border border-ink/20 bg-surface px-3 py-2 text-xs font-semibold text-ink/70 transition hover:border-ink hover:text-ink"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            {searchSuggestions.length > 0 && (
-              <div className="mt-3 grid gap-2 border-t border-ink/10 pt-3 sm:grid-cols-2">
-                {searchSuggestions.slice(0, 4).map((product) => (
-                  <button
-                    key={product.id}
-                    type="button"
-                    onClick={() => applySmartSearch(product.name)}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2 text-left text-xs font-medium text-muted transition hover:bg-ink hover:text-white"
+      <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+        <div className="grid gap-4 lg:grid-cols-[212px_1fr_248px]">
+          {/* Left: Jumia-style category sidebar */}
+          <aside className="hidden rounded-2xl border border-ink/10 bg-white p-2 lg:block">
+            <p className="px-3 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted">Categories</p>
+            <ul>
+              {marketplaceCategories.map((cat) => (
+                <li key={cat.slug}>
+                  <Link
+                    href={categoryPath(cat)}
+                    className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink/80 transition hover:bg-surface hover:text-ink"
                   >
-                    <span className="min-w-0 truncate">{product.name}</span>
-                    <span className="shrink-0 font-bold">{formatPrice(product.price)}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </form>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#products" className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-ink/85">
-              Shop catalog
-            </a>
-            <a href={whatsappLink()} className="rounded-full border border-ink/20 bg-transparent px-6 py-3 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white">
-              Order on WhatsApp
-            </a>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {highlights.map((item) => (
-              <span key={item} className="rounded-full border border-ink/10 bg-white px-3 py-2 text-xs font-semibold text-ink/70">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className="grid min-h-[560px] grid-cols-[1fr_0.72fr] gap-4 max-md:min-h-0 max-md:grid-cols-1">
-          <div className="relative overflow-hidden rounded-3xl bg-white shadow-xl">
-            <Image src="/products/product-21.jpg" alt="Corner shower caddy" width={900} height={900} priority className="h-full min-h-[420px] w-full object-cover" />
-            <m.div
-              animate={reduceMotion ? undefined : { y: [0, -9, 0], rotate: [0, -1.5, 1.5, 0] }}
-              transition={reduceMotion ? undefined : { duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute left-4 top-4 z-10 flex max-w-[260px] items-center gap-3 rounded-2xl border border-ink/10 bg-white/95 p-3 text-ink shadow-xl backdrop-blur"
+                    <span>{cat.label}</span>
+                    <span aria-hidden className="text-ink/30">&rsaquo;</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </aside>
+
+          {/* Center: flash-sale banner carousel */}
+          <div className="min-w-0">
+            <Swiper
+              modules={[Autoplay, Pagination, A11y, Keyboard]}
+              slidesPerView={1}
+              loop={bannerProducts.length > 1}
+              autoplay={reduceMotion ? false : { delay: 4200, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              keyboard={{ enabled: true }}
+              speed={500}
+              className="h-full overflow-hidden rounded-2xl"
             >
-              <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent shadow-inner" aria-hidden="true">
-                <span className="absolute -top-2 h-4 w-7 rounded-t-full border-4 border-ink border-b-0" />
-                <span className="mt-1 flex gap-1">
-                  <span className="h-2 w-2 rounded-full bg-ink" />
-                  <span className="h-2 w-2 rounded-full bg-ink" />
-                </span>
-              </span>
+              {bannerProducts.map((product, index) => (
+                <SwiperSlide key={product.id}>
+                  <div className="relative flex min-h-[300px] overflow-hidden bg-ink text-white sm:min-h-[360px]">
+                    <div className="flex flex-1 flex-col justify-center gap-3 p-6 sm:p-9">
+                      <span className="w-fit rounded-md bg-accent px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-ink">Flash sale &#9889;</span>
+                      <h1 className="max-w-md font-display text-2xl font-black leading-tight sm:text-4xl">{product.name}</h1>
+                      <div className="flex flex-wrap items-baseline gap-3">
+                        <span className="rounded-lg bg-white px-3 py-1.5 font-display text-xl font-black text-ink sm:text-2xl">{formatPrice(product.price)}</span>
+                        <span className="text-sm font-semibold text-white/45 line-through">{formatPrice(Math.round(product.price * 1.4))}</span>
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-[0.14em] text-accent">Limited stock &middot; Local delivery &middot; WhatsApp checkout</span>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        <Link href={`/products/${product.slug}`} className="rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-ink transition hover:bg-accent/85">
+                          Shop now
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => addToCart(product)}
+                          className="rounded-full border border-white/30 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white hover:text-ink"
+                        >
+                          Add to cart
+                        </button>
+                      </div>
+                    </div>
+                    <div className="relative hidden w-[44%] shrink-0 sm:block">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        priority={index === 0}
+                        sizes="(min-width:1024px) 38vw, 44vw"
+                        className="object-cover"
+                      />
+                      <span className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-ink">
+                        {product.badge || "Hot deal"}
+                      </span>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          {/* Right: info / promo cards */}
+          <aside className="hidden flex-col gap-3 lg:flex">
+            <a href={whatsappLink()} className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-white p-4 transition hover:border-ink/30 hover:shadow-md">
+              <span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent text-lg text-ink">&#9742;</span>
               <span className="min-w-0">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink/50">Shop guide</span>
-                <span className="block text-sm font-semibold leading-5">{assistantCopy}</span>
+                <span className="block text-sm font-bold text-ink">WhatsApp to order</span>
+                <span className="block truncate text-xs font-semibold text-muted">{whatsappDisplay}</span>
               </span>
-            </m.div>
-            <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-ink/90 p-4 text-white backdrop-blur">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Featured</p>
-              <p className="mt-1 font-display text-lg font-bold">Corner Shower Caddy</p>
+            </a>
+            <div className="rounded-2xl border border-ink/10 bg-white p-4">
+              <p className="text-sm font-bold text-ink">Top rated, best prices</p>
+              <p className="mt-1 text-xs font-medium leading-5 text-muted">Hand-picked products for everyday Kigali homes.</p>
             </div>
-          </div>
-          <div className="grid gap-4">
-            <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-              <Image src="/products/product-19.jpg" alt="Silver Crest air fryer" width={600} height={600} className="h-full w-full object-cover" />
-            </div>
-            <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-              <Image src="/products/product-31.jpg" alt="Portable laptop table" width={600} height={600} className="h-full w-full object-cover" />
-            </div>
-            <div className="rounded-3xl bg-ink p-5 text-white">
-              <p className="font-display text-3xl font-bold text-accent">{whatsappDisplay}</p>
-              <p className="mt-2 text-sm font-semibold text-white/70">orders through WhatsApp</p>
-            </div>
-          </div>
+            <a href="#shop" className="rounded-2xl bg-ink p-4 text-white transition hover:bg-ink/90">
+              <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-accent">Up to 40% off</span>
+              <span className="mt-1 block font-display text-xl font-black">Daily deals</span>
+              <span className="mt-2 inline-block text-xs font-bold underline">Shop categories</span>
+            </a>
+          </aside>
+        </div>
+
+        {/* Trending + quick searches under the hero */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-[0.14em] text-muted">Trending:</span>
+          {quickSearches.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => applySmartSearch(item.query, item.category)}
+              className="rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs font-semibold text-ink/70 transition hover:border-ink hover:text-ink"
+            >
+              {item.label}
+            </button>
+          ))}
+          {searchSuggestions.slice(0, 3).map((product) => (
+            <button
+              key={product.id}
+              type="button"
+              onClick={() => applySmartSearch(product.name)}
+              className="rounded-full border border-ink/10 bg-surface px-3 py-1.5 text-xs font-semibold text-muted transition hover:bg-ink hover:text-white"
+            >
+              {product.name}
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {highlights.map((item) => (
+            <span key={item} className="rounded-full border border-ink/10 bg-white px-3 py-1.5 text-xs font-semibold text-ink/70">
+              {item}
+            </span>
+          ))}
         </div>
       </section>
 
@@ -572,80 +724,16 @@ export function Storefront({ products }: { products: Product[] }) {
         </div>
 
         <div className="space-y-8">
-          {productsByCategory.map(([category, items]) => {
-            const marketplace = marketplaceCategories.find((entry) => entry.category === category);
-
-            return (
-              <m.div
-                key={category}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6"
-              >
-                <div className="mb-4 flex items-end justify-between gap-3">
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">{category}</h3>
-                    <p className="text-xs font-semibold text-muted">
-                      {items.length} {items.length === 1 ? "item" : "items"} available
-                    </p>
-                  </div>
-                  {marketplace ? (
-                    <Link
-                      href={categoryPath(marketplace)}
-                      className="shrink-0 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
-                    >
-                      See all
-                    </Link>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => applySmartSearch("", category)}
-                      className="shrink-0 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
-                    >
-                      See all
-                    </button>
-                  )}
-                </div>
-
-                <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  {items.slice(0, 12).map((product) => (
-                    <article
-                      key={product.id}
-                      className="group w-40 shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-surface transition hover:shadow-md sm:w-48"
-                    >
-                      <Link href={`/products/${product.slug}`} className="block overflow-hidden">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          width={320}
-                          height={320}
-                          className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105"
-                        />
-                      </Link>
-                      <div className="p-3">
-                        <Link
-                          href={`/products/${product.slug}`}
-                          className="block min-h-9 text-xs font-semibold leading-4 text-ink hover:text-ink/70 sm:text-sm sm:leading-5"
-                        >
-                          {product.name}
-                        </Link>
-                        <p className="mt-1.5 font-display text-base font-bold text-ink">{formatPrice(product.price)}</p>
-                        <button
-                          type="button"
-                          onClick={() => addToCart(product)}
-                          className="mt-2 h-9 w-full rounded-full bg-ink text-xs font-semibold text-white transition hover:bg-ink/85"
-                        >
-                          Add to cart
-                        </button>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </m.div>
-            );
-          })}
+          {productsByCategory.map(([category, items]) => (
+            <CategoryRow
+              key={category}
+              category={category}
+              items={items}
+              marketplace={marketplaceCategories.find((entry) => entry.category === category)}
+              onAddToCart={addToCart}
+              onSeeAll={() => applySmartSearch("", category)}
+            />
+          ))}
         </div>
       </section>
 
