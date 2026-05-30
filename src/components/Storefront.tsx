@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { A11y, Autoplay, Keyboard, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { categoryPath, getCategoryShowcase, marketplaceCategories, type MarketplaceCategory } from "@/lib/categories";
@@ -48,23 +48,43 @@ function CategoryRow({
     node.scrollBy({ left: direction * amount, behavior: "smooth" });
   };
 
+  // Both the top pill and the mobile footer button lead to the same place
+  // (the full category page, or the in-page filter when there is no page).
+  const renderSeeAll = (className: string, label: ReactNode) =>
+    marketplace ? (
+      <Link href={categoryPath(marketplace)} className={className}>
+        {label}
+      </Link>
+    ) : (
+      <button type="button" onClick={onSeeAll} className={className}>
+        {label}
+      </button>
+    );
+
+  const hasMore = items.length > 4;
+
   return (
     <m.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6"
+      className="overflow-hidden rounded-[1.75rem] border border-ink/10 bg-white shadow-sm transition hover:shadow-md"
     >
-      <div className="mb-4 flex items-end justify-between gap-3">
-        <div>
-          <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">{category}</h3>
-          <p className="flex items-center gap-2 text-xs font-semibold text-muted">
-            <span>{items.length} {items.length === 1 ? "item" : "items"}</span>
-            <span aria-hidden className="hidden items-center gap-1 text-ink/40 lg:inline-flex">
-              &middot; swipe to see more <span aria-hidden>&rarr;</span>
-            </span>
-          </p>
+      <div className="flex items-center justify-between gap-3 border-b border-ink/10 bg-gradient-to-r from-surface to-white px-4 py-3.5 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ink font-display text-lg font-black text-accent sm:h-11 sm:w-11">
+            {category.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <h3 className="truncate font-display text-lg font-bold leading-tight text-ink sm:text-2xl">{category}</h3>
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-muted">
+              <span className="rounded-full bg-ink/5 px-2 py-0.5 text-[11px] font-bold text-ink/70">
+                {items.length} {items.length === 1 ? "item" : "items"}
+              </span>
+              {marketplace?.tag ? <span className="hidden truncate text-ink/45 sm:inline">{marketplace.tag}</span> : null}
+            </p>
+          </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <button
@@ -83,29 +103,19 @@ function CategoryRow({
           >
             &rsaquo;
           </button>
-          {marketplace ? (
-            <Link
-              href={categoryPath(marketplace)}
-              className="rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
-            >
-              See all
-            </Link>
-          ) : (
-            <button
-              type="button"
-              onClick={onSeeAll}
-              className="rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-ink hover:text-white sm:text-sm"
-            >
-              See all
-            </button>
+          {renderSeeAll(
+            "inline-flex items-center gap-1 rounded-full bg-accent px-3.5 py-2 text-xs font-bold text-ink shadow-sm transition hover:bg-ink hover:text-white sm:px-4 sm:text-sm",
+            <>
+              See all <span aria-hidden>&rarr;</span>
+            </>,
           )}
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative px-4 pb-4 pt-4 sm:px-6">
         {/* Edge fades hint that the row scrolls horizontally (large screens only). */}
-        <span className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-6 rounded-l-2xl bg-gradient-to-r from-white to-transparent lg:block" />
-        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-10 rounded-r-2xl bg-gradient-to-l from-white to-transparent lg:block" />
+        <span className="pointer-events-none absolute inset-y-4 left-4 z-10 hidden w-6 bg-gradient-to-r from-white to-transparent lg:block" />
+        <span className="pointer-events-none absolute inset-y-4 right-4 z-10 hidden w-12 bg-gradient-to-l from-white to-transparent lg:block" />
 
         {/*
           Mobile: a clean 2-column grid showing 4 products per category (no
@@ -113,16 +123,16 @@ function CategoryRow({
         */}
         <div
           ref={scrollerRef}
-          className="-mx-1 grid grid-cols-2 gap-3 px-1 pb-1 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-auto lg:pb-2 lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+          className="-mx-1 grid grid-cols-2 gap-3 px-1 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-auto lg:pb-2 lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
         >
           {items.slice(0, 14).map((product, index) => (
             <article
               key={product.id}
-              className={`group w-full shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-surface transition hover:shadow-md lg:w-48 lg:snap-start ${
-                index >= 4 ? "hidden lg:block" : ""
+              className={`group flex w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white transition hover:border-ink/25 hover:shadow-md lg:w-48 lg:snap-start ${
+                index >= 4 ? "hidden lg:flex" : ""
               }`}
             >
-              <Link href={`/products/${product.slug}`} className="block overflow-hidden">
+              <Link href={`/products/${product.slug}`} className="relative block overflow-hidden bg-surface">
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -131,8 +141,13 @@ function CategoryRow({
                   sizes="(min-width:1024px) 192px, 50vw"
                   className="aspect-square w-full object-cover transition duration-300 group-hover:scale-105"
                 />
+                {product.badge ? (
+                  <span className="absolute left-2 top-2 rounded-full bg-ink/90 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-accent">
+                    {product.badge}
+                  </span>
+                ) : null}
               </Link>
-              <div className="p-3">
+              <div className="flex flex-1 flex-col p-3">
                 <Link
                   href={`/products/${product.slug}`}
                   className="block min-h-9 text-xs font-semibold leading-4 text-ink hover:text-ink/70 sm:text-sm sm:leading-5"
@@ -143,7 +158,7 @@ function CategoryRow({
                 <button
                   type="button"
                   onClick={() => onAddToCart(product)}
-                  className="mt-2 h-9 w-full rounded-full bg-ink text-xs font-semibold text-white transition hover:bg-ink/85"
+                  className="mt-2.5 h-9 w-full rounded-full bg-ink text-xs font-semibold text-white transition hover:bg-ink/85"
                 >
                   Add to cart
                 </button>
@@ -151,6 +166,16 @@ function CategoryRow({
             </article>
           ))}
         </div>
+
+        {/* Mobile only shows 4 cards, so make "see the rest" obvious per section. */}
+        {hasMore
+          ? renderSeeAll(
+              "mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 bg-surface px-4 py-3 text-sm font-bold text-ink transition hover:bg-ink hover:text-white lg:hidden",
+              <>
+                See all {items.length} in {category} <span aria-hidden>&rarr;</span>
+              </>,
+            )
+          : null}
       </div>
     </m.div>
   );
@@ -719,15 +744,28 @@ export function Storefront({ products }: { products: Product[] }) {
       </section>
 
       <section id="shop" className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">Shop by category</p>
-          <h2 className="mt-2 max-w-3xl font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">
-            Every category has its own aisle.
-          </h2>
-          <p className="mt-3 max-w-2xl leading-7 text-muted">Each section below is a single category. Scroll a row, or open the full category page.</p>
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-ink px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
+              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+              Shop by category
+            </span>
+            <h2 className="mt-3 max-w-3xl font-display text-3xl font-bold leading-[1.05] text-ink sm:text-4xl md:text-5xl">
+              Every category, its own aisle.
+            </h2>
+            <p className="mt-3 max-w-2xl leading-7 text-muted">
+              Browse the first picks in each category, then tap <span className="font-semibold text-ink">See all</span> to open the full collection.
+            </p>
+          </div>
+          <a
+            href={whatsappLink()}
+            className="hidden w-fit shrink-0 items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white sm:inline-flex"
+          >
+            Can&apos;t find it? Ask on WhatsApp <span aria-hidden>&rarr;</span>
+          </a>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {productsByCategory.map(([category, items]) => (
             <CategoryRow
               key={category}
