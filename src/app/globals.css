@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f4f3ee;
+  --paper: #ffd60a;
+  --surface: #fbf6e9;
   --ink: #111114;
   --accent: #ffd60a;
-  --muted: #6c6c72;
+  --muted: #5a5a4a;
   --line: rgba(17, 17, 20, 0.1);
 
   --background: var(--paper);
@@ -15,6 +16,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-paper: var(--paper);
+  --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-accent: var(--accent);
   --color-muted: var(--muted);

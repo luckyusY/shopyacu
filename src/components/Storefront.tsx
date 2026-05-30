@@ -339,7 +339,7 @@ export function Storefront({ products }: { products: Product[] }) {
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="What are you looking for today?"
                 aria-label="Search products"
-                className="h-12 min-w-0 flex-1 rounded-xl border border-transparent bg-paper px-5 text-sm font-medium text-ink outline-none transition focus:border-ink"
+                className="h-12 min-w-0 flex-1 rounded-xl border border-transparent bg-surface px-5 text-sm font-medium text-ink outline-none transition focus:border-ink"
               />
               <button type="submit" className="h-12 rounded-xl bg-ink px-6 text-sm font-semibold text-white transition hover:bg-ink/85">
                 Find products
@@ -351,7 +351,7 @@ export function Storefront({ products }: { products: Product[] }) {
                   key={item.label}
                   type="button"
                   onClick={() => applySmartSearch(item.query, item.category)}
-                  className="rounded-full border border-ink/15 bg-paper px-3 py-2 text-xs font-semibold text-ink/70 transition hover:border-ink hover:text-ink"
+                  className="rounded-full border border-ink/20 bg-surface px-3 py-2 text-xs font-semibold text-ink/70 transition hover:border-ink hover:text-ink"
                 >
                   {item.label}
                 </button>
@@ -364,7 +364,7 @@ export function Storefront({ products }: { products: Product[] }) {
                     key={product.id}
                     type="button"
                     onClick={() => applySmartSearch(product.name)}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-paper px-3 py-2 text-left text-xs font-medium text-muted transition hover:bg-ink hover:text-white"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2 text-left text-xs font-medium text-muted transition hover:bg-ink hover:text-white"
                   >
                     <span className="min-w-0 truncate">{product.name}</span>
                     <span className="shrink-0 font-bold">{formatPrice(product.price)}</span>
@@ -421,9 +421,9 @@ export function Storefront({ products }: { products: Product[] }) {
             <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
               <Image src="/products/product-31.jpg" alt="Portable laptop table" width={600} height={600} className="h-full w-full object-cover" />
             </div>
-            <div className="rounded-3xl bg-accent p-5 text-ink">
-              <p className="font-display text-3xl font-bold">{whatsappDisplay}</p>
-              <p className="mt-2 text-sm font-semibold text-ink/70">orders through WhatsApp</p>
+            <div className="rounded-3xl bg-ink p-5 text-white">
+              <p className="font-display text-3xl font-bold text-accent">{whatsappDisplay}</p>
+              <p className="mt-2 text-sm font-semibold text-white/70">orders through WhatsApp</p>
             </div>
           </div>
         </div>
@@ -488,7 +488,7 @@ export function Storefront({ products }: { products: Product[] }) {
                 type="button"
                 onClick={() => setActiveCategory(category)}
                 className={`h-10 rounded-full px-4 text-sm font-semibold transition ${
-                  activeCategory === category ? "bg-ink text-white" : "bg-paper text-ink/70 hover:bg-ink hover:text-white"
+                  activeCategory === category ? "bg-ink text-white" : "bg-surface text-ink/70 hover:bg-ink hover:text-white"
                 }`}
               >
                 {category}
@@ -501,7 +501,7 @@ export function Storefront({ products }: { products: Product[] }) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search products"
-              className="h-11 w-full rounded-full border border-ink/10 bg-paper px-5 text-sm font-medium text-ink outline-none transition focus:border-ink"
+              className="h-11 w-full rounded-full border border-ink/10 bg-surface px-5 text-sm font-medium text-ink outline-none transition focus:border-ink"
             />
           </label>
         </div>
@@ -545,7 +545,7 @@ export function Storefront({ products }: { products: Product[] }) {
                   transition={{ duration: 0.28, ease: "easeOut" }}
                   className="group overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-paper">
+                  <div className="relative aspect-square overflow-hidden bg-surface">
                     <Swiper
                       modules={[Navigation, Pagination, Keyboard, A11y]}
                       slidesPerView={1}
@@ -712,7 +712,7 @@ export function Storefront({ products }: { products: Product[] }) {
               </div>
               <button type="button" onClick={() => setCartOpen(false)} aria-label="Close cart" className="grid h-10 w-10 place-items-center rounded-full bg-white text-xl font-bold text-ink transition hover:bg-ink hover:text-white">&times;</button>
             </div>
-            <p className="mt-4 rounded-xl bg-accent/40 p-3 text-sm font-semibold text-ink">
+            <p className="mt-4 rounded-xl bg-white p-3 text-sm font-semibold text-ink">
               {cartHydrated ? "Saved on this device, so refresh will not empty it." : "Loading saved cart..."}
             </p>
             <div className="mt-6 flex-1 space-y-4 overflow-auto">
