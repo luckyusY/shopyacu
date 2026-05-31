@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
+import { whatsappLink } from "@/lib/whatsapp";
 
 // Deterministic per-product display signals (rating / reviews / discount /
 // sold count) so each card looks populated. Presentation-only placeholders
@@ -73,6 +74,9 @@ export function ProductCard({
   const original = Math.round(product.price * (1 + discount / 100));
   const [wished, setWished] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const askHref = whatsappLink(
+    `Hello Shopyacu, I want to ask about ${product.name} (${formatPrice(product.price)}). Is it available?`,
+  );
 
   function handleAdd() {
     onAddToCart?.(product);
@@ -169,45 +173,61 @@ export function ProductCard({
         ) : null}
 
         {onAddToCart ? (
-          <m.button
-            type="button"
-            onClick={handleAdd}
-            whileTap={reduceMotion ? undefined : { scale: 0.96 }}
-            className={`mt-2.5 flex h-9 w-full items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white transition ${
-              justAdded ? "bg-emerald-600" : "bg-ink hover:bg-ink/85"
-            }`}
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {justAdded ? (
-                <m.span
-                  key="ok"
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -10, opacity: 0 }}
-                  transition={{ duration: 0.18 }}
-                >
-                  Added &#10003;
-                </m.span>
-              ) : (
-                <m.span
-                  key="add"
-                  initial={{ y: -10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 10, opacity: 0 }}
-                  transition={{ duration: 0.18 }}
-                >
-                  Add to cart
-                </m.span>
-              )}
-            </AnimatePresence>
-          </m.button>
+          <div className="mt-2.5 grid gap-2">
+            <m.button
+              type="button"
+              onClick={handleAdd}
+              whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+              className={`flex h-9 w-full items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white transition ${
+                justAdded ? "bg-emerald-600" : "bg-ink hover:bg-ink/85"
+              }`}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {justAdded ? (
+                  <m.span
+                    key="ok"
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -10, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    Added &#10003;
+                  </m.span>
+                ) : (
+                  <m.span
+                    key="add"
+                    initial={{ y: -10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 10, opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    Add to cart
+                  </m.span>
+                )}
+              </AnimatePresence>
+            </m.button>
+            <a
+              href={askHref}
+              className="flex h-9 w-full items-center justify-center rounded-full bg-[#25D366] px-3 text-center text-xs font-black text-white transition hover:bg-[#1fb458]"
+            >
+              Ask on WhatsApp
+            </a>
+          </div>
         ) : (
-          <Link
-            href={`/products/${product.slug}`}
-            className="mt-2.5 flex h-9 w-full items-center justify-center rounded-full bg-ink text-xs font-bold text-white transition hover:bg-ink/85"
-          >
-            View product
-          </Link>
+          <div className="mt-2.5 grid gap-2">
+            <Link
+              href={`/products/${product.slug}`}
+              className="flex h-9 w-full items-center justify-center rounded-full bg-ink px-3 text-center text-xs font-bold text-white transition hover:bg-ink/85"
+            >
+              View product
+            </Link>
+            <a
+              href={askHref}
+              className="flex h-9 w-full items-center justify-center rounded-full bg-[#25D366] px-3 text-center text-xs font-black text-white transition hover:bg-[#1fb458]"
+            >
+              Ask on WhatsApp
+            </a>
+          </div>
         )}
       </div>
     </m.article>

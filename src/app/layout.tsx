@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { FloatingSupport } from "@/components/FloatingSupport";
 import { SmoothMotionProvider } from "@/components/SmoothMotionProvider";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -38,7 +39,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SmoothMotionProvider>{children}</SmoothMotionProvider>
+        <SmoothMotionProvider>
+          {children}
+          <FloatingSupport />
+        </SmoothMotionProvider>
       </body>
     </html>
   );
