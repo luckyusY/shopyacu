@@ -6,6 +6,8 @@ import { getProducts } from "@/lib/product-store";
 import { whatsappLink } from "@/lib/whatsapp";
 import { ProductCard } from "@/components/ProductCard";
 import { Logo } from "@/components/Logo";
+import { WhatsAppLink } from "@/components/WhatsAppLink";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -46,9 +48,19 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <Link href="/" className="inline-flex items-center">
             <Logo imgClassName="h-8" />
           </Link>
-          <Link href="/categories" className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink/85">
-            Categories
-          </Link>
+          <div className="flex items-center gap-2">
+            <WhatsAppLink
+              href={whatsappLink(`Hello Shopyacu, I want to ask about ${category.label}.`)}
+              track={{ category: category.category, source: "header" }}
+              className="flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#1fb458] sm:px-5"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </WhatsAppLink>
+            <Link href="/categories" className="rounded-full bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-ink/85 sm:px-5">
+              Categories
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -61,9 +73,14 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-ink shadow-sm">
               {categoryProducts.length ? `${categoryProducts.length} live listings` : "Open for requests"}
             </span>
-            <a href={whatsappLink(`Hello Shopyacu, I want to ask about ${category.label}.`)} className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-ink transition hover:bg-accent/85">
+            <WhatsAppLink
+              href={whatsappLink(`Hello Shopyacu, I want to ask about ${category.label}. Can you share options, prices, and delivery?`)}
+              track={{ category: category.category, source: "category" }}
+              className="flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#1fb458]"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
               Ask on WhatsApp
-            </a>
+            </WhatsAppLink>
           </div>
         </div>
         <div className="relative min-h-[300px] overflow-hidden rounded-[2rem] bg-ink shadow-xl sm:min-h-[430px]">
@@ -100,9 +117,14 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               <p className="mx-auto mt-3 max-w-xl font-medium leading-7 text-muted">
                 This page is ready. Add listings from the admin panel, or let customers request this category directly on WhatsApp.
               </p>
-              <a href={whatsappLink(`Hello Shopyacu, I want to ask about ${category.label}.`)} className="mt-6 inline-flex rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:bg-ink/85">
+              <WhatsAppLink
+                href={whatsappLink(`Hello Shopyacu, I want to request ${category.label}. Can you help me find it?`)}
+                track={{ category: category.category, source: "category" }}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1fb458]"
+              >
+                <WhatsAppIcon className="h-5 w-5" />
                 Ask on WhatsApp
-              </a>
+              </WhatsAppLink>
             </div>
           </div>
         )}

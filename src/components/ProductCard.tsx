@@ -6,6 +6,8 @@ import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { whatsappLink } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/track-client";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
 // Deterministic per-product display signals (rating / reviews / discount /
 // sold count) so each card looks populated. Presentation-only placeholders
@@ -82,6 +84,13 @@ export function ProductCard({
   const askHref = whatsappLink(
     `Hello Shopyacu, I want to ask about ${product.name} (${formatPrice(product.price)}). Is it available?`,
   );
+  const trackAsk = () =>
+    trackEvent("inquiry", {
+      slug: product.slug,
+      name: product.name,
+      category: product.category,
+      source: "product_card",
+    });
 
   useEffect(() => {
     if (reduceMotion || rotatingBadges.length < 2) return;
@@ -222,8 +231,10 @@ export function ProductCard({
             </m.button>
             <a
               href={askHref}
-              className="flex h-9 w-full items-center justify-center rounded-full bg-[#25D366] px-3 text-center text-xs font-black text-white transition hover:bg-[#1fb458]"
+              onClick={trackAsk}
+              className="flex h-9 w-full items-center justify-center gap-1.5 rounded-full bg-[#25D366] px-3 text-center text-xs font-black text-white transition hover:bg-[#1fb458]"
             >
+              <WhatsAppIcon className="h-3.5 w-3.5" />
               Ask on WhatsApp
             </a>
           </div>
@@ -237,8 +248,10 @@ export function ProductCard({
             </Link>
             <a
               href={askHref}
-              className="flex h-9 w-full items-center justify-center rounded-full bg-[#25D366] px-3 text-center text-xs font-black text-white transition hover:bg-[#1fb458]"
+              onClick={trackAsk}
+              className="flex h-9 w-full items-center justify-center gap-1.5 rounded-full bg-[#25D366] px-3 text-center text-xs font-black text-white transition hover:bg-[#1fb458]"
             >
+              <WhatsAppIcon className="h-3.5 w-3.5" />
               Ask on WhatsApp
             </a>
           </div>

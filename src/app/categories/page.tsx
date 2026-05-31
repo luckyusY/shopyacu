@@ -2,7 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { categoryPath, getCategoryShowcase } from "@/lib/categories";
 import { getProducts } from "@/lib/product-store";
+import { whatsappLink } from "@/lib/whatsapp";
 import { Logo } from "@/components/Logo";
+import { WhatsAppLink } from "@/components/WhatsAppLink";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +25,19 @@ export default async function CategoriesPage() {
           <Link href="/" className="inline-flex items-center">
             <Logo imgClassName="h-8" />
           </Link>
-          <Link href="/#products" className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink/85">
-            All products
-          </Link>
+          <div className="flex items-center gap-2">
+            <WhatsAppLink
+              href={whatsappLink("Hello Shopyacu, I would like to order. Can you help me?")}
+              track={{ source: "header" }}
+              className="flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#1fb458] sm:px-5"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </WhatsAppLink>
+            <Link href="/#products" className="rounded-full bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-ink/85 sm:px-5">
+              All products
+            </Link>
+          </div>
         </div>
       </header>
 

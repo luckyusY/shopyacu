@@ -12,7 +12,11 @@ const SOURCE_LABELS: Record<string, string> = {
   product_cta: "Order button",
   sticky_bar: "Sticky bar",
   ask_question: "Ask first",
-  header: "Product header",
+  product_card: "Product card",
+  hero: "Hero / banner",
+  category: "Category page",
+  cart: "Cart checkout",
+  header: "Header",
   other: "Other",
 };
 

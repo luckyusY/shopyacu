@@ -14,6 +14,10 @@ export type InquirySource =
   | "product_cta"
   | "sticky_bar"
   | "ask_question"
+  | "product_card"
+  | "hero"
+  | "category"
+  | "cart"
   | "header"
   | "other";
 
@@ -48,6 +52,10 @@ const VALID_SOURCES: InquirySource[] = [
   "product_cta",
   "sticky_bar",
   "ask_question",
+  "product_card",
+  "hero",
+  "category",
+  "cart",
   "header",
   "other",
 ];

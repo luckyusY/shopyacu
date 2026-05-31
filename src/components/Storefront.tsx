@@ -11,6 +11,9 @@ import { formatPrice, getCategories, type Product, type ProductMedia } from "@/l
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 import { ProductCard, StarRow, productSignals } from "@/components/ProductCard";
 import { Logo } from "@/components/Logo";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { trackEvent } from "@/lib/track-client";
+import type { InquirySource } from "@/lib/events-store";
 
 type CartItem = Product & { quantity: number };
 type SavedCartItem = { id: number; quantity: number };
@@ -398,6 +401,8 @@ export function Storefront({ products }: { products: Product[] }) {
       .map((item) => `- ${item.name} x${item.quantity}: ${formatPrice(item.price * item.quantity)}`)
       .join("\n")}\nTotal: ${formatPrice(cartTotal)}`;
 
+  const trackWa = (source: InquirySource) => trackEvent("inquiry", { source });
+
   return (
     <main className="min-h-screen bg-paper text-ink">
       <header className="sticky top-0 z-30 bg-accent shadow-sm">
@@ -429,6 +434,16 @@ export function Storefront({ products }: { products: Product[] }) {
             <a className="transition hover:text-white" href="#contact">Contact</a>
           </nav>
           <div className="flex items-center gap-2">
+            <a
+              href={whatsappLink("Hello Shopyacu, I would like to order. Can you help me?")}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackWa("header")}
+              className="flex h-11 items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#1fb458] sm:px-5"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </a>
             <button
               type="button"
               onClick={() => setIsMenuOpen((open) => !open)}
@@ -578,11 +593,19 @@ export function Storefront({ products }: { products: Product[] }) {
 
           {/* Right: info / promo cards */}
           <aside className="hidden flex-col gap-3 lg:flex">
-            <a href={whatsappLink()} className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-white p-4 transition hover:border-ink/30 hover:shadow-md">
-              <span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent text-lg text-ink">&#9742;</span>
+            <a
+              href={whatsappLink("Hello Shopyacu, I would like to order. Can you help me?")}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackWa("hero")}
+              className="flex items-center gap-3 rounded-2xl bg-[#25D366] p-4 text-white shadow-sm transition hover:bg-[#1fb458]"
+            >
+              <span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/20">
+                <WhatsAppIcon className="h-5 w-5" />
+              </span>
               <span className="min-w-0">
-                <span className="block text-sm font-bold text-ink">WhatsApp to order</span>
-                <span className="block truncate text-xs font-semibold text-muted">{whatsappDisplay}</span>
+                <span className="block text-sm font-black">Order on WhatsApp</span>
+                <span className="block truncate text-xs font-semibold text-white/85">Pay on delivery · reply in minutes</span>
               </span>
             </a>
             <div className="rounded-2xl border border-ink/10 bg-white p-4">
@@ -655,7 +678,14 @@ export function Storefront({ products }: { products: Product[] }) {
                 <a href="#products" className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-ink transition hover:bg-accent/85">
                   Browse catalog
                 </a>
-                <a href={whatsappLink()} className="rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-ink">
+                <a
+                  href={whatsappLink("Hello Shopyacu, I would like to order. Can you help me?")}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => trackWa("hero")}
+                  className="flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#1fb458]"
+                >
+                  <WhatsAppIcon className="h-4 w-4" />
                   Order on WhatsApp
                 </a>
               </div>
@@ -745,10 +775,14 @@ export function Storefront({ products }: { products: Product[] }) {
             </p>
           </div>
           <a
-            href={whatsappLink()}
-            className="hidden w-fit shrink-0 items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white sm:inline-flex"
+            href={whatsappLink("Hello Shopyacu, I'm looking for a specific product. Can you help me find it?")}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackWa("category")}
+            className="hidden w-fit shrink-0 items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#1fb458] sm:inline-flex"
           >
-            Can&apos;t find it? Ask on WhatsApp <span aria-hidden>&rarr;</span>
+            <WhatsAppIcon className="h-4 w-4" />
+            Can&apos;t find it? Ask on WhatsApp
           </a>
         </div>
 
@@ -884,8 +918,12 @@ export function Storefront({ products }: { products: Product[] }) {
               {selectedMarketplaceCategory && (
                 <a
                   href={whatsappLink(`Hello Shopyacu, I want to ask about ${selectedMarketplaceCategory.label}.`)}
-                  className="mt-5 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink/85"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => trackWa("category")}
+                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#1fb458]"
                 >
+                  <WhatsAppIcon className="h-4 w-4" />
                   Ask on WhatsApp
                 </a>
               )}
@@ -1009,7 +1047,14 @@ export function Storefront({ products }: { products: Product[] }) {
             <p className="mt-5 max-w-xl leading-7 text-white/70">
               Choose products on the website, send your cart to WhatsApp, then confirm availability, delivery, and payment details with the seller.
             </p>
-            <a href={whatsappLink()} className="mt-8 inline-flex rounded-full bg-accent px-6 py-3 text-sm font-semibold text-ink transition hover:bg-accent/85">
+            <a
+              href={whatsappLink("Hello Shopyacu, I would like to start an order. Can you help me?")}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackWa("hero")}
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1fb458]"
+            >
+              <WhatsAppIcon className="h-5 w-5" />
               Start WhatsApp order
             </a>
           </div>
@@ -1033,14 +1078,8 @@ export function Storefront({ products }: { products: Product[] }) {
         <p className="font-display text-lg font-bold text-ink">WhatsApp {whatsappDisplay}</p>
       </footer>
 
-      <a
-        href={whatsappLink()}
-        className="fixed bottom-4 right-4 z-40 grid rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white shadow-2xl transition hover:bg-ink/85"
-        aria-label="Order on WhatsApp"
-      >
-        <span className="text-[11px] uppercase tracking-[0.14em] text-accent">WhatsApp</span>
-        <span>{whatsappDisplay}</span>
-      </a>
+      {/* The persistent WhatsApp CTA on this page is the global FloatingSupport
+          widget; a second fixed link here would overlap it bottom-right. */}
 
       <div className="pointer-events-none fixed bottom-24 left-1/2 z-[60] max-w-[92vw] -translate-x-1/2" aria-live="polite">
         <AnimatePresence>
@@ -1127,10 +1166,23 @@ export function Storefront({ products }: { products: Product[] }) {
               </div>
               <a
                 href={cart.length ? whatsappLink(whatsappText) : "#products"}
-                className="mt-4 block rounded-full bg-ink px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-ink/85"
+                target={cart.length ? "_blank" : undefined}
+                rel={cart.length ? "noreferrer" : undefined}
+                onClick={() => {
+                  if (cart.length) trackWa("cart");
+                }}
+                className={`mt-4 flex min-h-12 items-center justify-center gap-2 rounded-full px-5 text-center text-sm font-black text-white shadow-lg transition ${
+                  cart.length ? "bg-[#25D366] hover:bg-[#1fb458]" : "bg-ink/40"
+                }`}
               >
-                Send order on WhatsApp
+                <WhatsAppIcon className="h-5 w-5" />
+                {cart.length ? "Send order on WhatsApp" : "Add items to order"}
               </a>
+              {cart.length ? (
+                <p className="mt-2 text-center text-xs font-semibold text-muted">
+                  💵 Pay on delivery · ⚡ We reply in minutes
+                </p>
+              ) : null}
             </div>
             </m.aside>
           </m.div>
