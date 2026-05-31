@@ -228,7 +228,7 @@ export function FloatingSupport() {
           WA
         </span>
         <span className="grid">
-          <span className="text-xs font-bold uppercase tracking-[0.16em] text-accent">{open ? "Support open" : "Need help?"}</span>
+          <span className="text-xs font-bold uppercase tracking-[0.16em] text-accent">{open ? "Support open" : "Buy now"}</span>
           <span className="text-sm font-bold leading-tight sm:text-base">Call or WhatsApp</span>
         </span>
       </m.button>
