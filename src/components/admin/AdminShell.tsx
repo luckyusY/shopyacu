@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { Logo } from "@/components/Logo";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "▣", exact: true },
@@ -51,9 +52,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-paper text-ink lg:grid lg:grid-cols-[260px_1fr]">
       {/* Sidebar (desktop) */}
       <aside className="sticky top-0 hidden h-screen flex-col border-r border-ink/10 bg-white p-5 lg:flex">
-        <Link href="/admin" className="font-display text-2xl font-bold tracking-tight">
-          Shopyacu
-          <span className="ml-1 align-top text-xs font-bold uppercase tracking-[0.18em] text-accent">admin</span>
+        <Link href="/admin" className="flex items-center gap-2">
+          <Logo imgClassName="h-7" />
+          <span className="text-xs font-bold uppercase tracking-[0.18em] text-accent">admin</span>
         </Link>
         <div className="mt-8 flex-1">{nav}</div>
         <div className="grid gap-2 border-t border-ink/10 pt-4">
@@ -75,8 +76,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
       {/* Mobile top bar */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-ink/10 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
-        <Link href="/admin" className="font-display text-xl font-bold tracking-tight">
-          Shopyacu <span className="text-xs font-bold uppercase tracking-[0.18em] text-accent">admin</span>
+        <Link href="/admin" className="flex items-center gap-2">
+          <Logo imgClassName="h-6" />
+          <span className="text-xs font-bold uppercase tracking-[0.18em] text-accent">admin</span>
         </Link>
         <button
           type="button"

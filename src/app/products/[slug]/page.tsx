@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductLeadPopup } from "@/components/ProductLeadPopup";
+import { Logo } from "@/components/Logo";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product } from "@/lib/products";
@@ -104,8 +105,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <ProductLeadPopup productName={product.name} priceLabel={formatPrice(product.price)} slug={product.slug} image={product.image} />
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <Link href="/" className="font-display text-2xl font-bold tracking-tight text-ink">
-            Shopyacu
+          <Link href="/" className="inline-flex items-center">
+            <Logo priority imgClassName="h-8" />
           </Link>
           <div className="hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted sm:flex">
             <span>{product.category}</span>

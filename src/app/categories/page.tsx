@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { categoryPath, getCategoryShowcase } from "@/lib/categories";
 import { getProducts } from "@/lib/product-store";
+import { Logo } from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +19,8 @@ export default async function CategoriesPage() {
     <main className="min-h-screen bg-paper text-ink">
       <header className="border-b border-ink/10 bg-paper/85 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="font-display text-2xl font-bold tracking-tight text-ink">
-            Shopyacu
+          <Link href="/" className="inline-flex items-center">
+            <Logo imgClassName="h-8" />
           </Link>
           <Link href="/#products" className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink/85">
             All products

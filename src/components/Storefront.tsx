@@ -10,6 +10,7 @@ import { categoryPath, getCategoryShowcase, marketplaceCategories, type Marketpl
 import { formatPrice, getCategories, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 import { ProductCard, StarRow, productSignals } from "@/components/ProductCard";
+import { Logo } from "@/components/Logo";
 
 type CartItem = Product & { quantity: number };
 type SavedCartItem = { id: number; quantity: number };
@@ -404,9 +405,9 @@ export function Storefront({ products }: { products: Product[] }) {
           Orders confirmed on WhatsApp <span className="text-accent">{whatsappDisplay}</span>
         </div>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-baseline gap-2 text-white">
-            <span className="font-display text-2xl font-bold tracking-tight">Shopyacu</span>
-            <span className="hidden text-[11px] font-medium uppercase tracking-[0.18em] text-white/70 sm:inline">store</span>
+          <Link href="/" className="flex items-center gap-2 text-white">
+            <Logo priority imgClassName="h-8 sm:h-9" />
+            <span className="hidden text-[11px] font-medium uppercase tracking-[0.18em] text-white/80 sm:inline">store</span>
           </Link>
           <form onSubmit={submitSearch} className="hidden min-w-[280px] flex-1 items-center rounded-full bg-white p-1 shadow-sm lg:flex xl:max-w-lg">
             <input
@@ -1026,8 +1027,8 @@ export function Storefront({ products }: { products: Product[] }) {
 
       <footer id="contact" className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm font-medium text-muted sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
         <div>
-          <p className="font-display text-xl font-bold tracking-tight text-ink">Shopyacu</p>
-          <p className="mt-2 max-w-xl">Home, kitchen, bathroom, office, fitness, and outdoor essentials for everyday use.</p>
+          <Logo imgClassName="h-8" />
+          <p className="mt-3 max-w-xl">Home, kitchen, bathroom, office, fitness, and outdoor essentials for everyday use.</p>
         </div>
         <p className="font-display text-lg font-bold text-ink">WhatsApp {whatsappDisplay}</p>
       </footer>
