@@ -9,6 +9,7 @@ import { TrackProductView } from "@/components/TrackProductView";
 import { ProductStickyBar } from "@/components/ProductStickyBar";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { Logo } from "@/components/Logo";
+import { InstagramProfileCard } from "@/components/InstagramProfileCard";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product, type ProductMedia } from "@/lib/products";
@@ -341,6 +342,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </section>
+
+      <InstagramProfileCard compact />
 
       <section className="bg-ink px-3 py-7 text-white sm:px-6 sm:py-8 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

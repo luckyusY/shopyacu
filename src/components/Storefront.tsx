@@ -11,6 +11,7 @@ import { formatPrice, getCategories, type Product, type ProductMedia } from "@/l
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
 import { ProductCard, StarRow, productSignals } from "@/components/ProductCard";
 import { Logo } from "@/components/Logo";
+import { InstagramProfileCard } from "@/components/InstagramProfileCard";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { trackEvent } from "@/lib/track-client";
 import type { InquirySource } from "@/lib/events-store";
@@ -998,6 +999,8 @@ export function Storefront({
           </div>
         )}
       </section>
+
+      <InstagramProfileCard />
 
       <section id="delivery" className="bg-ink py-16 text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-[0.9fr_1.1fr] lg:px-8">
