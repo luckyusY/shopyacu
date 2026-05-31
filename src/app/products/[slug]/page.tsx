@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/ProductGallery";
+import { ProductLeadPopup } from "@/components/ProductLeadPopup";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product } from "@/lib/products";
@@ -104,6 +105,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="min-h-screen bg-paper text-ink">
+      <ProductLeadPopup productName={product.name} priceLabel={formatPrice(product.price)} slug={product.slug} />
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/" className="font-display text-2xl font-bold tracking-tight text-ink">

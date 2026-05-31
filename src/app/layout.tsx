@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { FloatingSupport } from "@/components/FloatingSupport";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { SmoothMotionProvider } from "@/components/SmoothMotionProvider";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -26,6 +27,12 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Shopyacu Online Store",
   description: "Shop practical home, kitchen, bathroom, fitness, office, and outdoor products in Kigali.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Shopyacu" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f68b1e",
 };
 
 export default function RootLayout({
@@ -42,6 +49,7 @@ export default function RootLayout({
         <SmoothMotionProvider>
           {children}
           <FloatingSupport />
+          <InstallPrompt />
         </SmoothMotionProvider>
       </body>
     </html>
