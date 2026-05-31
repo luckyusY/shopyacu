@@ -12,6 +12,7 @@ type ProductForm = {
   category: string;
   price: string;
   badge: string;
+  tags: string;
   stock: string;
   description: string;
   active: boolean;
@@ -34,6 +35,7 @@ const defaultForm: ProductForm = {
   category: "Home",
   price: "",
   badge: "",
+  tags: "",
   stock: "In stock",
   description: "",
   active: true,
@@ -81,7 +83,7 @@ export function AdminPanel({ products }: { products: Product[] }) {
   const categories = useMemo(() => getCategories(items), [items]);
   const visible = items.filter((item) => {
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-    const matchesQuery = `${item.name} ${item.category} ${item.description}`.toLowerCase().includes(query.toLowerCase());
+    const matchesQuery = `${item.name} ${item.category} ${item.description} ${(item.tags || []).join(" ")}`.toLowerCase().includes(query.toLowerCase());
     return matchesCategory && matchesQuery;
   });
   const inventoryValue = items.reduce((total, item) => total + item.price, 0);
@@ -171,6 +173,10 @@ export function AdminPanel({ products }: { products: Product[] }) {
           ...form,
           slug,
           price: Number(form.price),
+          tags: form.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean),
           media,
           image: media.find((item) => item.type === "image")?.url || media.find((item) => item.type === "video")?.poster,
           images: media.filter((item) => item.type === "image").map((item) => item.url),
@@ -291,6 +297,7 @@ export function AdminPanel({ products }: { products: Product[] }) {
                 <option>Out of stock</option>
               </select>
             </div>
+            <input value={form.tags} onChange={(event) => setForm({ ...form, tags: event.target.value })} placeholder="Rotating tags, e.g. -33%, New arrival, Fast delivery" className="h-11 rounded-xl border border-ink/10 px-4 text-sm font-medium outline-none focus:border-ink" />
             <textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Description" className="min-h-24 rounded-xl border border-ink/10 px-4 py-3 text-sm font-medium outline-none focus:border-ink" />
             <label className="rounded-xl border border-dashed border-ink/20 bg-surface p-4 text-sm font-semibold text-ink">
               Images or videos
@@ -372,6 +379,19 @@ export function AdminPanel({ products }: { products: Product[] }) {
                     value={product.badge || ""}
                     onChange={(event) => updateProduct(product.id, { badge: event.target.value, featured: Boolean(event.target.value) })}
                     placeholder="Badge"
+                    className="mt-2 h-8 w-full rounded-lg border border-ink/10 px-2 text-xs font-medium outline-none focus:border-ink"
+                  />
+                  <input
+                    value={(product.tags || []).join(", ")}
+                    onChange={(event) =>
+                      updateProduct(product.id, {
+                        tags: event.target.value
+                          .split(",")
+                          .map((tag) => tag.trim())
+                          .filter(Boolean),
+                      })
+                    }
+                    placeholder="Rotating tags"
                     className="mt-2 h-8 w-full rounded-lg border border-ink/10 px-2 text-xs font-medium outline-none focus:border-ink"
                   />
                   <p className="mt-2 text-xs font-medium text-muted">

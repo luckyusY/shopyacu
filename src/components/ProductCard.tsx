@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { whatsappLink } from "@/lib/whatsapp";
 
@@ -74,9 +74,24 @@ export function ProductCard({
   const original = Math.round(product.price * (1 + discount / 100));
   const [wished, setWished] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [badgeIndex, setBadgeIndex] = useState(0);
+  const rotatingBadges = Array.from(
+    new Set([`-${discount}%`, product.badge, ...(product.tags || [])].filter((tag): tag is string => Boolean(tag))),
+  ).slice(0, 6);
+  const activeBadge = rotatingBadges[badgeIndex % rotatingBadges.length] || `-${discount}%`;
   const askHref = whatsappLink(
     `Hello Shopyacu, I want to ask about ${product.name} (${formatPrice(product.price)}). Is it available?`,
   );
+
+  useEffect(() => {
+    if (reduceMotion || rotatingBadges.length < 2) return;
+
+    const timer = window.setInterval(() => {
+      setBadgeIndex((current) => (current + 1) % rotatingBadges.length);
+    }, 2200);
+
+    return () => window.clearInterval(timer);
+  }, [reduceMotion, rotatingBadges.length]);
 
   function handleAdd() {
     onAddToCart?.(product);
@@ -111,21 +126,20 @@ export function ProductCard({
           />
         </m.div>
 
-        <m.span
-          initial={reduceMotion ? false : { scale: 0.6, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ type: "spring", stiffness: 320, damping: 18 }}
-          className="absolute left-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-black text-white shadow-sm"
-        >
-          -{discount}%
-        </m.span>
-
-        {product.badge ? (
-          <span className="absolute left-2 top-9 rounded-md bg-ink/90 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-accent">
-            {product.badge}
-          </span>
-        ) : null}
+        <div className="absolute left-2 top-2 max-w-[calc(100%-3.25rem)]">
+          <AnimatePresence mode="wait" initial={false}>
+            <m.span
+              key={activeBadge}
+              initial={reduceMotion ? false : { opacity: 0, y: 6, rotate: -4, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, rotate: 4, scale: 0.9 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="block max-w-full truncate rounded-lg bg-accent px-2 py-1 text-[10px] font-black uppercase leading-none text-white shadow-md ring-2 ring-white/85"
+            >
+              {activeBadge}
+            </m.span>
+          </AnimatePresence>
+        </div>
 
         <button
           type="button"

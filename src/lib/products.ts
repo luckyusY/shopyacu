@@ -22,6 +22,7 @@ export type Product = {
   videos?: ProductMedia[];
   media?: ProductMedia[];
   badge?: string;
+  tags?: string[];
   description: string;
   stock?: string;
   active?: boolean;
@@ -141,6 +142,19 @@ function normalizeMedia(media: Partial<ProductMedia> | string, fallbackType: "im
   };
 }
 
+function normalizeTags(tags: Product["tags"] | string | undefined) {
+  const values = Array.isArray(tags) ? tags : typeof tags === "string" ? tags.split(",") : [];
+
+  return Array.from(
+    new Set(
+      values
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .slice(0, 8),
+    ),
+  );
+}
+
 export function normalizeProduct(product: Partial<Product>): Product {
   const id = Number(product.id) || Date.now();
   const name = product.name?.trim() || `Product ${id}`;
@@ -168,6 +182,7 @@ export function normalizeProduct(product: Partial<Product>): Product {
     videos,
     media: dedupedMedia.length ? dedupedMedia : [{ type: "image", url: image }],
     badge: product.badge?.trim() || undefined,
+    tags: normalizeTags(product.tags),
     description: product.description?.trim() || `${name} is available from Shopyacu for local online ordering and delivery.`,
     stock: product.stock || "In stock",
     active: product.active !== false,
