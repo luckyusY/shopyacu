@@ -90,7 +90,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .filter((item) => item.slug !== product.slug)
     .sort((a, b) => productSignal(b.id).sold - productSignal(a.id).sold)
     .slice(0, 8);
-  const bundleProducts = uniqueProducts([...sameCategory, ...related, ...topSellers]).slice(0, 3);
+  const topRelated = uniqueProducts([...sameCategory, ...related, ...topSellers]).slice(0, 4);
   const categoryTags = uniqueProducts(allProducts)
     .filter((item) => item.slug !== product.slug)
     .map((item) => item.category)
@@ -98,10 +98,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .slice(0, 8);
   const featuredUpsells = uniqueProducts([...related, ...topSellers]).slice(0, 4);
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
-  const bundleTotal = bundleProducts.reduce((total, item) => total + item.price, product.price);
-  const bundleMessage = `Hello Shopyacu, I saw ${product.name} and I want to ask about a bundle with ${bundleProducts
-    .map((item) => item.name)
-    .join(", ")}.`;
 
   return (
     <main className="min-h-screen bg-paper text-ink">
@@ -182,22 +178,21 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      {bundleProducts.length > 0 ? (
+      {topRelated.length > 0 ? (
         <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
           <div className="grid gap-5 rounded-[2rem] bg-ink p-5 text-white shadow-xl sm:p-7 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Bundle upsell</p>
-              <h2 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">Sell the full solution, not just one item.</h2>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Top related products</p>
+              <h2 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">Customers also love these picks.</h2>
               <p className="mt-4 text-sm font-medium leading-7 text-white/70">
-                These are strong add-ons for this product page. Perfect for ad traffic that is already interested.
+                Hand-picked products that pair well with this one. Tap any item to view it, or message us and we&apos;ll help you choose.
               </p>
-              <p className="mt-4 font-display text-2xl font-bold text-accent">{formatPrice(bundleTotal)}</p>
-              <a href={whatsappLink(bundleMessage)} className="mt-5 inline-flex rounded-full bg-accent px-6 py-3 text-sm font-bold text-ink transition hover:bg-white">
-                Ask for bundle price
+              <a href={whatsappLink(`Hello Shopyacu, I want help choosing the best option related to ${product.name}.`)} className="mt-5 inline-flex rounded-full bg-accent px-6 py-3 text-sm font-bold text-ink transition hover:bg-white">
+                Ask for advice
               </a>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {[product, ...bundleProducts].slice(0, 4).map((item) => (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {topRelated.map((item) => (
                 <Link key={item.slug} href={`/products/${item.slug}`} className="group overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-3 transition hover:bg-white hover:text-ink">
                   <Image src={item.image} alt={item.name} width={360} height={360} className="aspect-square w-full rounded-xl object-cover" />
                   <span className="mt-3 block min-h-10 text-sm font-bold leading-5">{item.name}</span>
