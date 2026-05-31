@@ -2,6 +2,7 @@
 // survives navigation (e.g. tapping a WhatsApp link that leaves the page),
 // falling back to fetch with keepalive.
 
+import posthog from "posthog-js";
 import type { InquirySource, StorefrontEventType } from "@/lib/events-store";
 
 type TrackPayload = {
@@ -11,8 +12,23 @@ type TrackPayload = {
   source?: InquirySource;
 };
 
+const POSTHOG_EVENT: Record<StorefrontEventType, string> = {
+  view: "product_viewed",
+  inquiry: "whatsapp_inquiry",
+};
+
 export function trackEvent(type: StorefrontEventType, payload: TrackPayload = {}): void {
   if (typeof window === "undefined") return;
+
+  // Mirror to PostHog as a named event (powers funnels/paths/retention)
+  // when it's initialized; harmless no-op otherwise.
+  try {
+    if (posthog.__loaded) {
+      posthog.capture(POSTHOG_EVENT[type], { ...payload });
+    }
+  } catch {
+    // PostHog is best-effort.
+  }
 
   const body = JSON.stringify({
     type,
