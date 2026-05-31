@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { FloatingSupport } from "@/components/FloatingSupport";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { ScrollProgressIndicator } from "@/components/ScrollProgressIndicator";
 import { SmoothMotionProvider } from "@/components/SmoothMotionProvider";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -63,6 +64,7 @@ export default function RootLayout({
         <PostHogProvider>
           <SmoothMotionProvider>
             {children}
+            <ScrollProgressIndicator />
             <FloatingSupport />
             <InstallPrompt />
           </SmoothMotionProvider>
