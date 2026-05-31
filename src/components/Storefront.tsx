@@ -583,7 +583,7 @@ export function Storefront({ products }: { products: Product[] }) {
               </span>
               <span className="min-w-0">
                 <span className="block text-sm font-black">Order on WhatsApp</span>
-                <span className="block truncate text-xs font-semibold text-white/85">Pay on delivery · reply in minutes</span>
+                <span className="block truncate text-xs font-semibold text-white/85">Pay after delivery · WISHYURA BIKUGEZEHO</span>
               </span>
             </a>
             <div className="rounded-2xl border border-ink/10 bg-white p-4">
@@ -1127,7 +1127,7 @@ export function Storefront({ products }: { products: Product[] }) {
               </a>
               {cart.length ? (
                 <p className="mt-2 text-center text-xs font-semibold text-muted">
-                  💵 Pay on delivery · ⚡ We reply in minutes
+                  Pay after delivery · WISHYURA BIKUGEZEHO
                 </p>
               ) : null}
             </div>

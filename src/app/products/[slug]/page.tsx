@@ -116,6 +116,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .slice(0, 8);
   const featuredUpsells = uniqueProducts([...related, ...topSellers]).slice(0, 4);
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
+  const kinyarwandaTags = ["Yizewe", "Byihuse", "Kigali", "Bikugezeho", "Guhitamo"];
 
   return (
     <main className="min-h-screen bg-paper pb-28 text-ink lg:pb-0">
@@ -170,6 +171,27 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <span className="rounded-full bg-surface px-3 py-1.5">{signal.sold}+ sold</span>
             </div>
 
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {kinyarwandaTags.map((tag) => (
+                <span key={tag} className="rounded-full border border-ink/10 bg-white px-2.5 py-1 text-[0.68rem] font-black uppercase tracking-[0.08em] text-ink/70">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl border border-ink/10 bg-surface p-2">
+              {[
+                [`${signal.sold}+`, "orders"],
+                [`${signal.reviews}+`, "asked"],
+                [`${signal.rating}/5`, "rating"],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-xl bg-white px-2 py-2 text-center">
+                  <p className="font-display text-base font-bold leading-none text-ink">{value}</p>
+                  <p className="mt-1 text-[0.62rem] font-black uppercase tracking-[0.12em] text-muted">{label}</p>
+                </div>
+              ))}
+            </div>
+
             {product.stock === "Low stock" ? (
               <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700">
                 Selling fast - only a few left in Kigali.
@@ -198,7 +220,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
             <ul className="mt-4 grid grid-cols-3 gap-2 sm:mt-5">
               {[
-                ["COD", "Pay on delivery"],
+                ["COD", "Pay after delivery"],
                 ["KGL", "Same-day delivery"],
                 ["FAST", "Quick replies"],
               ].map(([icon, label]) => (
@@ -212,7 +234,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </ul>
 
             <p className="mt-4 text-xs font-medium leading-6 text-muted">
-              A real person replies on WhatsApp at {whatsappDisplay}. No prepayment - confirm price, delivery, and availability before you pay.{" "}
+              WISHYURA BIKUGEZEHO. A real person replies on WhatsApp at {whatsappDisplay}. No prepayment - confirm price, delivery, and availability before you pay.{" "}
               <Link href="/#products" className="font-semibold text-ink underline-offset-2 hover:underline">
                 Keep shopping
               </Link>
@@ -229,7 +251,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               {[
                 ["1", "Message us", "Tap WhatsApp and tell us what you want."],
                 ["2", "Confirm details", "We confirm the price, delivery time, and availability."],
-                ["3", "Pay on delivery", "Receive your item, check it, then pay. No risk."],
+                ["3", "Pay after delivery", "WISHYURA BIKUGEZEHO - receive your item, check it, then pay."],
               ].map(([step, title, copy]) => (
                 <li key={step} className="flex gap-3 rounded-xl bg-surface p-3 sm:bg-transparent sm:p-0">
                   <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-ink text-xs font-black text-accent">

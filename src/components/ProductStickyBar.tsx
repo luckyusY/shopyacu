@@ -28,7 +28,7 @@ export function ProductStickyBar({ name, slug, category, priceLabel }: Props) {
     >
       <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 pt-2.5">
         <div className="min-w-0 shrink-0">
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-emerald-600">Pay on delivery</p>
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-emerald-600">WISHYURA BIKUGEZEHO</p>
           <p className="font-display text-lg font-bold leading-none text-ink">{priceLabel}</p>
         </div>
         <a
