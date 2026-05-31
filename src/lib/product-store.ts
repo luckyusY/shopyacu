@@ -107,3 +107,12 @@ export async function patchProduct(slug: string, input: Partial<Product>) {
 
   return product;
 }
+
+export async function deleteProduct(slug: string): Promise<Product | null> {
+  const collection = await getCollection();
+  const existing = await collection.findOne({ slug });
+  if (!existing) return null;
+
+  await collection.deleteOne({ slug });
+  return serializeProduct(existing);
+}

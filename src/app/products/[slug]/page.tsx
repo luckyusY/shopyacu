@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductLeadPopup } from "@/components/ProductLeadPopup";
+import { WhatsAppLink } from "@/components/WhatsAppLink";
+import { TrackProductView } from "@/components/TrackProductView";
 import { Logo } from "@/components/Logo";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
@@ -102,6 +104,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="min-h-screen bg-paper text-ink">
+      <TrackProductView slug={product.slug} name={product.name} category={product.category} />
       <ProductLeadPopup productName={product.name} priceLabel={formatPrice(product.price)} slug={product.slug} image={product.image} />
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -113,9 +116,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <span className="h-1 w-1 rounded-full bg-ink/25" />
             <span>{signal.sold}+ sold</span>
           </div>
-          <a href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)} className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-ink/85 sm:px-5">
+          <WhatsAppLink
+            href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
+            track={{ slug: product.slug, name: product.name, category: product.category, source: "header" }}
+            className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-ink/85 sm:px-5"
+          >
             WhatsApp
-          </a>
+          </WhatsAppLink>
         </div>
       </header>
 
@@ -148,12 +155,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]">
-              <a
+              <WhatsAppLink
                 href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
+                track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
                 className="flex min-h-14 items-center justify-center rounded-full bg-ink px-7 py-4 text-sm font-bold text-white shadow-lg transition hover:bg-ink/85"
               >
                 Order this on WhatsApp
-              </a>
+              </WhatsAppLink>
               <Link href="/#products" className="flex min-h-14 items-center justify-center rounded-full border border-ink/15 bg-surface px-7 py-4 text-sm font-bold text-ink transition hover:bg-ink hover:text-white">
                 Keep shopping
               </Link>
@@ -259,9 +267,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Ready to close?</p>
             <h2 className="mt-2 font-display text-3xl font-bold">Send this product to WhatsApp.</h2>
           </div>
-          <a href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)} className="rounded-full bg-accent px-7 py-4 text-sm font-bold text-ink transition hover:bg-white">
+          <WhatsAppLink
+            href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
+            track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
+            className="rounded-full bg-accent px-7 py-4 text-sm font-bold text-ink transition hover:bg-white"
+          >
             Order now
-          </a>
+          </WhatsAppLink>
         </div>
       </section>
     </main>

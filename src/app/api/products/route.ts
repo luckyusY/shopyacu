@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getProducts, saveProduct } from "@/lib/product-store";
 import { adminGuard } from "@/lib/admin-guard";
+import { logActivity } from "@/lib/events-store";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
 
   try {
     const product = await saveProduct(await request.json());
+    await logActivity({ action: "create", slug: product.slug, name: product.name });
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     return NextResponse.json(

@@ -4,6 +4,7 @@ import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { whatsappDisplay, whatsappInternational, whatsappLink } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/track-client";
 
 const DEFAULT_MESSAGE = "Hello Shopyacu, I need help choosing or ordering a product.";
 
@@ -164,7 +165,11 @@ export function FloatingSupport() {
                 rel="noreferrer"
                 aria-disabled={!canSend}
                 onClick={(event) => {
-                  if (!canSend) event.preventDefault();
+                  if (!canSend) {
+                    event.preventDefault();
+                    return;
+                  }
+                  trackEvent("inquiry", { source: "support_widget" });
                 }}
                 className={`flex min-h-12 items-center justify-between rounded-2xl px-4 py-3 text-sm font-black text-white transition ${
                   canSend ? "bg-[#25D366] hover:bg-[#1fb458]" : "cursor-not-allowed bg-[#25D366]/50"

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/track-client";
 
 type ProductLeadPopupProps = {
   productName: string;
@@ -133,7 +134,10 @@ export function ProductLeadPopup({ productName, priceLabel, slug, image }: Produ
                 href={whatsappLink(message)}
                 target="_blank"
                 rel="noreferrer"
-                onClick={dismiss}
+                onClick={() => {
+                  trackEvent("inquiry", { slug, name: productName, source: "lead_popup" });
+                  dismiss();
+                }}
                 className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 text-base font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.98]"
               >
                 Send message on WhatsApp
