@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { whatsappDisplay, whatsappInternational, whatsappLink } from "@/lib/whatsapp";
 
@@ -19,6 +20,7 @@ export function FloatingSupport() {
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [showNudge, setShowNudge] = useState(false);
   const reduceMotion = useReducedMotion();
+  const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -75,6 +77,9 @@ export function FloatingSupport() {
 
   const trimmed = message.trim();
   const canSend = trimmed.length > 0;
+
+  // The support widget is for shoppers; keep it out of the admin area.
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <div ref={panelRef} className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-5 sm:right-5">

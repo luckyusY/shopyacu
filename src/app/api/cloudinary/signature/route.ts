@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudinaryUploadSignature, type CloudinaryResourceType } from "@/lib/cloudinary";
 import { slugify } from "@/lib/products";
+import { adminGuard } from "@/lib/admin-guard";
 
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
+  const denied = await adminGuard();
+  if (denied) return denied;
+
   try {
     const body = (await request.json()) as { resourceType?: CloudinaryResourceType; slug?: string };
     const resourceType = body.resourceType === "video" ? "video" : "image";

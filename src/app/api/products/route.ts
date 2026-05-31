@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getProducts, saveProduct } from "@/lib/product-store";
+import { adminGuard } from "@/lib/admin-guard";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const denied = await adminGuard();
+  if (denied) return denied;
+
   try {
     const product = await saveProduct(await request.json());
     return NextResponse.json(product, { status: 201 });
