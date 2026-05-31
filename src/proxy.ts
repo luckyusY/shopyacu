@@ -3,7 +3,7 @@ import { ADMIN_COOKIE, verifySessionToken } from "@/lib/admin-auth";
 
 const MUTATING_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApi = pathname.startsWith("/api/");
 

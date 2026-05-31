@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { FloatingSupport } from "@/components/FloatingSupport";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import { SmoothMotionProvider } from "@/components/SmoothMotionProvider";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -59,11 +60,13 @@ export default function RootLayout({
             gtag('config', 'G-M7CDRBWQL9');
           `}
         </Script>
-        <SmoothMotionProvider>
-          {children}
-          <FloatingSupport />
-          <InstallPrompt />
-        </SmoothMotionProvider>
+        <PostHogProvider>
+          <SmoothMotionProvider>
+            {children}
+            <FloatingSupport />
+            <InstallPrompt />
+          </SmoothMotionProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
