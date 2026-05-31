@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { categoryPath, getCategoryShowcase, getMarketplaceCategory, marketplaceCategories } from "@/lib/categories";
+import { getHiddenCategories } from "@/lib/category-visibility";
 import { getProducts } from "@/lib/product-store";
 import { whatsappLink } from "@/lib/whatsapp";
 import { ProductCard } from "@/components/ProductCard";
@@ -35,9 +36,12 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     notFound();
   }
 
-  const products = await getProducts();
+  const [products, hiddenCategories] = await Promise.all([getProducts(), getHiddenCategories()]);
+  if (hiddenCategories.includes(category.category)) {
+    notFound();
+  }
   const categoryProducts = products.filter((product) => product.category === category.category);
-  const showcase = getCategoryShowcase(products);
+  const showcase = getCategoryShowcase(products).filter((item) => !hiddenCategories.includes(item.category));
   const relatedCategories = showcase.filter((item) => item.slug !== category.slug).slice(0, 6);
   const heroImage = categoryProducts[0]?.image || category.image;
 

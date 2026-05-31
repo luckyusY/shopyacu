@@ -1,4 +1,5 @@
 import type { Filter, WithId } from "mongodb";
+import { getHiddenCategories, isCategoryHidden } from "@/lib/category-visibility";
 import { getMongoClient } from "@/lib/mongodb";
 import { normalizeProduct, products as fallbackProducts, slugify, type Product } from "@/lib/products";
 
@@ -28,25 +29,35 @@ async function getCollection() {
 
 export async function getProducts({ includeInactive = false } = {}) {
   try {
+    const hiddenCategories = includeInactive ? [] : await getHiddenCategories();
     const filter: Filter<ProductDocument> = includeInactive ? {} : { active: { $ne: false } };
     const remoteProducts = await getCollection()
       .then((collection) => collection.find(filter).sort({ id: 1, createdAt: 1 }).toArray());
 
-    return remoteProducts.length > 0 ? remoteProducts.map(serializeProduct) : fallbackProducts;
+    const products = remoteProducts.length > 0 ? remoteProducts.map(serializeProduct) : fallbackProducts;
+    return includeInactive
+      ? products
+      : products.filter((product) => product.active !== false && !isCategoryHidden(product.category, hiddenCategories));
   } catch {
     return includeInactive ? fallbackProducts : fallbackProducts.filter((product) => product.active !== false);
   }
 }
 
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(slug: string, { includeInactive = false } = {}) {
   try {
     const product = await getCollection().then((collection) => collection.findOne({ slug }));
-    if (product) return serializeProduct(product);
+    if (product) {
+      const serialized = serializeProduct(product);
+      if (includeInactive) return serialized;
+      const hiddenCategories = await getHiddenCategories();
+      return serialized.active !== false && !isCategoryHidden(serialized.category, hiddenCategories) ? serialized : undefined;
+    }
   } catch {
     // Fall back to bundled products below when MongoDB is not configured or temporarily unavailable.
   }
 
-  return fallbackProducts.find((product) => product.slug === slug);
+  const product = fallbackProducts.find((item) => item.slug === slug);
+  return includeInactive || product?.active !== false ? product : undefined;
 }
 
 export async function saveProduct(input: Partial<Product>) {

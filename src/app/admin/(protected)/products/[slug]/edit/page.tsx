@@ -10,14 +10,14 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlug(slug, { includeInactive: true });
   return { title: product ? `Edit ${product.name} | Shopyacu admin` : "Edit product | Shopyacu admin" };
 }
 
 export default async function EditProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [product, products] = await Promise.all([
-    getProductBySlug(slug),
+    getProductBySlug(slug, { includeInactive: true }),
     getProducts({ includeInactive: true }),
   ]);
 

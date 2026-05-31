@@ -9,8 +9,8 @@ import { whatsappLink } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/track-client";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
-// Deterministic per-product display signals (rating / reviews / discount /
-// sold count) so each card looks populated. Presentation-only placeholders
+// Deterministic per-product display signals (rating / reviews / interest /
+// discount) so each card looks populated. Presentation-only placeholders
 // to be swapped for real review data once that exists.
 export function productSignals(id: number) {
   const seed = (n: number) => {
@@ -20,8 +20,8 @@ export function productSignals(id: number) {
   const rating = Math.round((3.6 + seed(id) * 1.4) * 10) / 10;
   const reviews = Math.round(8 + seed(id + 17) * 472);
   const discount = Math.round(10 + seed(id + 31) * 28);
-  const sold = Math.round(20 + seed(id + 53) * 480);
-  return { rating, reviews, discount, sold };
+  const interested = Math.round(20 + seed(id + 53) * 480);
+  return { rating, reviews, discount, interested };
 }
 
 export function StarRow({ rating, reviews }: { rating: number; reviews: number }) {
@@ -72,7 +72,7 @@ export function ProductCard({
   fluid = false,
 }: ProductCardProps) {
   const reduceMotion = useReducedMotion();
-  const { rating, reviews, discount, sold } = productSignals(product.id);
+  const { rating, reviews, discount, interested } = productSignals(product.id);
   const original = Math.round(product.price * (1 + discount / 100));
   const [wished, setWished] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
@@ -189,9 +189,9 @@ export function ProductCard({
 
         <StarRow rating={rating} reviews={reviews} />
 
-        {sold > 250 ? (
-          <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-accent">Bestseller &middot; {sold}+ sold</p>
-        ) : sold < 80 ? (
+        {interested > 250 ? (
+          <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-accent">{interested}+ interested people</p>
+        ) : interested < 80 ? (
           <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-ink/50">Only a few left</p>
         ) : null}
 

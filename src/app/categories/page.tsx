@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categoryPath, getCategoryShowcase } from "@/lib/categories";
+import { getHiddenCategories } from "@/lib/category-visibility";
 import { getProducts } from "@/lib/product-store";
 import { whatsappLink } from "@/lib/whatsapp";
 import { Logo } from "@/components/Logo";
@@ -15,8 +16,8 @@ export const metadata = {
 };
 
 export default async function CategoriesPage() {
-  const products = await getProducts();
-  const categories = getCategoryShowcase(products);
+  const [products, hiddenCategories] = await Promise.all([getProducts(), getHiddenCategories()]);
+  const categories = getCategoryShowcase(products).filter((category) => !hiddenCategories.includes(category.category));
 
   return (
     <main className="min-h-screen bg-paper text-ink">

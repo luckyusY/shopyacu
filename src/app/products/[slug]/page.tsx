@@ -43,7 +43,7 @@ function productSignal(id: number) {
     rating: Math.round((4.1 + seed(id) * 0.8) * 10) / 10,
     reviews: Math.round(18 + seed(id + 17) * 520),
     discount: Math.round(8 + seed(id + 31) * 24),
-    sold: Math.round(26 + seed(id + 53) * 690),
+    interested: Math.round(26 + seed(id + 53) * 690),
   };
 }
 
@@ -59,7 +59,7 @@ function relatedScore(current: Product, item: Product) {
   const overlap = itemWords.filter((word) => currentWords.has(word)).length;
   const sameCategory = item.category === current.category ? 18 : 0;
   const sameBadge = item.badge && item.badge === current.badge ? 8 : 0;
-  const popularity = productSignal(item.id).sold / 80;
+  const popularity = productSignal(item.id).interested / 80;
 
   return sameCategory + sameBadge + overlap * 3 + popularity;
 }
@@ -106,7 +106,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .slice(0, 8);
   const topSellers = allProducts
     .filter((item) => item.slug !== product.slug)
-    .sort((a, b) => productSignal(b.id).sold - productSignal(a.id).sold)
+    .sort((a, b) => productSignal(b.id).interested - productSignal(a.id).interested)
     .slice(0, 8);
   const topRelated = uniqueProducts([...sameCategory, ...related, ...topSellers]).slice(0, 4);
   const categoryTags = uniqueProducts(allProducts)
@@ -131,7 +131,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted sm:flex">
             <span>{product.category}</span>
             <span className="h-1 w-1 rounded-full bg-ink/25" />
-            <span>{signal.sold}+ sold</span>
+            <span>{signal.interested}+ interested</span>
           </div>
           <WhatsAppLink
             href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
@@ -154,7 +154,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 {product.category}
               </Link>
               {product.badge ? <span className="rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-ink">{product.badge}</span> : null}
-              <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-ink/70">{signal.sold}+ sold</span>
+              <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-ink/70">{signal.interested}+ interested</span>
             </div>
 
             <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:mt-4 sm:text-4xl lg:text-5xl">{product.name}</h1>
@@ -168,7 +168,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-ink/65 sm:mt-4 sm:text-sm">
               <span className="rounded-full bg-surface px-3 py-1.5">Rating {signal.rating}/5</span>
               <span className="rounded-full bg-surface px-3 py-1.5">{signal.reviews} interested</span>
-              <span className="rounded-full bg-surface px-3 py-1.5">{signal.sold}+ sold</span>
+              <span className="rounded-full bg-surface px-3 py-1.5">{signal.interested}+ interested people</span>
             </div>
 
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -181,7 +181,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
             <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl border border-ink/10 bg-surface p-2">
               {[
-                [`${signal.sold}+`, "orders"],
+                [`${signal.interested}+`, "interested"],
                 [`${signal.reviews}+`, "asked"],
                 [`${signal.rating}/5`, "rating"],
               ].map(([value, label]) => (

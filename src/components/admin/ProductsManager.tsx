@@ -37,8 +37,15 @@ function stockTone(stock?: string): "neutral" | "amber" | "rose" {
   return "neutral";
 }
 
-export function ProductsManager({ products }: { products: Product[] }) {
+export function ProductsManager({
+  products,
+  hiddenCategories,
+}: {
+  products: Product[];
+  hiddenCategories: string[];
+}) {
   const [items, setItems] = useState<Product[]>(products);
+  const [hidden, setHidden] = useState<string[]>(hiddenCategories);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [status, setStatus] = useState("");
@@ -59,6 +66,27 @@ export function ProductsManager({ products }: { products: Product[] }) {
       setStatus("Synced from MongoDB.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to refresh products.");
+    }
+  }
+
+  async function toggleCategory(category: string) {
+    const next = hidden.includes(category) ? hidden.filter((item) => item !== category) : [...hidden, category].sort();
+    setHidden(next);
+    setStatus(`${category} is ${next.includes(category) ? "hidden from" : "visible on"} the storefront. Saving...`);
+
+    try {
+      const response = await fetch("/api/categories/visibility", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hiddenCategories: next }),
+      });
+      if (!response.ok) throw new Error("Unable to update category visibility.");
+      const body = await response.json();
+      setHidden(body.hiddenCategories || next);
+      setStatus(`${category} visibility saved.`);
+    } catch (error) {
+      setHidden(hidden);
+      setStatus(error instanceof Error ? error.message : "Unable to update category visibility.");
     }
   }
 
@@ -103,6 +131,34 @@ export function ProductsManager({ products }: { products: Product[] }) {
         </div>
       </div>
 
+      <section className="mt-5 rounded-3xl border border-ink/8 bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Category visibility</p>
+            <h2 className="mt-1 font-display text-xl font-bold text-ink">Hide a whole category from the website</h2>
+          </div>
+          <p className="text-xs font-semibold text-muted">{hidden.length} hidden</p>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {categories.filter((category) => category !== "All").map((category) => {
+            const isHidden = hidden.includes(category);
+            return (
+              <button
+                key={category}
+                type="button"
+                onClick={() => toggleCategory(category)}
+                className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+                  isHidden ? "bg-rose-100 text-rose-700 hover:bg-rose-200" : "bg-surface text-ink/75 hover:bg-ink hover:text-white"
+                }`}
+              >
+                {isHidden ? "Hidden: " : "Live: "}
+                {category}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       {status ? (
         <p className="mt-4 rounded-xl border border-ink/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm">
           {status}
@@ -140,6 +196,7 @@ export function ProductsManager({ products }: { products: Product[] }) {
               <Badge tone={product.active === false ? "neutral" : "emerald"}>
                 {product.active === false ? "Hidden" : "Live"}
               </Badge>
+              {hidden.includes(product.category) ? <Badge tone="rose">Category hidden</Badge> : null}
               <Badge tone={stockTone(product.stock)}>{product.stock || "In stock"}</Badge>
             </div>
 

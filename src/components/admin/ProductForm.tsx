@@ -271,9 +271,14 @@ export function ProductForm({ mode, categories, product }: ProductFormProps) {
 
         <div className="rounded-3xl border border-ink/8 bg-white p-5 shadow-sm">
           <span className={labelClass}>Publishing</span>
-          <label className="mt-3 flex items-center gap-2 text-sm font-semibold text-ink">
-            <input type="checkbox" checked={form.active} onChange={(e) => set("active", e.target.checked)} className="h-4 w-4 accent-ink" />
-            Show on storefront
+          <label className="mt-3 flex items-start gap-2 text-sm font-semibold text-ink">
+            <input type="checkbox" checked={!form.active} onChange={(e) => set("active", !e.target.checked)} className="mt-0.5 h-4 w-4 accent-ink" />
+            <span>
+              Hide this product from website
+              <span className="mt-1 block text-xs font-medium leading-5 text-muted">
+                When enabled, this product is not shown on the storefront or public product page.
+              </span>
+            </span>
           </label>
           <label className="mt-2 flex items-center gap-2 text-sm font-semibold text-ink">
             <input type="checkbox" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} className="h-4 w-4 accent-ink" />

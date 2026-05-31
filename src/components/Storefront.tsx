@@ -156,7 +156,13 @@ function CategoryRow({
   );
 }
 
-export function Storefront({ products }: { products: Product[] }) {
+export function Storefront({
+  products,
+  hiddenCategories = [],
+}: {
+  products: Product[];
+  hiddenCategories?: string[];
+}) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -173,8 +179,15 @@ export function Storefront({ products }: { products: Product[] }) {
   // marketplace categories (e.g. Cars for Sale when the DB is not connected) no
   // longer render a chip that leads to an empty state.
   const catalogCategories = useMemo(() => storeCategories, [storeCategories]);
-  const selectedMarketplaceCategory = marketplaceCategories.find((item) => item.category === activeCategory);
-  const categoryShowcase = useMemo(() => getCategoryShowcase(products), [products]);
+  const visibleMarketplaceCategories = useMemo(
+    () => marketplaceCategories.filter((category) => !hiddenCategories.includes(category.category)),
+    [hiddenCategories],
+  );
+  const selectedMarketplaceCategory = visibleMarketplaceCategories.find((item) => item.category === activeCategory);
+  const categoryShowcase = useMemo(
+    () => getCategoryShowcase(products).filter((category) => !hiddenCategories.includes(category.category)),
+    [hiddenCategories, products],
+  );
   const categoryBannerItems = categoryShowcase.filter((item) => ["Wedding", "Cars for Sale", "Home"].includes(item.category));
 
   // Group products by category and order marketplace categories first so the
@@ -187,7 +200,7 @@ export function Storefront({ products }: { products: Product[] }) {
       groups.set(product.category, list);
     }
 
-    const order = marketplaceCategories.map((category) => category.category);
+    const order = visibleMarketplaceCategories.map((category) => category.category);
     return Array.from(groups.entries()).sort((a, b) => {
       const indexA = order.indexOf(a[0]);
       const indexB = order.indexOf(b[0]);
@@ -196,7 +209,7 @@ export function Storefront({ products }: { products: Product[] }) {
       if (rankA !== rankB) return rankA - rankB;
       return b[1].length - a[1].length;
     });
-  }, [products]);
+  }, [products, visibleMarketplaceCategories]);
 
   // Featured products to rotate through the Jumia-style flash-sale hero banner.
   const bannerProducts = useMemo(() => {
@@ -481,7 +494,7 @@ export function Storefront({ products }: { products: Product[] }) {
       {/* Jumia-style quick category strip for phones/tablets (sidebar is lg+). */}
       <div className="border-b border-ink/10 bg-white lg:hidden">
         <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-2.5 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {marketplaceCategories.map((cat) => (
+          {visibleMarketplaceCategories.map((cat) => (
             <Link
               key={cat.slug}
               href={categoryPath(cat)}
@@ -499,7 +512,7 @@ export function Storefront({ products }: { products: Product[] }) {
           <aside className="hidden rounded-2xl border border-ink/10 bg-white p-2 lg:block">
             <p className="px-3 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted">Categories</p>
             <ul>
-              {marketplaceCategories.map((cat) => (
+              {visibleMarketplaceCategories.map((cat) => (
                 <li key={cat.slug}>
                   <Link
                     href={categoryPath(cat)}
@@ -770,7 +783,7 @@ export function Storefront({ products }: { products: Product[] }) {
               key={category}
               category={category}
               items={items}
-              marketplace={marketplaceCategories.find((entry) => entry.category === category)}
+              marketplace={visibleMarketplaceCategories.find((entry) => entry.category === category)}
               onAddToCart={addToCart}
               onSeeAll={() => applySmartSearch("", category)}
             />
