@@ -69,7 +69,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
   return (
     <div className="flex flex-col gap-3">
       <div
-        className="group relative aspect-square touch-pan-y select-none overflow-hidden rounded-3xl border border-ink/10 bg-white shadow-sm"
+        className="group relative aspect-[4/5] max-h-[72vh] touch-pan-y select-none overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm sm:aspect-square sm:max-h-none sm:rounded-3xl"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -79,8 +79,11 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
             src={current.url}
             poster={current.poster || fallbackImage}
             controls
+            autoPlay
+            muted
+            loop
             playsInline
-            preload="metadata"
+            preload="auto"
             className="h-full w-full bg-black object-contain"
           />
         ) : (
@@ -96,7 +99,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
               fill
               sizes="(min-width:1024px) 45vw, 100vw"
               priority
-              className="object-contain p-4"
+              className="object-contain p-2 sm:p-4"
             />
           </button>
         )}
@@ -107,7 +110,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
               type="button"
               onClick={() => go(-1)}
               aria-label="Previous image"
-              className="absolute left-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-ink shadow-md backdrop-blur transition hover:bg-white active:scale-95 sm:opacity-0 sm:group-hover:opacity-100"
+              className="absolute left-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-ink shadow-md backdrop-blur transition hover:bg-white active:scale-95 sm:h-11 sm:w-11 sm:opacity-0 sm:group-hover:opacity-100"
             >
               <span className="text-xl leading-none">&#8249;</span>
             </button>
@@ -115,11 +118,11 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
               type="button"
               onClick={() => go(1)}
               aria-label="Next image"
-              className="absolute right-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-ink shadow-md backdrop-blur transition hover:bg-white active:scale-95 sm:opacity-0 sm:group-hover:opacity-100"
+              className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-ink shadow-md backdrop-blur transition hover:bg-white active:scale-95 sm:h-11 sm:w-11 sm:opacity-0 sm:group-hover:opacity-100"
             >
               <span className="text-xl leading-none">&#8250;</span>
             </button>
-            <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-ink/80 px-3 py-1 text-xs font-bold text-white">
+            <span className="absolute bottom-2.5 left-1/2 -translate-x-1/2 rounded-full bg-ink/80 px-3 py-1 text-xs font-bold text-white sm:bottom-3">
               {active + 1} / {count}
             </span>
           </>
@@ -147,11 +150,11 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
                 onClick={() => setActive(index)}
                 aria-label={`Show ${name} view ${index + 1}`}
                 aria-current={isActive}
-                className={`relative aspect-square w-[4.5rem] flex-none snap-start overflow-hidden rounded-xl border-2 bg-white transition active:scale-95 sm:w-20 ${
+                className={`relative aspect-square w-16 flex-none snap-start overflow-hidden rounded-xl border-2 bg-white transition active:scale-95 sm:w-20 ${
                   isActive ? "border-accent" : "border-ink/10 hover:border-ink/30"
                 }`}
               >
-                <Image src={thumb} alt="" fill sizes="80px" className="object-contain p-1.5" />
+                <Image src={thumb} alt="" fill sizes="80px" className="object-cover sm:object-contain sm:p-1.5" />
                 {item.type === "video" ? (
                   <span className="absolute inset-0 grid place-items-center bg-black/15 text-lg text-white">&#9658;</span>
                 ) : null}
@@ -187,7 +190,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
             </button>
             <div className="relative h-[82vh] w-[92vw]" onClick={(event) => event.stopPropagation()}>
               {isVideo ? (
-                <video src={current.url} poster={current.poster || fallbackImage} controls playsInline autoPlay className="h-full w-full object-contain" />
+                <video src={current.url} poster={current.poster || fallbackImage} controls playsInline autoPlay muted loop className="h-full w-full object-contain" />
               ) : (
                 <Image src={current.url} alt={`${name} enlarged`} fill sizes="92vw" className="object-contain" />
               )}

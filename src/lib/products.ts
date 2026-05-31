@@ -27,7 +27,6 @@ export type Product = {
   stock?: string;
   active?: boolean;
   featured?: boolean;
-  instagramUrl?: string;
   cloudinaryPublicId?: string;
   sourceFolder?: string;
   createdAt?: string;
@@ -156,15 +155,6 @@ function normalizeTags(tags: Product["tags"] | string | undefined) {
   );
 }
 
-// Accept only real Instagram permalinks (post/reel/tv) so the embed never
-// renders garbage. Strips query params for a clean permalink.
-function normalizeInstagramUrl(value: Product["instagramUrl"]): string | undefined {
-  const url = value?.trim();
-  if (!url) return undefined;
-  const match = url.match(/^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/[^/?#]+/i);
-  return match ? match[0] : undefined;
-}
-
 export function normalizeProduct(product: Partial<Product>): Product {
   const id = Number(product.id) || Date.now();
   const name = product.name?.trim() || `Product ${id}`;
@@ -197,7 +187,6 @@ export function normalizeProduct(product: Partial<Product>): Product {
     stock: product.stock || "In stock",
     active: product.active !== false,
     featured: Boolean(product.featured || product.badge),
-    instagramUrl: normalizeInstagramUrl(product.instagramUrl),
     cloudinaryPublicId: product.cloudinaryPublicId,
     sourceFolder: product.sourceFolder,
     createdAt: product.createdAt,

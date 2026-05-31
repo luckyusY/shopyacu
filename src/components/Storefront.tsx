@@ -334,26 +334,6 @@ export function Storefront({ products }: { products: Product[] }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [cartOpen]);
 
-  useEffect(() => {
-    const processEmbeds = () => window.instgrm?.Embeds?.process?.();
-
-    if (window.instgrm?.Embeds) {
-      processEmbeds();
-      return;
-    }
-
-    if (document.querySelector('script[src*="instagram.com/embed.js"]')) {
-      window.setTimeout(processEmbeds, 800);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://www.instagram.com/embed.js";
-    script.onload = processEmbeds;
-    document.body.appendChild(script);
-  }, []);
-
   function addToCart(product: Product) {
     setCart((items) => {
       const existing = items.find((item) => item.id === product.id);
@@ -429,7 +409,6 @@ export function Storefront({ products }: { products: Product[] }) {
           <nav className="hidden items-center gap-6 text-sm font-semibold text-white/90 md:flex">
             <a className="transition hover:text-white" href="#categories">Categories</a>
             <a className="transition hover:text-white" href="#products">Products</a>
-            <a className="transition hover:text-white" href="#instagram">Instagram</a>
             <a className="transition hover:text-white" href="#delivery">How it works</a>
             <a className="transition hover:text-white" href="#contact">Contact</a>
           </nav>
@@ -483,7 +462,6 @@ export function Storefront({ products }: { products: Product[] }) {
             {[
               ["Categories", "#categories"],
               ["Products", "#products"],
-              ["Instagram", "#instagram"],
               ["How it works", "#delivery"],
               ["Contact", "#contact"],
             ].map(([label, href]) => (
@@ -1006,37 +984,6 @@ export function Storefront({ products }: { products: Product[] }) {
             })}
           </div>
         )}
-      </section>
-
-      <section id="instagram" className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 sm:px-6 md:grid-cols-[0.85fr_1fr] lg:px-8">
-        <div className="flex flex-col justify-center">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">Instagram</p>
-          <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight text-ink md:text-5xl">Follow the newest arrivals from @shopyacu.</h2>
-          <p className="mt-5 max-w-2xl leading-7 text-muted">
-            See product videos, restocks, and daily-use demos directly from the Shopyacu Instagram profile.
-          </p>
-          <a href="https://www.instagram.com/shopyacu/" target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex w-fit rounded-full border border-ink/20 bg-transparent px-6 py-3 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white">
-            Open Instagram
-          </a>
-        </div>
-        <div className="relative min-h-[440px] overflow-hidden rounded-3xl border border-ink/10 bg-white p-5 shadow-xl">
-          <blockquote
-            className="instagram-media relative z-10 mx-auto w-full max-w-[540px]"
-            data-instgrm-permalink="https://www.instagram.com/shopyacu/"
-            data-instgrm-version="14"
-          >
-            <a href="https://www.instagram.com/shopyacu/" target="_blank" rel="noopener noreferrer">
-              View @shopyacu on Instagram
-            </a>
-          </blockquote>
-          <div className="absolute inset-5 z-0 grid place-items-center rounded-2xl border border-dashed border-ink/15 p-8 text-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">@shopyacu</p>
-              <p className="mx-auto mt-3 max-w-sm font-display text-2xl font-bold leading-tight text-ink">Latest product drops, demos, and offers</p>
-              <p className="mt-3 text-sm font-semibold text-muted">Instagram embed loading...</p>
-            </div>
-          </div>
-        </div>
       </section>
 
       <section id="delivery" className="bg-ink py-16 text-white">

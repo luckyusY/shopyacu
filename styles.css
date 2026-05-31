@@ -1072,96 +1072,6 @@ select:focus {
   color: white;
 }
 
-.instagram-section {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1fr);
-  gap: clamp(28px, 5vw, 64px);
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 0 clamp(16px, 4vw, 56px) 82px;
-}
-
-.instagram-copy {
-  align-self: center;
-}
-
-.instagram-copy h2 {
-  max-width: 720px;
-  margin: 14px 0 0;
-  font-size: clamp(32px, 4.8vw, 56px);
-  line-height: 1.04;
-}
-
-.instagram-copy p:not(.eyebrow) {
-  max-width: 620px;
-  margin: 18px 0 0;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.instagram-copy .secondary-link {
-  margin-top: 28px;
-}
-
-.instagram-embed-shell {
-  position: relative;
-  min-height: 440px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(201, 93, 53, 0.13), transparent 42%),
-    linear-gradient(315deg, rgba(49, 95, 114, 0.15), transparent 45%),
-    var(--surface-strong);
-  padding: 20px;
-  box-shadow: var(--shadow);
-}
-
-.instagram-embed-shell .instagram-media {
-  position: relative !important;
-  z-index: 2;
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 540px !important;
-  margin: 0 auto !important;
-}
-
-.instagram-fallback {
-  position: absolute;
-  inset: 20px;
-  z-index: 1;
-  display: grid;
-  align-content: center;
-  gap: 10px;
-  border: 1px dashed rgba(19, 41, 47, 0.18);
-  border-radius: 8px;
-  padding: 28px;
-  text-align: center;
-}
-
-.instagram-fallback span {
-  color: var(--orange);
-  font-size: 13px;
-  font-weight: 950;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.instagram-fallback strong {
-  max-width: 360px;
-  margin: 0 auto;
-  color: var(--ink);
-  font-size: 26px;
-  line-height: 1.12;
-}
-
-.instagram-fallback small {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 850;
-}
-
 .delivery-copy,
 .delivery-steps {
   max-width: 640px;
@@ -1726,7 +1636,6 @@ footer > div:first-child {
 
   .hero-media,
   .section-heading,
-  .instagram-section,
   .promise-strip,
   .smart-pick-grid,
   .product-grid,

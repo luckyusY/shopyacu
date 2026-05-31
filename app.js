@@ -498,26 +498,6 @@ async function initProductSwipers() {
   }
 }
 
-function initInstagramEmbed() {
-  const processEmbeds = () => window.instgrm?.Embeds?.process?.();
-
-  if (window.instgrm?.Embeds) {
-    processEmbeds();
-    return;
-  }
-
-  if (document.querySelector('script[src*="instagram.com/embed.js"]')) {
-    window.setTimeout(processEmbeds, 800);
-    return;
-  }
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = "https://www.instagram.com/embed.js";
-  script.onload = processEmbeds;
-  document.body.appendChild(script);
-}
-
 function openCart() {
   cartPanel.hidden = false;
   document.body.classList.add("cart-open");
@@ -597,7 +577,6 @@ renderFilters();
 renderProducts();
 renderCart();
 initSmoothScroll();
-initInstagramEmbed();
 
 window.setTimeout(() => {
   isLoadingProducts = false;
