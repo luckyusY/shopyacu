@@ -184,7 +184,7 @@ export function ProductCard({
 
         <div className="mt-1.5 flex items-baseline gap-2">
           <span className="font-display text-base font-bold text-ink">{formatPrice(product.price)}</span>
-          <span className="text-[11px] font-semibold text-ink/40 line-through">{formatPrice(original)}</span>
+          <span className="text-[11px] font-semibold text-ink/45 line-through decoration-2 decoration-rose-500/80">{formatPrice(original)}</span>
         </div>
 
         <StarRow rating={rating} reviews={reviews} />

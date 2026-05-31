@@ -13,6 +13,9 @@ type ProductLeadPopupProps = {
   image: string;
 };
 
+const LEAD_POPUP_DELAY_MS = 18000;
+const LEAD_POPUP_SCROLL_DEPTH = 0.7;
+
 function detectInstagram(): boolean {
   if (typeof window === "undefined") return false;
   const params = new URLSearchParams(window.location.search);
@@ -44,13 +47,13 @@ export function ProductLeadPopup({ productName, priceLabel, slug, image }: Produ
 
     const onScroll = () => {
       const scrolled = window.scrollY + window.innerHeight;
-      if (scrolled / document.documentElement.scrollHeight > 0.5) reveal();
+      if (scrolled / document.documentElement.scrollHeight > LEAD_POPUP_SCROLL_DEPTH) reveal();
     };
     const onExit = (event: MouseEvent) => {
       if (event.clientY <= 0) reveal();
     };
 
-    const timer = window.setTimeout(reveal, 8000);
+    const timer = window.setTimeout(reveal, LEAD_POPUP_DELAY_MS);
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("mouseout", onExit);
 

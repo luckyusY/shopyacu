@@ -557,7 +557,7 @@ export function Storefront({
                       <h1 className="max-w-md font-display text-2xl font-black leading-tight drop-shadow-sm sm:text-4xl">{product.name}</h1>
                       <div className="flex flex-wrap items-baseline gap-3">
                         <span className="rounded-lg bg-white px-3 py-1.5 font-display text-xl font-black text-ink sm:text-2xl">{formatPrice(product.price)}</span>
-                        <span className="text-sm font-semibold text-white/55 line-through">{formatPrice(Math.round(product.price * 1.4))}</span>
+                        <span className="text-sm font-semibold text-white/65 line-through decoration-2 decoration-accent">{formatPrice(Math.round(product.price * 1.4))}</span>
                       </div>
                       <span className="text-xs font-bold uppercase tracking-[0.14em] text-accent">Limited stock &middot; Local delivery &middot; WhatsApp checkout</span>
                       <div className="mt-1 flex flex-wrap gap-2">
@@ -833,7 +833,7 @@ export function Storefront({
                     <span className="mt-2 block min-h-12 text-sm font-semibold leading-5 text-ink">{product.name}</span>
                     <span className="mt-2 flex items-baseline gap-2">
                       <span className="font-display text-lg font-bold text-ink">{formatPrice(product.price)}</span>
-                      <span className="text-[11px] font-semibold text-ink/40 line-through">{formatPrice(original)}</span>
+                      <span className="text-[11px] font-semibold text-ink/45 line-through decoration-2 decoration-rose-500/80">{formatPrice(original)}</span>
                     </span>
                     <StarRow rating={rating} reviews={reviews} />
                   </span>
