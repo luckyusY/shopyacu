@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
@@ -8,6 +9,7 @@ type ProductLeadPopupProps = {
   productName: string;
   priceLabel: string;
   slug: string;
+  image: string;
 };
 
 function detectInstagram(): boolean {
@@ -20,7 +22,7 @@ function detectInstagram(): boolean {
   return navigator.userAgent.includes("Instagram");
 }
 
-export function ProductLeadPopup({ productName, priceLabel, slug }: ProductLeadPopupProps) {
+export function ProductLeadPopup({ productName, priceLabel, slug, image }: ProductLeadPopupProps) {
   const [open, setOpen] = useState(false);
   const [fromInstagram, setFromInstagram] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -114,9 +116,17 @@ export function ProductLeadPopup({ productName, priceLabel, slug }: ProductLeadP
             </div>
 
             <div className="grid gap-3 px-5 py-5 sm:px-6">
-              <div className="flex items-center gap-2 rounded-2xl bg-surface px-3.5 py-3 text-sm font-semibold text-ink/75">
-                <span className="rounded-lg bg-accent px-2 py-1 text-xs font-black text-ink">DEAL</span>
-                <span className="line-clamp-2">{productName} &middot; ask about {priceLabel}</span>
+              <div className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-surface p-2.5">
+                <div className="relative h-16 w-16 flex-none overflow-hidden rounded-xl border border-ink/10 bg-white">
+                  <Image src={image} alt={productName} fill sizes="64px" className="object-contain p-1" />
+                </div>
+                <div className="min-w-0">
+                  <p className="line-clamp-2 text-sm font-bold leading-snug text-ink">{productName}</p>
+                  <p className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span className="rounded-md bg-accent px-1.5 py-0.5 text-[0.65rem] font-black uppercase tracking-wide text-ink">Deal</span>
+                    <span className="text-sm font-bold text-ink/80">Ask about {priceLabel}</span>
+                  </p>
+                </div>
               </div>
 
               <a
