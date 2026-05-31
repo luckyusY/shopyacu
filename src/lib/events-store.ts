@@ -8,7 +8,14 @@ import { getMongoClient } from "@/lib/mongodb";
 const databaseName = "shopyacu";
 
 export type StorefrontEventType = "view" | "inquiry";
-export type InquirySource = "lead_popup" | "support_widget" | "product_cta" | "header" | "other";
+export type InquirySource =
+  | "lead_popup"
+  | "support_widget"
+  | "product_cta"
+  | "sticky_bar"
+  | "ask_question"
+  | "header"
+  | "other";
 
 export type StorefrontEvent = {
   type: StorefrontEventType;
@@ -35,7 +42,15 @@ type EventDocument = Omit<StorefrontEvent, "ts"> & { ts: Date };
 type ActivityDocument = Omit<ActivityEntry, "ts"> & { ts: Date };
 
 const VALID_EVENT_TYPES: StorefrontEventType[] = ["view", "inquiry"];
-const VALID_SOURCES: InquirySource[] = ["lead_popup", "support_widget", "product_cta", "header", "other"];
+const VALID_SOURCES: InquirySource[] = [
+  "lead_popup",
+  "support_widget",
+  "product_cta",
+  "sticky_bar",
+  "ask_question",
+  "header",
+  "other",
+];
 
 function clean(value: unknown, max = 160): string | undefined {
   if (typeof value !== "string") return undefined;

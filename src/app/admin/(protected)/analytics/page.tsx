@@ -8,7 +8,9 @@ export const dynamic = "force-dynamic";
 const SOURCE_LABELS: Record<string, string> = {
   lead_popup: "Lead popup",
   support_widget: "Support widget",
-  product_cta: "Product page",
+  product_cta: "Order button",
+  sticky_bar: "Sticky bar",
+  ask_question: "Ask first",
   header: "Product header",
   other: "Other",
 };

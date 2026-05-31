@@ -7,6 +7,8 @@ import { ProductLeadPopup } from "@/components/ProductLeadPopup";
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { TrackProductView } from "@/components/TrackProductView";
 import { InstagramEmbed } from "@/components/InstagramEmbed";
+import { ProductStickyBar } from "@/components/ProductStickyBar";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { Logo } from "@/components/Logo";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
@@ -104,9 +106,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
 
   return (
-    <main className="min-h-screen bg-paper text-ink">
+    <main className="min-h-screen bg-paper pb-24 text-ink lg:pb-0">
       <TrackProductView slug={product.slug} name={product.name} category={product.category} />
       <ProductLeadPopup productName={product.name} priceLabel={formatPrice(product.price)} slug={product.slug} image={product.image} />
+      <ProductStickyBar name={product.name} slug={product.slug} category={product.category} priceLabel={formatPrice(product.price)} />
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center">
@@ -120,8 +123,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <WhatsAppLink
             href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
             track={{ slug: product.slug, name: product.name, category: product.category, source: "header" }}
-            className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-ink/85 sm:px-5"
+            className="flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#1fb458] sm:px-5"
           >
+            <WhatsAppIcon className="h-4 w-4" />
             WhatsApp
           </WhatsAppLink>
         </div>
@@ -140,50 +144,89 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-ink/70">{signal.sold}+ sold</span>
             </div>
 
-            <h1 className="mt-4 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">{product.name}</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted sm:text-lg">{product.description}</p>
+            <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-ink sm:text-4xl lg:text-5xl">{product.name}</h1>
 
-            <div className="mt-5 flex flex-wrap items-end gap-3">
+            <div className="mt-4 flex flex-wrap items-end gap-3">
               <span className="font-display text-4xl font-bold leading-none text-ink">{formatPrice(product.price)}</span>
               {product.price > 0 ? <span className="pb-1 text-sm font-semibold text-muted line-through">{formatPrice(originalPrice)}</span> : null}
               {product.price > 0 ? <span className="mb-0.5 rounded-full bg-accent px-3 py-1 text-xs font-black text-ink">Save {signal.discount}%</span> : null}
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-3 text-sm font-semibold text-ink/65">
-              <span className="rounded-full bg-surface px-3 py-2">Rated {signal.rating}/5</span>
-              <span className="rounded-full bg-surface px-3 py-2">{signal.reviews} interested shoppers</span>
-              <span className="rounded-full bg-surface px-3 py-2">{product.stock || "In stock"}</span>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-semibold text-ink/65">
+              <span className="rounded-full bg-surface px-3 py-1.5">★ {signal.rating}/5</span>
+              <span className="rounded-full bg-surface px-3 py-1.5">{signal.reviews} interested</span>
+              <span className="rounded-full bg-surface px-3 py-1.5">{signal.sold}+ sold</span>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]">
-              <WhatsAppLink
-                href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
-                track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
-                className="flex min-h-14 items-center justify-center rounded-full bg-ink px-7 py-4 text-sm font-bold text-white shadow-lg transition hover:bg-ink/85"
-              >
-                Order this on WhatsApp
-              </WhatsAppLink>
-              <Link href="/#products" className="flex min-h-14 items-center justify-center rounded-full border border-ink/15 bg-surface px-7 py-4 text-sm font-bold text-ink transition hover:bg-ink hover:text-white">
+            {product.stock === "Low stock" ? (
+              <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700">
+                🔥 Selling fast — only a few left in Kigali.
+              </p>
+            ) : product.stock === "Out of stock" ? (
+              <p className="mt-4 rounded-xl bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">
+                Out of stock right now — message us to get notified or find a close alternative.
+              </p>
+            ) : null}
+
+            <WhatsAppLink
+              href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}). Is it available and what is the delivery time?`)}
+              track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
+              className="mt-5 flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-7 text-base font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.99]"
+            >
+              <WhatsAppIcon className="h-6 w-6" />
+              Order on WhatsApp
+            </WhatsAppLink>
+            <WhatsAppLink
+              href={whatsappLink(`Hello Shopyacu, I'm interested in ${product.name} (${formatPrice(product.price)}). Can you share your best price, delivery details, and availability?`)}
+              track={{ slug: product.slug, name: product.name, category: product.category, source: "ask_question" }}
+              className="mt-2.5 flex min-h-12 w-full items-center justify-center rounded-full border border-ink/15 bg-surface px-7 text-sm font-bold text-ink transition hover:bg-ink hover:text-white"
+            >
+              Ask price &amp; availability first
+            </WhatsAppLink>
+
+            <ul className="mt-5 grid gap-2 sm:grid-cols-3">
+              {[
+                ["💵", "Pay on delivery"],
+                ["🚚", "Same-day Kigali delivery"],
+                ["⚡", "We reply in minutes"],
+              ].map(([icon, label]) => (
+                <li key={label} className="flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-xs font-bold text-ink/80">
+                  <span aria-hidden>{icon}</span> {label}
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-4 text-xs font-medium leading-6 text-muted">
+              A real person replies on WhatsApp at {whatsappDisplay}. No prepayment — confirm price, delivery, and availability before you pay.{" "}
+              <Link href="/#products" className="font-semibold text-ink underline-offset-2 hover:underline">
                 Keep shopping
               </Link>
-            </div>
-
-            <p className="mt-4 text-sm font-semibold leading-6 text-muted">
-              Orders are confirmed by a person on WhatsApp at {whatsappDisplay}. Ask for delivery, bundle pricing, or current availability before paying.
             </p>
+
+            <div className="mt-5 border-t border-ink/10 pt-5">
+              <p className="text-base leading-7 text-muted">{product.description}</p>
+            </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              ["Fast close", "Tap WhatsApp and confirm in minutes."],
-              ["Bundle smart", "Add related items before checkout."],
-              ["Local help", "Ask for delivery and product advice."],
-            ].map(([title, copy]) => (
-              <div key={title} className="rounded-2xl border border-ink/10 bg-white p-4 shadow-sm">
-                <p className="font-display text-lg font-bold text-ink">{title}</p>
-                <p className="mt-2 text-sm font-medium leading-6 text-muted">{copy}</p>
-              </div>
-            ))}
+          <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">How ordering works</p>
+            <ol className="mt-4 grid gap-4 sm:grid-cols-3">
+              {[
+                ["1", "Message us", "Tap WhatsApp and tell us what you want."],
+                ["2", "Confirm details", "We confirm the price, delivery time, and availability."],
+                ["3", "Pay on delivery", "Receive your item, check it, then pay. No risk."],
+              ].map(([step, title, copy]) => (
+                <li key={step} className="flex gap-3">
+                  <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-ink text-xs font-black text-accent">
+                    {step}
+                  </span>
+                  <div>
+                    <p className="font-display text-base font-bold text-ink">{title}</p>
+                    <p className="mt-1 text-sm font-medium leading-6 text-muted">{copy}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>

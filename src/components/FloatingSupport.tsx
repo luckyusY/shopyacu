@@ -79,8 +79,10 @@ export function FloatingSupport() {
   const trimmed = message.trim();
   const canSend = trimmed.length > 0;
 
-  // The support widget is for shoppers; keep it out of the admin area.
-  if (pathname?.startsWith("/admin")) return null;
+  // The support widget is for shoppers; keep it out of the admin area. On
+  // product pages the always-visible sticky WhatsApp bar is the primary CTA,
+  // so hide this floating widget there to avoid overlap and decision noise.
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/products/")) return null;
 
   return (
     <div ref={panelRef} className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-5 sm:right-5">
