@@ -9,14 +9,17 @@ import { useEffect, type ReactNode } from "react";
 // autocaptured clicks, and session replay. Replay must also be toggled on in
 // the PostHog project settings ("Record user sessions").
 //
-// Requires NEXT_PUBLIC_POSTHOG_KEY. Without it, analytics are silently skipped
-// so local/dev builds keep working.
+// The phc_ project key is a *public* client-side token (it ships in the
+// browser bundle by design), so committing it is safe. An env var override is
+// still supported for staging/region changes.
+const POSTHOG_KEY =
+  process.env.NEXT_PUBLIC_POSTHOG_KEY || "phc_pkRrtTu2YFEn3TjSzhUcoU8NQrcDRA2JKkhPiwt8MheD";
+
 export function PostHogProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    if (!key || posthog.__loaded) return;
+    if (!POSTHOG_KEY || posthog.__loaded) return;
 
-    posthog.init(key, {
+    posthog.init(POSTHOG_KEY, {
       api_host: "/ingest",
       ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST || "https://us.posthog.com",
       // Auto-capture pageviews on initial load AND client-side route changes.
