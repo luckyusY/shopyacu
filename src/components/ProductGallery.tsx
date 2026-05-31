@@ -67,7 +67,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
   const isVideo = current.type === "video";
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex w-full min-w-0 max-w-full flex-col gap-3">
       <div
         className="group relative aspect-[4/5] max-h-[72vh] touch-pan-y select-none overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm sm:aspect-square sm:max-h-none sm:rounded-3xl"
         onTouchStart={onTouchStart}
@@ -138,7 +138,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
       {count > 1 ? (
         <div
           ref={thumbStripRef}
-          className="-mx-1 flex snap-x gap-2.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-1 flex w-full min-w-0 max-w-[calc(100vw-1.5rem)] snap-x gap-2.5 overflow-x-auto overscroll-x-contain px-1 pb-1 sm:max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {media.map((item, index) => {
             const thumb = item.type === "video" ? item.poster || fallbackImage : item.url;

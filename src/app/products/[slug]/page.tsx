@@ -144,7 +144,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-4 px-3 py-3 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-8 lg:py-10">
+      <section className="mx-auto grid max-w-7xl gap-4 px-3 py-3 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-8 lg:py-10 [&>*]:min-w-0">
         <ProductGallery media={media} name={product.name} fallbackImage={product.image} />
 
         <div className="grid gap-4 sm:gap-5">
