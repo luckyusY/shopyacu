@@ -6,6 +6,7 @@ import { ProductGallery } from "@/components/ProductGallery";
 import { ProductLeadPopup } from "@/components/ProductLeadPopup";
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { TrackProductView } from "@/components/TrackProductView";
+import { InstagramEmbed } from "@/components/InstagramEmbed";
 import { Logo } from "@/components/Logo";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
@@ -186,6 +187,31 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </section>
+
+      {product.instagramUrl ? (
+        <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+          <div className="grid gap-6 rounded-[2rem] border border-ink/10 bg-white p-5 shadow-sm sm:p-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">On Instagram</p>
+              <h2 className="mt-3 font-display text-3xl font-bold leading-tight text-ink sm:text-4xl">
+                See {product.name} in action.
+              </h2>
+              <p className="mt-4 text-sm font-medium leading-7 text-muted">
+                Watch the real product video from our Instagram, then message us to order or ask anything.
+              </p>
+              <a
+                href="https://www.instagram.com/shopyacu/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex w-fit rounded-full border border-ink/20 px-6 py-3 text-sm font-bold text-ink transition hover:bg-ink hover:text-white"
+              >
+                Follow @shopyacu
+              </a>
+            </div>
+            <InstagramEmbed url={product.instagramUrl} className="w-full" />
+          </div>
+        </section>
+      ) : null}
 
       {topRelated.length > 0 ? (
         <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">

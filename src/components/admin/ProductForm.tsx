@@ -19,6 +19,7 @@ type FormState = {
   tags: string;
   stock: string;
   description: string;
+  instagramUrl: string;
   active: boolean;
   featured: boolean;
 };
@@ -36,6 +37,7 @@ function initialState(product?: Product, categories: string[] = []): FormState {
     tags: (product?.tags || []).join(", "),
     stock: product?.stock || "In stock",
     description: product?.description || "",
+    instagramUrl: product?.instagramUrl || "",
     active: product?.active !== false,
     featured: Boolean(product?.featured),
   };
@@ -103,6 +105,7 @@ export function ProductForm({ mode, categories, product }: ProductFormProps) {
         badge: form.badge.trim() || undefined,
         stock: form.stock,
         description: form.description.trim(),
+        instagramUrl: form.instagramUrl.trim() || undefined,
         active: form.active,
         featured: form.featured || Boolean(form.badge.trim()),
         tags: form.tags
@@ -214,6 +217,21 @@ export function ProductForm({ mode, categories, product }: ProductFormProps) {
             placeholder="Describe the product…"
             className="min-h-28 rounded-xl border border-ink/10 bg-surface px-4 py-3 text-sm font-medium text-ink outline-none transition focus:border-accent focus:bg-white"
           />
+        </label>
+
+        <label className="grid gap-1.5">
+          <span className={labelClass}>Instagram video URL</span>
+          <input
+            value={form.instagramUrl}
+            onChange={(e) => set("instagramUrl", e.target.value)}
+            type="url"
+            inputMode="url"
+            placeholder="https://www.instagram.com/reel/…"
+            className={fieldClass}
+          />
+          <span className="text-xs font-medium text-muted">
+            Paste a post or reel link. It embeds on this product&apos;s page. Leave blank for none.
+          </span>
         </label>
       </div>
 
