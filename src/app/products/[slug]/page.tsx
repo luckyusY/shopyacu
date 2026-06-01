@@ -119,14 +119,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const featuredUpsells = uniqueProducts([...related, ...topSellers]).slice(0, 4);
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
   const kinyarwandaTags = ["Yizewe", "Byihuse", "Kigali", "Bikugezeho", "Guhitamo"];
-  const askedToday = Math.max(4, Math.round(signal.reviews / 18));
-  const activityMessages = [
-    `🔥 ${signal.interested}+ people viewed this recently`,
-    `💬 ${askedToday} people asked about it on WhatsApp today`,
-    `⚡ We usually reply in under 5 minutes`,
-    `💵 WISHYURA BIKUGEZEHO · pay on delivery`,
-    `🚚 Same-day delivery in Kigali`,
-  ];
+  const activityMessage = `🔥 ${signal.interested}+ people viewed this recently · ⚡ we reply in minutes`;
 
   return (
     <main className="min-h-screen bg-paper pb-28 text-ink lg:pb-0">
@@ -212,7 +205,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </p>
             ) : null}
 
-            <LiveActivityBanner messages={activityMessages} />
+            <LiveActivityBanner message={activityMessage} />
 
             <WhatsAppLink
               href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}). Is it available and what is the delivery time?`)}
