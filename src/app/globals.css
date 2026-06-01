@@ -96,6 +96,27 @@ a {
   border-radius: 999px;
 }
 
+/* Shimmer sweep for the live-activity banner. */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-160%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(320%) skewX(-12deg);
+  }
+}
+
+/* Gentle attention glow on the primary WhatsApp CTA. */
+@keyframes ctaGlow {
+  0%,
+  100% {
+    box-shadow: 0 10px 24px -8px rgba(37, 211, 102, 0.55);
+  }
+  50% {
+    box-shadow: 0 12px 30px -4px rgba(37, 211, 102, 0.9);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

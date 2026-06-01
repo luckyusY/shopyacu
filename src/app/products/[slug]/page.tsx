@@ -8,6 +8,7 @@ import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { TrackProductView } from "@/components/TrackProductView";
 import { ProductStickyBar } from "@/components/ProductStickyBar";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { LiveActivityBanner } from "@/components/LiveActivityBanner";
 import { Logo } from "@/components/Logo";
 import { InstagramProfileCard } from "@/components/InstagramProfileCard";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
@@ -118,6 +119,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const featuredUpsells = uniqueProducts([...related, ...topSellers]).slice(0, 4);
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
   const kinyarwandaTags = ["Yizewe", "Byihuse", "Kigali", "Bikugezeho", "Guhitamo"];
+  const askedToday = Math.max(4, Math.round(signal.reviews / 18));
+  const activityMessages = [
+    `🔥 ${signal.interested}+ people viewed this recently`,
+    `💬 ${askedToday} people asked about it on WhatsApp today`,
+    `⚡ We usually reply in under 5 minutes`,
+    `💵 WISHYURA BIKUGEZEHO · pay on delivery`,
+    `🚚 Same-day delivery in Kigali`,
+  ];
 
   return (
     <main className="min-h-screen bg-paper pb-28 text-ink lg:pb-0">
@@ -203,10 +212,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </p>
             ) : null}
 
+            <LiveActivityBanner messages={activityMessages} />
+
             <WhatsAppLink
               href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}). Is it available and what is the delivery time?`)}
               track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
-              className="mt-4 flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-5 text-sm font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.99] sm:mt-5 sm:min-h-14 sm:px-7 sm:text-base"
+              className="mt-3 flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-5 text-sm font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.99] animate-[ctaGlow_2.4s_ease-in-out_infinite] sm:min-h-14 sm:px-7 sm:text-base"
             >
               <WhatsAppIcon className="h-6 w-6" />
               Order on WhatsApp
