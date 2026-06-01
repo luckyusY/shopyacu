@@ -8,7 +8,6 @@ import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { TrackProductView } from "@/components/TrackProductView";
 import { ProductStickyBar } from "@/components/ProductStickyBar";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import { LiveActivityBanner } from "@/components/LiveActivityBanner";
 import { Logo } from "@/components/Logo";
 import { InstagramProfileCard } from "@/components/InstagramProfileCard";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
@@ -119,7 +118,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const featuredUpsells = uniqueProducts([...related, ...topSellers]).slice(0, 4);
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
   const kinyarwandaTags = ["Yizewe", "Byihuse", "Kigali", "Bikugezeho", "Guhitamo"];
-  const activityMessage = `🔥 ${signal.interested}+ people viewed this recently · ⚡ we reply in minutes`;
 
   return (
     <main className="min-h-screen bg-paper pb-28 text-ink lg:pb-0">
@@ -147,11 +145,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-4 px-3 py-3 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-8 lg:py-10 [&>*]:min-w-0">
+      <section className="mx-auto grid max-w-7xl gap-3 px-3 py-3 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-8 lg:py-10 [&>*]:min-w-0">
         <ProductGallery media={media} name={product.name} fallbackImage={product.image} />
 
         <div className="grid gap-4 sm:gap-5">
-          <div className="rounded-2xl border border-ink/10 bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7">
+          <div className="rounded-2xl border border-ink/10 bg-white p-3 shadow-sm sm:rounded-[2rem] sm:p-7">
             <div className="flex flex-wrap items-center gap-2">
               <Link href={getMarketplacePath(product.category)} className="inline-flex rounded-full bg-ink px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-accent">
                 {product.category}
@@ -160,18 +158,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-ink/70">{signal.interested}+ interested</span>
             </div>
 
-            <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:mt-4 sm:text-4xl lg:text-5xl">{product.name}</h1>
+            <h1 className="mt-3 font-display text-[1.55rem] font-bold leading-tight text-ink sm:mt-4 sm:text-4xl lg:text-5xl">{product.name}</h1>
 
-            <div className="mt-3 flex flex-wrap items-end gap-2.5 sm:mt-4 sm:gap-3">
-              <span className="font-display text-3xl font-bold leading-none text-ink sm:text-4xl">{formatPrice(product.price)}</span>
+            <div className="mt-3 flex flex-wrap items-end gap-2 sm:mt-4 sm:gap-3">
+              <span className="font-display text-[1.85rem] font-bold leading-none text-ink sm:text-4xl">{formatPrice(product.price)}</span>
               {product.price > 0 ? <span className="pb-1 text-sm font-semibold text-muted line-through decoration-2 decoration-rose-500/80">{formatPrice(originalPrice)}</span> : null}
               {product.price > 0 ? <span className="mb-0.5 rounded-full bg-accent px-3 py-1 text-xs font-black text-ink">Save {signal.discount}%</span> : null}
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-ink/65 sm:mt-4 sm:text-sm">
-              <span className="rounded-full bg-surface px-3 py-1.5">Rating {signal.rating}/5</span>
-              <span className="rounded-full bg-surface px-3 py-1.5">{signal.reviews} interested</span>
-              <span className="rounded-full bg-surface px-3 py-1.5">{signal.interested}+ interested people</span>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-semibold text-ink/65 sm:mt-4 sm:flex sm:flex-wrap sm:text-sm">
+              <span className="rounded-full bg-surface px-3 py-1.5 text-center sm:text-left">Rating {signal.rating}/5</span>
+              <span className="rounded-full bg-surface px-3 py-1.5 text-center sm:text-left">{signal.reviews} interested</span>
+              <span className="col-span-2 rounded-full bg-surface px-3 py-1.5 text-center sm:col-span-1 sm:text-left">{signal.interested}+ interested people</span>
             </div>
 
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -205,12 +203,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </p>
             ) : null}
 
-            <LiveActivityBanner message={activityMessage} />
-
             <WhatsAppLink
               href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}). Is it available and what is the delivery time?`)}
               track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
-              className="mt-3 flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-5 text-sm font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.99] animate-[ctaGlow_2.4s_ease-in-out_infinite] sm:min-h-14 sm:px-7 sm:text-base"
+              className="mt-4 flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-5 text-sm font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.99] animate-[ctaGlow_2.4s_ease-in-out_infinite] sm:mt-5 sm:min-h-14 sm:px-7 sm:text-base"
             >
               <WhatsAppIcon className="h-6 w-6" />
               Order on WhatsApp
@@ -223,14 +219,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               Ask price &amp; availability first
             </WhatsAppLink>
 
-            <ul className="mt-4 grid grid-cols-3 gap-2 sm:mt-5">
+            <ul className="mt-4 grid grid-cols-1 gap-2 sm:mt-5 sm:grid-cols-3">
               {[
                 ["COD", "Pay after delivery"],
                 ["KGL", "Same-day delivery"],
                 ["FAST", "Quick replies"],
               ].map(([icon, label]) => (
-                <li key={label} className="grid min-h-16 content-center rounded-xl bg-surface px-2 py-2 text-center text-[0.68rem] font-bold leading-tight text-ink/80 sm:flex sm:min-h-0 sm:items-center sm:gap-2 sm:px-3 sm:text-left sm:text-xs">
-                  <span className="mx-auto rounded-md bg-white px-1.5 py-0.5 text-[0.6rem] font-black text-ink sm:mx-0" aria-hidden>
+                <li key={label} className="flex min-h-0 items-center gap-2 rounded-xl bg-surface px-3 py-2 text-left text-xs font-bold leading-tight text-ink/80">
+                  <span className="rounded-md bg-white px-1.5 py-0.5 text-[0.6rem] font-black text-ink" aria-hidden>
                     {icon}
                   </span>
                   {label}
@@ -274,23 +270,23 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {topRelated.length > 0 ? (
-        <section className="mx-auto max-w-7xl px-3 pb-10 sm:px-6 sm:pb-12 lg:px-8">
-          <div className="grid gap-4 rounded-2xl bg-ink p-4 text-white shadow-xl sm:gap-5 sm:rounded-[2rem] sm:p-7 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
+        <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-6 sm:pb-12 lg:px-8">
+          <div className="grid gap-4 rounded-2xl bg-ink p-3 text-white shadow-xl sm:gap-5 sm:rounded-[2rem] sm:p-7 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Top related products</p>
-              <h2 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-4xl">Customers also love these picks.</h2>
-              <p className="mt-4 text-sm font-medium leading-7 text-white/70">
+              <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:mt-3 sm:text-4xl">Customers also love these picks.</h2>
+              <p className="mt-3 text-sm font-medium leading-6 text-white/70 sm:mt-4 sm:leading-7">
                 Hand-picked products that pair well with this one. Tap any item to view it, or message us and we&apos;ll help you choose.
               </p>
-              <a href={whatsappLink(`Hello Shopyacu, I want help choosing the best option related to ${product.name}.`)} className="mt-5 inline-flex w-full justify-center rounded-full bg-accent px-6 py-3 text-sm font-bold text-ink transition hover:bg-white sm:w-fit">
+              <a href={whatsappLink(`Hello Shopyacu, I want help choosing the best option related to ${product.name}.`)} className="mt-4 inline-flex w-full justify-center rounded-full bg-accent px-6 py-3 text-sm font-bold text-ink transition hover:bg-white sm:mt-5 sm:w-fit">
                 Ask for advice
               </a>
             </div>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
               {topRelated.map((item) => (
-                <Link key={item.slug} href={`/products/${item.slug}`} className="group overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-3 transition hover:bg-white hover:text-ink">
+                <Link key={item.slug} href={`/products/${item.slug}`} className="group overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-2.5 transition hover:bg-white hover:text-ink sm:p-3">
                   <Image src={item.image} alt={item.name} width={360} height={360} className="aspect-square w-full rounded-xl object-cover" />
-                  <span className="mt-3 block min-h-10 text-sm font-bold leading-5">{item.name}</span>
+                  <span className="mt-2 block min-h-10 text-xs font-bold leading-4 sm:mt-3 sm:text-sm sm:leading-5">{item.name}</span>
                   <span className="mt-1 block text-sm font-semibold text-accent group-hover:text-ink">{formatPrice(item.price)}</span>
                 </Link>
               ))}
@@ -380,11 +376,11 @@ function ProductRail({
   products: Product[];
 }) {
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-10 sm:px-6 sm:pb-12 lg:px-8">
+    <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-6 sm:pb-12 lg:px-8">
       <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-muted">{eyebrow}</p>
-          <h2 className="mt-2 font-display text-2xl font-bold text-ink sm:text-3xl">{title}</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted sm:text-sm sm:tracking-[0.22em]">{eyebrow}</p>
+          <h2 className="mt-2 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">{title}</h2>
           <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-muted">{copy}</p>
         </div>
       </div>

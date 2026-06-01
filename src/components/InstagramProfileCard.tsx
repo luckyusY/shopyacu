@@ -6,22 +6,22 @@ const instagramUrl = "https://www.instagram.com/shopyacu/";
 
 export function InstagramProfileCard({ compact = false }: InstagramProfileCardProps) {
   return (
-    <section className={compact ? "mx-auto max-w-7xl px-3 pb-10 sm:px-6 sm:pb-12 lg:px-8" : "mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8"}>
-      <div className="overflow-hidden rounded-3xl bg-[#e1302f] text-white shadow-2xl shadow-[#e1302f]/20">
-        <div className={`grid gap-5 p-5 sm:p-7 ${compact ? "lg:grid-cols-[1fr_auto]" : "lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-9"}`}>
+    <section className={compact ? "mx-auto max-w-7xl px-3 pb-8 sm:px-6 sm:pb-12 lg:px-8" : "mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8"}>
+      <div className="overflow-hidden rounded-2xl bg-[#e1302f] text-white shadow-2xl shadow-[#e1302f]/20 sm:rounded-3xl">
+        <div className={`grid gap-4 p-4 sm:gap-5 sm:p-7 ${compact ? "lg:grid-cols-[1fr_auto]" : "lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-9"}`}>
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-white/70">Instagram shop</p>
-            <h2 className={`${compact ? "mt-2 text-2xl sm:text-3xl" : "mt-3 text-3xl sm:text-5xl"} font-display font-black leading-tight`}>
+            <h2 className={`${compact ? "mt-2 text-[1.55rem] sm:text-3xl" : "mt-3 text-3xl sm:text-5xl"} font-display font-black leading-tight`}>
               See more products on Instagram.
             </h2>
-            <p className={`${compact ? "mt-3" : "mt-4"} max-w-2xl text-sm font-semibold leading-7 text-white/78`}>
+            <p className={`${compact ? "mt-2 leading-6" : "mt-4 leading-7"} max-w-2xl text-sm font-semibold text-white/78`}>
               Follow <span className="font-black text-white">@shopyacu</span> for new arrivals, short product videos, customer updates, and quick deals before they reach the website.
             </p>
           </div>
 
-          <div className="rounded-3xl border border-white/20 bg-white p-3 text-ink shadow-xl">
+          <div className="rounded-2xl border border-white/20 bg-white p-3 text-ink shadow-xl sm:rounded-3xl">
             <div className="flex items-center gap-3">
-              <div className="grid h-16 w-16 flex-none place-items-center rounded-full bg-[#e1302f] text-xl font-black text-white ring-4 ring-[#ffcf33]">
+              <div className="grid h-14 w-14 flex-none place-items-center rounded-full bg-[#e1302f] text-xl font-black text-white ring-4 ring-[#ffcf33] sm:h-16 sm:w-16">
                 S
               </div>
               <div className="min-w-0">

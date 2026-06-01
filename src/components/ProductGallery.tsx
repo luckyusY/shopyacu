@@ -69,7 +69,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
   return (
     <div className="flex w-full min-w-0 max-w-full flex-col gap-3">
       <div
-        className="group relative aspect-[4/5] max-h-[72vh] touch-pan-y select-none overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm sm:aspect-square sm:max-h-none sm:rounded-3xl"
+        className="group relative aspect-square max-h-[58vh] touch-pan-y select-none overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm sm:max-h-none sm:rounded-3xl"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -138,7 +138,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
       {count > 1 ? (
         <div
           ref={thumbStripRef}
-          className="-mx-1 flex w-full min-w-0 max-w-[calc(100vw-1.5rem)] snap-x gap-2.5 overflow-x-auto overscroll-x-contain px-1 pb-1 sm:max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-1 flex w-full min-w-0 max-w-[calc(100vw-1.5rem)] snap-x gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 sm:max-w-full sm:gap-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {media.map((item, index) => {
             const thumb = item.type === "video" ? item.poster || fallbackImage : item.url;
@@ -150,7 +150,7 @@ export function ProductGallery({ media, name, fallbackImage }: ProductGalleryPro
                 onClick={() => setActive(index)}
                 aria-label={`Show ${name} view ${index + 1}`}
                 aria-current={isActive}
-                className={`relative aspect-square w-16 flex-none snap-start overflow-hidden rounded-xl border-2 bg-white transition active:scale-95 sm:w-20 ${
+                className={`relative aspect-square w-14 flex-none snap-start overflow-hidden rounded-xl border-2 bg-white transition active:scale-95 sm:w-20 ${
                   isActive ? "border-accent" : "border-ink/10 hover:border-ink/30"
                 }`}
               >
