@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Logo } from "@/components/Logo";
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { ShareActions } from "@/components/ShareActions";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               Ask on WhatsApp
             </WhatsAppLink>
           </div>
+          <ShareActions
+            compact
+            title={`${category.label} | Shopyacu`}
+            text={`Browse ${category.label} on Shopyacu.`}
+            path={categoryPath(category)}
+            className="mt-5 max-w-xl"
+          />
         </div>
         <div className="relative min-h-[300px] overflow-hidden rounded-[2rem] bg-ink shadow-xl sm:min-h-[430px]">
           <Image src={heroImage} alt={`${category.label} hero`} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />

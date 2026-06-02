@@ -10,6 +10,7 @@ import { ProductStickyBar } from "@/components/ProductStickyBar";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { Logo } from "@/components/Logo";
 import { InstagramProfileCard } from "@/components/InstagramProfileCard";
+import { ShareActions } from "@/components/ShareActions";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product, type ProductMedia } from "@/lib/products";
@@ -218,6 +219,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             >
               Ask price &amp; availability first
             </WhatsAppLink>
+
+            <ShareActions
+              compact
+              title={`${product.name} | Shopyacu`}
+              text={`Check out ${product.name} on Shopyacu for ${formatPrice(product.price)}.`}
+              path={`/products/${product.slug}`}
+              className="mt-3"
+            />
 
             <ul className="mt-4 grid grid-cols-1 gap-2 sm:mt-5 sm:grid-cols-3">
               {[

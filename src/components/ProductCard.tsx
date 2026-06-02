@@ -8,6 +8,7 @@ import { formatPrice, type Product } from "@/lib/products";
 import { whatsappLink } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/track-client";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { ShareButton } from "@/components/ShareActions";
 
 // Deterministic per-product display signals (rating / reviews / interest /
 // discount) so each card looks populated. Presentation-only placeholders
@@ -237,6 +238,12 @@ export function ProductCard({
               <WhatsAppIcon className="h-3.5 w-3.5" />
               Ask on WhatsApp
             </a>
+            <ShareButton
+              title={`${product.name} | Shopyacu`}
+              text={`Check out ${product.name} on Shopyacu for ${formatPrice(product.price)}.`}
+              path={`/products/${product.slug}`}
+              className="flex h-9 w-full items-center justify-center rounded-full border border-ink/15 bg-white px-3 text-center text-xs font-black text-ink transition hover:bg-ink hover:text-white"
+            />
           </div>
         ) : (
           <div className="mt-2.5 grid gap-2">
@@ -254,6 +261,12 @@ export function ProductCard({
               <WhatsAppIcon className="h-3.5 w-3.5" />
               Ask on WhatsApp
             </a>
+            <ShareButton
+              title={`${product.name} | Shopyacu`}
+              text={`Check out ${product.name} on Shopyacu for ${formatPrice(product.price)}.`}
+              path={`/products/${product.slug}`}
+              className="flex h-9 w-full items-center justify-center rounded-full border border-ink/15 bg-white px-3 text-center text-xs font-black text-ink transition hover:bg-ink hover:text-white"
+            />
           </div>
         )}
       </div>
