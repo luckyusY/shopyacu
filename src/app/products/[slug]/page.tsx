@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductLeadPopup } from "@/components/ProductLeadPopup";
+import { ProductPageTopReset } from "@/components/ProductPageTopReset";
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { TrackProductView } from "@/components/TrackProductView";
 import { ProductStickyBar } from "@/components/ProductStickyBar";
@@ -122,12 +123,25 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="min-h-screen bg-paper pb-28 text-ink lg:pb-0">
+      <ProductPageTopReset />
       <TrackProductView slug={product.slug} name={product.name} category={product.category} />
       <ProductLeadPopup productName={product.name} priceLabel={formatPrice(product.price)} slug={product.slug} image={product.image} />
       <ProductStickyBar name={product.name} slug={product.slug} category={product.category} priceLabel={formatPrice(product.price)} />
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-2.5 sm:px-6 sm:py-3 lg:px-8">
-          <Link href="/" className="inline-flex items-center">
+          <div className="flex min-w-0 items-center gap-2">
+            <Link
+              href="/#products"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-white text-xl font-black text-ink shadow-sm transition hover:bg-ink hover:text-white"
+              aria-label="Back to products"
+            >
+              &#8249;
+            </Link>
+            <Link href="/" className="hidden items-center sm:inline-flex">
+              <Logo priority imgClassName="h-8" />
+            </Link>
+          </div>
+          <Link href="/" className="inline-flex items-center sm:hidden">
             <Logo priority imgClassName="h-8" />
           </Link>
           <div className="hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted sm:flex">
@@ -147,6 +161,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-3 px-3 py-3 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-8 lg:py-10 [&>*]:min-w-0">
+        <nav className="col-span-full flex flex-wrap items-center gap-2 text-sm font-bold">
+          <Link href="/#products" className="rounded-full border border-ink/15 bg-white px-4 py-2 text-ink shadow-sm transition hover:bg-ink hover:text-white">
+            Back to products
+          </Link>
+          <Link href={getMarketplacePath(product.category)} className="rounded-full bg-surface px-4 py-2 text-ink/75 transition hover:bg-accent hover:text-ink">
+            Browse {product.category}
+          </Link>
+        </nav>
+
         <ProductGallery media={media} name={product.name} fallbackImage={product.image} />
 
         <div className="grid gap-4 sm:gap-5">
