@@ -33,6 +33,184 @@ const quickSearches = [
   { label: "Rainy day", query: "rain coat", category: "Outdoor" },
 ];
 
+type CategoryPromo = {
+  headline: string;
+  line: string;
+  cta: string;
+  tone: string;
+  desktopClass: string;
+  mobileClass: string;
+  markClass: string;
+};
+
+const categoryPromos: Record<string, CategoryPromo> = {
+  Fashion: {
+    headline: "Fresh fits, clean finish.",
+    line: "Shape, layer, and step out with pieces that do the quiet work.",
+    cta: "Shop style",
+    tone: "Style edit",
+    desktopClass: "from-[#1b1f2a] via-[#2f3747] to-[#f97316]",
+    mobileClass: "from-[#1b1f2a] to-[#f97316]",
+    markClass: "bg-[#f97316] text-white",
+  },
+  Kitchen: {
+    headline: "Kitchen upgrades that earn counter space.",
+    line: "Appliances, prep tools, and daily helpers picked for busy homes.",
+    cta: "Cook smarter",
+    tone: "Kitchen picks",
+    desktopClass: "from-[#12343b] via-[#1f6f6a] to-[#f5b700]",
+    mobileClass: "from-[#12343b] to-[#f5b700]",
+    markClass: "bg-[#f5b700] text-[#12343b]",
+  },
+  Bathroom: {
+    headline: "Turn small spaces into tidy rituals.",
+    line: "Shelves, racks, and organizers that make the morning rush calmer.",
+    cta: "Organize now",
+    tone: "Bathroom order",
+    desktopClass: "from-[#17324d] via-[#3f7cac] to-[#d9f2f2]",
+    mobileClass: "from-[#17324d] to-[#3f7cac]",
+    markClass: "bg-[#d9f2f2] text-[#17324d]",
+  },
+  "Storage & Racks": {
+    headline: "Give everything a proper place.",
+    line: "Wardrobes, shelves, racks, and compact storage for rooms that work harder.",
+    cta: "Find storage",
+    tone: "Space makers",
+    desktopClass: "from-[#242423] via-[#57564f] to-[#f2cc8f]",
+    mobileClass: "from-[#242423] to-[#57564f]",
+    markClass: "bg-[#f2cc8f] text-[#242423]",
+  },
+  Bedding: {
+    headline: "Soft layers, warmer nights.",
+    line: "Blankets and duvet sets in colors that make bedrooms feel finished.",
+    cta: "Choose bedding",
+    tone: "Bedroom comfort",
+    desktopClass: "from-[#3b1f2b] via-[#8f4f65] to-[#f7c7a3]",
+    mobileClass: "from-[#3b1f2b] to-[#8f4f65]",
+    markClass: "bg-[#f7c7a3] text-[#3b1f2b]",
+  },
+  "Home Appliances": {
+    headline: "The practical things that quietly save the day.",
+    line: "Dispensers, ironing boards, and appliances made for daily use.",
+    cta: "See appliances",
+    tone: "Home utility",
+    desktopClass: "from-[#233d4d] via-[#619b8a] to-[#fe7f2d]",
+    mobileClass: "from-[#233d4d] to-[#619b8a]",
+    markClass: "bg-[#fe7f2d] text-white",
+  },
+  Wedding: {
+    headline: "Set the scene before the first photo.",
+    line: "Decor, stage details, and event pieces with presence.",
+    cta: "Plan decor",
+    tone: "Event mood",
+    desktopClass: "from-[#4a1942] via-[#893168] to-[#f2d0a9]",
+    mobileClass: "from-[#4a1942] to-[#893168]",
+    markClass: "bg-[#f2d0a9] text-[#4a1942]",
+  },
+  Outdoor: {
+    headline: "Ready for rain, errands, and movement.",
+    line: "Useful gear for outside days, deliveries, travel, and quick fixes.",
+    cta: "Go outside",
+    tone: "Out and about",
+    desktopClass: "from-[#1b4332] via-[#40916c] to-[#ffd166]",
+    mobileClass: "from-[#1b4332] to-[#40916c]",
+    markClass: "bg-[#ffd166] text-[#1b4332]",
+  },
+  Furniture: {
+    headline: "Small pieces with room energy.",
+    line: "Functional accents that add storage, seating, and polish.",
+    cta: "Style rooms",
+    tone: "Room pieces",
+    desktopClass: "from-[#2b2d42] via-[#8d99ae] to-[#ef233c]",
+    mobileClass: "from-[#2b2d42] to-[#8d99ae]",
+    markClass: "bg-[#ef233c] text-white",
+  },
+};
+
+const fallbackPromo: CategoryPromo = {
+  headline: "A sharper shelf for everyday finds.",
+  line: "Browse the best of this category, grouped so the good stuff is easy to spot.",
+  cta: "Explore",
+  tone: "Curated aisle",
+  desktopClass: "from-[#20232f] via-[#59606f] to-[#ff8a1d]",
+  mobileClass: "from-[#20232f] to-[#59606f]",
+  markClass: "bg-[#ff8a1d] text-white",
+};
+
+function CategoryGraphicStrip({
+  category,
+  items,
+  marketplace,
+  onSeeAll,
+}: {
+  category: string;
+  items: Product[];
+  marketplace?: MarketplaceCategory;
+  onSeeAll: () => void;
+}) {
+  const promo = categoryPromos[category] || fallbackPromo;
+  const leadImage = marketplace?.image || items[0]?.image || "/products/product-21.jpg";
+  const secondImage = items[1]?.image || leadImage;
+  const thirdImage = items[2]?.image || secondImage;
+  const href = marketplace ? categoryPath(marketplace) : undefined;
+
+  const content = (
+    <>
+      <span className={`hidden min-h-[88px] overflow-hidden rounded-2xl bg-gradient-to-r ${promo.desktopClass} text-white shadow-sm sm:grid sm:grid-cols-[1fr_240px]`}>
+        <span className="relative z-10 flex min-w-0 items-center gap-4 px-5 py-4">
+          <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-display text-xl font-black ${promo.markClass}`}>
+            {category.slice(0, 1).toUpperCase()}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/70">{promo.tone}</span>
+            <span className="mt-1 block truncate font-display text-2xl font-bold leading-tight">{promo.headline}</span>
+            <span className="mt-1 block max-w-2xl truncate text-sm font-semibold text-white/78">{promo.line}</span>
+          </span>
+        </span>
+        <span className="relative hidden overflow-hidden sm:block">
+          <span className="absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-black/35 to-transparent" />
+          <Image src={leadImage} alt="" fill sizes="260px" className="object-cover opacity-90" />
+          <span className="absolute bottom-3 left-5 z-20 rounded-full bg-white px-3 py-1 text-xs font-black text-ink shadow-sm">
+            {promo.cta} <span aria-hidden>&rarr;</span>
+          </span>
+          <span className="absolute right-4 top-4 z-20 h-14 w-14 overflow-hidden rounded-xl border-2 border-white/85 bg-white shadow-md">
+            <Image src={secondImage} alt="" fill sizes="64px" className="object-cover" />
+          </span>
+          <span className="absolute bottom-4 right-12 z-20 h-12 w-12 overflow-hidden rounded-xl border-2 border-white/85 bg-white shadow-md">
+            <Image src={thirdImage} alt="" fill sizes="56px" className="object-cover" />
+          </span>
+        </span>
+      </span>
+
+      <span className={`relative flex min-h-16 overflow-hidden rounded-xl bg-gradient-to-r ${promo.mobileClass} text-white shadow-sm sm:hidden`}>
+        <span className="relative z-10 flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3">
+          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl font-display text-base font-black ${promo.markClass}`}>
+            {category.slice(0, 1).toUpperCase()}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-[10px] font-black uppercase tracking-[0.14em] text-white/70">{promo.tone}</span>
+            <span className="mt-0.5 block truncate text-sm font-black leading-5">{promo.headline}</span>
+          </span>
+        </span>
+        <span className="absolute inset-y-0 right-0 w-28">
+          <Image src={leadImage} alt="" fill sizes="112px" className="object-cover opacity-55" />
+          <span className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
+        </span>
+      </span>
+    </>
+  );
+
+  return href ? (
+    <Link href={href} className="mb-4 block focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30">
+      {content}
+    </Link>
+  ) : (
+    <button type="button" onClick={onSeeAll} className="mb-4 block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30">
+      {content}
+    </button>
+  );
+}
+
 function CategoryRow({
   category,
   items,
@@ -120,9 +298,11 @@ function CategoryRow({
       </div>
 
       <div className="relative px-4 pb-4 pt-4 sm:px-6">
+        <CategoryGraphicStrip category={category} items={items} marketplace={marketplace} onSeeAll={onSeeAll} />
+
         {/* Edge fades hint that the row scrolls horizontally (large screens only). */}
-        <span className="pointer-events-none absolute inset-y-4 left-4 z-10 hidden w-6 bg-gradient-to-r from-white to-transparent lg:block" />
-        <span className="pointer-events-none absolute inset-y-4 right-4 z-10 hidden w-12 bg-gradient-to-l from-white to-transparent lg:block" />
+        <span className="pointer-events-none absolute bottom-4 left-4 top-[7.75rem] z-10 hidden w-6 bg-gradient-to-r from-white to-transparent lg:block" />
+        <span className="pointer-events-none absolute bottom-4 right-4 top-[7.75rem] z-10 hidden w-12 bg-gradient-to-l from-white to-transparent lg:block" />
 
         {/*
           Mobile: a clean 2-column grid showing 4 products per category (no
