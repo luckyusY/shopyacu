@@ -603,6 +603,7 @@ export function Storefront({
           <nav className="hidden items-center gap-6 text-sm font-bold text-ink/75 md:flex">
             <a className="transition hover:text-accent" href="#categories">Categories</a>
             <a className="transition hover:text-accent" href="#products">Products</a>
+            <Link className="transition hover:text-accent" href="/courses">Courses</Link>
             <a className="transition hover:text-accent" href="#delivery">How it works</a>
             <Link className="transition hover:text-accent" href="/blog">Blog</Link>
             <a className="transition hover:text-accent" href="#contact">Contact</a>
@@ -657,6 +658,7 @@ export function Storefront({
             {[
               ["Categories", "#categories"],
               ["Products", "#products"],
+              ["Courses", "/courses"],
               ["How it works", "#delivery"],
               ["Blog", "/blog"],
               ["Contact", "#contact"],

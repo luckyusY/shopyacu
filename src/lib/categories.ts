@@ -63,6 +63,14 @@ export const marketplaceCategories: MarketplaceCategory[] = [
     tag: "Education",
   },
   {
+    label: "Courses",
+    category: "Learning",
+    slug: "courses",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80",
+    description: "One-month practical courses in Excel, digital marketing, and full stack development.",
+    tag: "Learning",
+  },
+  {
     label: "Pets",
     category: "Pets",
     slug: "pets",
@@ -131,7 +139,7 @@ export const marketplaceCategories: MarketplaceCategory[] = [
     category: "Services",
     slug: "services",
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80",
-    description: "Professional help, repairs, delivery, creative work, and business support.",
+    description: "Professional help, repairs, delivery, creative work, learning, and business support.",
     tag: "Help",
   },
   {
@@ -145,6 +153,7 @@ export const marketplaceCategories: MarketplaceCategory[] = [
 ];
 
 export function categoryPath(category: MarketplaceCategory | CategoryShowcaseItem) {
+  if (category.slug === "courses") return "/courses";
   return `/categories/${category.slug}`;
 }
 

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
-import { marketplaceCategories } from "@/lib/categories";
+import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProducts } from "@/lib/product-store";
 import { getBlogPosts } from "@/lib/blog-store";
 
@@ -15,15 +15,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/courses`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
   ];
 
-  const categoryRoutes: MetadataRoute.Sitemap = marketplaceCategories.map((category) => ({
-    url: `${SITE_URL}/categories/${category.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
+  const categoryRoutes: MetadataRoute.Sitemap = marketplaceCategories
+    .filter((category) => category.slug !== "courses")
+    .map((category) => ({
+      url: `${SITE_URL}${categoryPath(category)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    }));
 
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
