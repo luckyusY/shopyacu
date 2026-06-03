@@ -10,11 +10,11 @@ import { whatsappLink } from "@/lib/whatsapp";
 
 export const metadata = {
   title: "Courses | Shopyacu",
-  description: "One-month Shopyacu learning courses in Excel, digital marketing, and full stack development for RWF 200,000 per month.",
+  description: "One-month Shopyacu learning courses in Excel, digital marketing, full stack development, and AI for RWF 200,000 per month.",
   alternates: canonical("/courses"),
   ...buildOpenGraph({
     title: "Courses | Shopyacu",
-    description: "Practical one-month learning courses in Excel, digital marketing, and full stack development.",
+    description: "Practical one-month learning courses in Excel, digital marketing, full stack development, and AI.",
     path: "/courses",
     image: courses[0]?.image,
   }),
@@ -65,13 +65,13 @@ export default function CoursesPage() {
           <ShareActions
             compact
             title="Courses | Shopyacu"
-            text="Browse Shopyacu courses in Excel, digital marketing, and full stack development."
+            text="Browse Shopyacu courses in Excel, digital marketing, full stack development, and AI."
             path="/courses"
             className="mt-5 max-w-xl"
           />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
           {courses.map((course) => (
             <a
               key={course.slug}

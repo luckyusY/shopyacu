@@ -111,6 +111,37 @@ export const courses: Course[] = [
       },
     ],
   },
+  {
+    slug: "ai-course",
+    title: "AI Course",
+    category: "Learning",
+    price: coursePrice,
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
+    summary: "A practical one-month AI course for using modern AI tools to work faster, create content, analyze information, and automate daily tasks.",
+    outcomes: ["Write stronger AI prompts", "Use AI for business and content", "Build simple automations", "Work safely with AI tools"],
+    modules: [
+      {
+        week: "Week 1",
+        title: "AI foundations",
+        lessons: ["What AI can and cannot do", "Prompt writing basics", "Choosing the right AI tool", "Safe and responsible AI use"],
+      },
+      {
+        week: "Week 2",
+        title: "AI for productivity",
+        lessons: ["Research and summaries", "Email and document drafting", "Spreadsheet and data help", "Personal workflow templates"],
+      },
+      {
+        week: "Week 3",
+        title: "AI for business and marketing",
+        lessons: ["Content ideas and captions", "Customer support replies", "Product descriptions", "Simple brand and campaign planning"],
+      },
+      {
+        week: "Week 4",
+        title: "Automation project",
+        lessons: ["Build reusable prompt systems", "Connect AI into daily tasks", "Create a business use-case workflow", "Final project review"],
+      },
+    ],
+  },
 ];
 
 export function getCourse(slug: string) {
