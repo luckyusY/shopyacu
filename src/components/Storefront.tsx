@@ -585,7 +585,7 @@ export function Storefront({
         </div>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 text-ink">
-            <Logo priority imgClassName="h-[34px] w-[84px] object-contain sm:h-9 sm:w-auto" />
+            <Logo priority imgClassName="h-[40px] w-[128px] object-contain sm:h-9 sm:w-auto" />
             <span className="hidden text-[11px] font-bold uppercase tracking-[0.18em] text-ink/55 sm:inline">store</span>
           </Link>
           <form onSubmit={submitSearch} className="hidden min-w-[280px] flex-1 items-center rounded-full border border-ink/10 bg-surface p-1 shadow-sm lg:flex xl:max-w-lg">
@@ -612,7 +612,7 @@ export function Storefront({
               target="_blank"
               rel="noreferrer"
               onClick={() => trackWa("header")}
-              className="flex h-11 items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#1fb458] sm:px-5"
+              className="hidden h-11 items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#1fb458] sm:flex sm:px-5"
             >
               <WhatsAppIcon className="h-4 w-4" />
               <span className="hidden sm:inline">WhatsApp</span>
