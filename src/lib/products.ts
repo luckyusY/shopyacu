@@ -100,6 +100,23 @@ const productSeed: Product[] = [
   { id: 64, slug: "liangnwbingtang-mouth-care", name: "Liangnwbingtang Mouth Care", category: "Oral Care", price: 30000, image: "/products/oral-liangnwbingtang-mouth-care.jpg", tags: ["Oral care"], description: "Packaged mouth-care item available for ordering. Ask Shopyacu for exact label details and directions." },
   { id: 65, slug: "7-days-hair-oil", name: "7 Days Hair Oil", category: "Hair Care", price: 30000, image: "/products/hair-7-days-hair-oil.jpg", tags: ["Hair care", "Oil"], description: "7 Days hair oil for hair-care routines. Read the label and apply as directed." },
   { id: 66, slug: "sex-light-orgasmic-gel", name: "Sex Light Orgasmic Gel", category: "Personal Care", price: 30000, image: "/products/personal-sex-light-orgasmic-gel.jpg", tags: ["Personal care", "Women"], description: "Women's personal-care gel available from Shopyacu. Confirm label details, ingredients, and directions before use." },
+  { id: 67, slug: "sonifer-sandwich-maker", name: "Sonifer Sandwich Maker", category: "Kitchen", price: 0, image: "/products/sonifer-sandwich-maker-box-1.jfif", badge: "New arrival", tags: ["Kitchen", "Appliance", "Breakfast"], description: "Sonifer sandwich maker for quick toasted sandwiches and everyday kitchen snacks. Message Shopyacu to confirm the latest price and stock." },
+  { id: 68, slug: "foldable-electric-ironing-board", name: "Foldable Electric Ironing Board", category: "Home Appliances", price: 0, image: "/products/electric-ironing-board-1.jfif", tags: ["Laundry", "Ironing", "Home"], description: "Foldable ironing board for laundry rooms and home garment care. Ask on WhatsApp for current availability and delivery details." },
+  { id: 69, slug: "metal-kitchen-rack", name: "Metal Kitchen Rack", category: "Storage & Racks", price: 0, image: "/products/metal-kitchen-rack-box.jfif", tags: ["Kitchen", "Storage", "Rack"], description: "Multi-tier kitchen rack for organizing dishes, cookware, condiments, and everyday kitchen tools." },
+  { id: 70, slug: "assorted-warm-blankets-duvet-sets", name: "Assorted Warm Blankets & Duvet Sets", category: "Bedding", price: 0, image: "/products/assorted-bedding-stack-1.jfif", badge: "Assorted colors", tags: ["Bedding", "Blankets", "Duvet"], description: "Assorted warm blankets and duvet sets in multiple colors and patterns. Contact Shopyacu to choose the available style you want." },
+  { id: 71, slug: "silver-crest-8l-air-fryer", name: "Silver Crest 8L Air Fryer", category: "Kitchen", price: 0, image: "/products/silver-crest-air-fryer-box-1.jfif", badge: "Kitchen pick", tags: ["Air fryer", "Kitchen", "Appliance"], description: "Silver Crest 8L air fryer for easy home cooking with less oil. Message us for the latest price, color, and stock confirmation." },
+  { id: 72, slug: "meylux-water-dispenser", name: "Meylux Water Dispenser", category: "Home Appliances", price: 0, image: "/products/meylux-water-dispenser-front.jfif", tags: ["Water dispenser", "Appliance", "Home"], description: "Meylux water dispenser for home or office use. Confirm model details, price, and delivery options on WhatsApp." },
+  { id: 73, slug: "pink-wedding-stage-decor", name: "Pink Wedding Stage Decor Setup", category: "Wedding", price: 0, image: "/products/wedding-stage-pink-view-1.jfif", badge: "Event decor", tags: ["Wedding", "Decor", "Stage"], description: "Pink wedding stage decor setup for ceremonies, receptions, and photo moments. Ask Shopyacu for package details and availability." },
+  { id: 74, slug: "standing-storage-cabinet", name: "Standing Storage Cabinet", category: "Storage & Racks", price: 0, image: "/products/standing-storage-cabinet.jfif", tags: ["Storage", "Cabinet", "Home"], description: "Standing storage cabinet for organizing household items, clothes, and supplies in compact spaces." },
+  { id: 75, slug: "countertop-water-dispenser", name: "Countertop Water Dispenser", category: "Home Appliances", price: 0, image: "/products/countertop-water-dispenser-lifestyle.jfif", tags: ["Water dispenser", "Kitchen", "Home"], description: "Compact countertop water dispenser for kitchens, offices, and small spaces. Contact us for current price and stock." },
+  { id: 76, slug: "kitchen-dish-rack", name: "Kitchen Dish Rack", category: "Storage & Racks", price: 0, image: "/products/kitchen-dish-rack-box.jfif", tags: ["Kitchen", "Dish rack", "Storage"], description: "Kitchen dish rack for plates, cups, utensils, and countertop organization." },
+  { id: 77, slug: "elastic-load-cover", name: "Elastic Load Cover", category: "Outdoor", price: 0, image: "/products/elastic-load-cover.jfif", tags: ["Outdoor", "Cover", "Utility"], description: "Elastic load cover for securing and covering carried items during movement, storage, or outdoor use." },
+  { id: 78, slug: "portable-cloth-wardrobe", name: "Portable Cloth Wardrobe", category: "Storage & Racks", price: 0, image: "/products/portable-wardrobe-lifestyle.jfif", tags: ["Wardrobe", "Storage", "Clothes"], description: "Portable cloth wardrobe with shelves and hanging space for bedrooms, rentals, and compact homes." },
+  { id: 79, slug: "door-draft-stopper-set", name: "Door Draft Stopper Set", category: "Home", price: 0, image: "/products/door-draft-stopper-set.jfif", tags: ["Door seal", "Home", "Comfort"], description: "Door draft stopper set for reducing gaps under doors and improving everyday home comfort." },
+  { id: 80, slug: "over-toilet-bathroom-rack", name: "Over-Toilet Bathroom Rack", category: "Bathroom", price: 0, image: "/products/over-toilet-bathroom-rack.jfif", tags: ["Bathroom", "Rack", "Storage"], description: "Over-toilet bathroom rack for keeping toiletries, towels, and daily essentials organized." },
+  { id: 81, slug: "shoe-and-hat-rack", name: "Shoe and Hat Rack", category: "Storage & Racks", price: 0, image: "/products/shoe-and-hat-rack-box.jfif", tags: ["Shoes", "Rack", "Storage"], description: "Shoe and hat rack for entryways, bedrooms, and closet organization." },
+  { id: 82, slug: "electric-kettle", name: "Electric Kettle", category: "Kitchen", price: 0, image: "/products/electric-kettle-display.jfif", tags: ["Kettle", "Kitchen", "Appliance"], description: "Electric kettle for boiling water quickly at home, in the office, or in small kitchens." },
+  { id: 83, slug: "storage-ottoman-stools", name: "Storage Ottoman Stools", category: "Furniture", price: 0, image: "/products/storage-ottoman-stools.jfif", tags: ["Furniture", "Storage", "Stool"], description: "Storage ottoman stools that can be used for seating, small-space organization, and room styling." },
 ];
 
 const galleryImages: Record<number, string[]> = {
@@ -130,6 +147,14 @@ const galleryImages: Record<number, string[]> = {
   32: ["product-32-2.jpg", "product-32-3.jpg"],
   34: ["wellness-butt-booster-2.jpg"],
   43: ["wellness-femmi-brew-2.jpg"],
+  67: ["sonifer-sandwich-maker-box-2.jfif", "sonifer-sandwich-maker-box-3.jfif"],
+  68: ["ironing-board-box-blue.jfif", "ironing-board-box-black.jfif", "ironing-board-lifestyle.jfif"],
+  70: ["bedding-color-options.jfif", "red-warm-blanket.jfif", "black-duvet-set.jfif", "striped-warm-blanket.jfif", "assorted-bedding-stack-2.jfif", "cream-warm-blanket.jfif", "bedding-stock-shelves.jfif", "bedding-store-display.jfif", "assorted-bedding-stack-3.jfif", "assorted-bedding-stack-4.jfif"],
+  71: ["silver-crest-air-fryer-box-2.jfif", "air-fryer-display-unit.jfif", "silver-crest-air-fryer-box-3.jfif"],
+  72: ["meylux-water-dispenser-box.jfif"],
+  73: ["wedding-stage-pink-view-2.jfif"],
+  75: ["countertop-water-dispenser-side.jfif", "standing-water-dispenser.jfif"],
+  78: ["portable-cloth-wardrobe-box.jfif"],
 };
 
 export function slugify(value: string) {
