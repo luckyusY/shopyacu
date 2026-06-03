@@ -14,6 +14,7 @@ import { InstagramProfileCard } from "@/components/InstagramProfileCard";
 import { ShareActions } from "@/components/ShareActions";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductCollectionBySlug } from "@/lib/collections-store";
+import { getCourse, type Course } from "@/lib/courses";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
@@ -169,6 +170,27 @@ export default async function ProductPage({
   const featuredUpsells = uniqueProducts([...related, ...topSellers]).slice(0, 4);
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
   const kinyarwandaTags = ["Yizewe", "Byihuse", "Kigali", "Bikugezeho", "Guhitamo"];
+  const course = getCourse(product.slug);
+  const primaryActionLabel = course ? "Register on WhatsApp" : "Order on WhatsApp";
+  const primaryActionMessage = course
+    ? `Hello Shopyacu, I want to register for ${course.title} at ${formatPrice(course.price)} per month. Can you share the next intake details?`
+    : `Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}). Is it available and what is the delivery time?`;
+  const secondaryActionLabel = course ? "Ask course details first" : "Ask price & availability first";
+  const secondaryActionMessage = course
+    ? `Hello Shopyacu, I'm interested in ${course.title}. Can you share the schedule, modules, and registration process?`
+    : `Hello Shopyacu, I'm interested in ${product.name} (${formatPrice(product.price)}). Can you share your best price, delivery details, and availability?`;
+  const processEyebrow = course ? "How registration works" : "How ordering works";
+  const processSteps = course
+    ? [
+        ["1", "Choose course", "Pick Excel, digital marketing, or full stack development."],
+        ["2", "Confirm intake", "We confirm the schedule, learning format, and start date."],
+        ["3", "Start learning", `Register for ${formatPrice(course.price)} per month and follow the weekly modules.`],
+      ]
+    : [
+        ["1", "Message us", "Tap WhatsApp and tell us what you want."],
+        ["2", "Confirm details", "We confirm the price, delivery time, and availability."],
+        ["3", "Pay after delivery", "WISHYURA BIKUGEZEHO - receive your item, check it, then pay."],
+      ];
 
   const marketplacePath = getMarketplacePath(product.category);
   const breadcrumb = breadcrumbJsonLd([
@@ -292,19 +314,19 @@ export default async function ProductPage({
             ) : null}
 
             <WhatsAppLink
-              href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}). Is it available and what is the delivery time?`)}
+              href={whatsappLink(primaryActionMessage)}
               track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
               className="mt-4 flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-5 text-sm font-black text-white shadow-lg transition hover:bg-[#1fb458] active:scale-[0.99] animate-[ctaGlow_2.4s_ease-in-out_infinite] sm:mt-5 sm:min-h-14 sm:px-7 sm:text-base"
             >
               <WhatsAppIcon className="h-6 w-6" />
-              Order on WhatsApp
+              {primaryActionLabel}
             </WhatsAppLink>
             <WhatsAppLink
-              href={whatsappLink(`Hello Shopyacu, I'm interested in ${product.name} (${formatPrice(product.price)}). Can you share your best price, delivery details, and availability?`)}
+              href={whatsappLink(secondaryActionMessage)}
               track={{ slug: product.slug, name: product.name, category: product.category, source: "ask_question" }}
               className="mt-2.5 flex min-h-11 w-full items-center justify-center rounded-full border border-ink/15 bg-surface px-5 text-sm font-bold text-ink transition hover:bg-ink hover:text-white sm:min-h-12 sm:px-7"
             >
-              Ask price &amp; availability first
+              {secondaryActionLabel}
             </WhatsAppLink>
 
             <ShareActions
@@ -371,16 +393,14 @@ export default async function ProductPage({
                 </ol>
               </div>
             ) : null}
+
+            {course ? <CourseModulesPanel course={course} /> : null}
           </div>
 
           <div className="rounded-2xl border border-ink/10 bg-white p-4 shadow-sm sm:p-5">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">How ordering works</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">{processEyebrow}</p>
             <ol className="mt-4 grid gap-3 sm:grid-cols-3 sm:gap-4">
-              {[
-                ["1", "Message us", "Tap WhatsApp and tell us what you want."],
-                ["2", "Confirm details", "We confirm the price, delivery time, and availability."],
-                ["3", "Pay after delivery", "WISHYURA BIKUGEZEHO - receive your item, check it, then pay."],
-              ].map(([step, title, copy]) => (
+              {processSteps.map(([step, title, copy]) => (
                 <li key={step} className="flex gap-3 rounded-xl bg-surface p-3 sm:bg-transparent sm:p-0">
                   <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-ink text-xs font-black text-accent">
                     {step}
@@ -476,18 +496,69 @@ export default async function ProductPage({
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Ready to close?</p>
-            <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Send this product to WhatsApp.</h2>
+            <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
+              {course ? "Send this course to WhatsApp." : "Send this product to WhatsApp."}
+            </h2>
           </div>
           <WhatsAppLink
-            href={whatsappLink(`Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
+            href={whatsappLink(course ? `Hello Shopyacu, I want to register for ${course.title}.` : `Hello Shopyacu, I want to order ${product.name} (${formatPrice(product.price)}).`)}
             track={{ slug: product.slug, name: product.name, category: product.category, source: "product_cta" }}
             className="rounded-full bg-accent px-7 py-4 text-center text-sm font-bold text-ink transition hover:bg-white"
           >
-            Order now
+            {course ? "Register now" : "Order now"}
           </WhatsAppLink>
         </div>
       </section>
     </main>
+  );
+}
+
+function CourseModulesPanel({ course }: { course: Course }) {
+  return (
+    <div className="mt-5 border-t border-ink/10 pt-5">
+      <div className="rounded-2xl bg-ink p-4 text-white sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">Course modules</p>
+            <h2 className="mt-2 font-display text-2xl font-bold leading-tight">One-month learning plan</h2>
+            <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-white/70">{course.summary}</p>
+          </div>
+          <span className="w-fit rounded-full bg-accent px-4 py-2 text-sm font-black text-ink">{formatPrice(course.price)} / month</span>
+        </div>
+
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {course.outcomes.map((outcome) => (
+            <span key={outcome} className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-bold text-white/85">
+              {outcome}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3">
+        {course.modules.map((module, index) => (
+          <section key={module.week} className="rounded-2xl border border-ink/10 bg-surface p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-xs font-black text-accent">{index + 1}</span>
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-muted">{module.week}</span>
+              <h3 className="font-display text-lg font-bold text-ink">{module.title}</h3>
+            </div>
+            <ul className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-muted sm:grid-cols-2">
+              {module.lessons.map((lesson) => (
+                <li key={lesson} className="flex gap-2 rounded-xl bg-white px-3 py-2">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                  <span>{lesson}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+
+      <Link href="/courses" className="mt-4 inline-flex w-full justify-center rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-black text-ink transition hover:bg-ink hover:text-white sm:w-fit">
+        View all courses
+      </Link>
+    </div>
   );
 }
 
