@@ -9,12 +9,11 @@ type LogoProps = {
   priority?: boolean;
 };
 
-// Brand wordmark. The source PNG has a white background, so it sits in a
-// white chip that blends on white/paper and reads as a clean badge on the
-// orange header.
+// Brand wordmark with transparent background so it can sit directly on header
+// colors and page surfaces.
 export function Logo({ className = "", imgClassName = "h-7", priority = false }: LogoProps) {
   return (
-    <span className={`inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 ring-1 ring-black/5 ${className}`}>
+    <span className={`inline-flex items-center ${className}`}>
       <Image
         src="/logo.png"
         alt="Shopyacu"
