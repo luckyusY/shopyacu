@@ -132,6 +132,20 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
             </div>
           </div>
         )}
+
+        <div className="mt-8 rounded-3xl bg-ink px-5 py-6 text-center text-white shadow-xl sm:px-8 sm:py-8">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-accent">Keep browsing</p>
+          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Want to see everything?</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm font-semibold leading-6 text-white/70">
+            Open the full Shopyacu catalog to compare more products, categories, and new arrivals.
+          </p>
+          <Link
+            href="/#products"
+            className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-7 text-sm font-black text-ink transition hover:bg-white sm:w-auto"
+          >
+            See all products
+          </Link>
+        </div>
       </section>
     </main>
   );
