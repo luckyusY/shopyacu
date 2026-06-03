@@ -8,13 +8,12 @@ import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { ShareActions } from "@/components/ShareActions";
 import { ProductCard } from "@/components/ProductCard";
 import {
-  getBlogPost,
-  getBlogPosts,
-  getRelatedPosts,
+  blogPosts,
   formatBlogDate,
   readingTimeMinutes,
   type BlogSection,
 } from "@/lib/blog";
+import { getBlogPost, getRelatedPosts } from "@/lib/blog-store";
 import { getMarketplaceCategory, categoryPath } from "@/lib/categories";
 import { getProducts } from "@/lib/product-store";
 import { whatsappLink } from "@/lib/whatsapp";
@@ -26,8 +25,10 @@ import {
   breadcrumbJsonLd,
 } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
-  return getBlogPosts().map((post) => ({ slug: post.slug }));
+  return blogPosts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
@@ -36,7 +37,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPost(slug);
   if (!post) return { title: "Article not found" };
 
   const path = `/blog/${post.slug}`;
@@ -100,7 +101,7 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPost(slug);
   if (!post) notFound();
 
   const allProducts = await getProducts();
@@ -110,7 +111,7 @@ export default async function BlogPostPage({
   const relatedCategories = post.relatedCategorySlugs
     .map((s) => getMarketplaceCategory(s))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
-  const relatedPosts = getRelatedPosts(post.slug, 3);
+  const relatedPosts = await getRelatedPosts(post.slug, 3);
   const readingTime = readingTimeMinutes(post);
 
   const articleJsonLd = {

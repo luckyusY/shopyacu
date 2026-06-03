@@ -9,7 +9,8 @@
     "lint": "eslint",
     "seed:products": "node --env-file=.env.local scripts/seed-products.mjs",
     "seed:cars": "node --env-file=.env.local scripts/seed-car-listings.mjs",
-    "seed:added-products": "node --env-file=.env.local scripts/seed-added-products.mjs"
+    "seed:added-products": "node --env-file=.env.local scripts/seed-added-products.mjs",
+    "generate:blog": "node --env-file=.env.local scripts/generate-blog.mjs"
   },
   "dependencies": {
     "cloudinary": "^2.8.0",

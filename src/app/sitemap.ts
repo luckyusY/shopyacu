@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 import { marketplaceCategories } from "@/lib/categories";
 import { getProducts } from "@/lib/product-store";
-import { blogPosts } from "@/lib/blog";
+import { getBlogPosts } from "@/lib/blog-store";
 
 // Dynamic sitemap covering the homepage, the categories hub, every marketplace
 // category, every live product, the blog index, and every blog post. Submitted
@@ -25,12 +25,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.updatedAt),
-    changeFrequency: "monthly",
-    priority: 0.6,
-  }));
+  let blogRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const posts = await getBlogPosts();
+    blogRoutes = posts.map((post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }));
+  } catch {
+    // Keep the rest of the sitemap if the blog store is unavailable.
+  }
 
   let productRoutes: MetadataRoute.Sitemap = [];
   try {

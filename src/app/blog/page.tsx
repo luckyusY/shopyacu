@@ -4,9 +4,12 @@ import type { Metadata } from "next";
 import { Logo } from "@/components/Logo";
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import { getBlogPosts, formatBlogDate, readingTimeMinutes } from "@/lib/blog";
+import { formatBlogDate, readingTimeMinutes } from "@/lib/blog";
+import { getBlogPosts } from "@/lib/blog-store";
 import { absoluteUrl, buildOpenGraph, SITE_NAME } from "@/lib/seo";
 import { whatsappLink } from "@/lib/whatsapp";
+
+export const dynamic = "force-dynamic";
 
 const TITLE = "Shopyacu Blog — Shopping Guides & Home Ideas for Kigali";
 const DESCRIPTION =
@@ -19,8 +22,8 @@ export const metadata: Metadata = {
   ...buildOpenGraph({ title: TITLE, description: DESCRIPTION, path: "/blog" }),
 };
 
-export default function BlogIndexPage() {
-  const posts = getBlogPosts();
+export default async function BlogIndexPage() {
+  const posts = await getBlogPosts();
   const [featured, ...rest] = posts;
 
   const blogJsonLd = {

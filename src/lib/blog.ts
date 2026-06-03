@@ -628,14 +628,111 @@ export const blogPosts: BlogPost[] = [
   },
 ];
 
-export function getBlogPosts() {
-  return [...blogPosts].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
-  );
+export function slugifyBlog(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
 }
 
-export function getBlogPost(slug: string) {
-  return blogPosts.find((post) => post.slug === slug);
+const ALLOWED_SECTION_TYPES = new Set(["p", "h2", "h3", "ul", "ol", "quote"]);
+
+function normalizeSections(input: unknown): BlogSection[] {
+  if (!Array.isArray(input)) return [];
+  const sections: BlogSection[] = [];
+
+  for (const raw of input) {
+    if (!raw || typeof raw !== "object") continue;
+    const type = (raw as { type?: string }).type;
+    if (!type || !ALLOWED_SECTION_TYPES.has(type)) continue;
+
+    if (type === "ul" || type === "ol") {
+      const items = Array.isArray((raw as { items?: unknown }).items)
+        ? ((raw as { items: unknown[] }).items.map((i) => String(i).trim()).filter(Boolean))
+        : [];
+      if (items.length) sections.push({ type, items });
+    } else {
+      const text = String((raw as { text?: unknown }).text ?? "").trim();
+      if (text) sections.push({ type: type as "p" | "h2" | "h3" | "quote", text });
+    }
+  }
+
+  return sections;
+}
+
+function normalizeStringArray(input: unknown, max = 12): string[] {
+  if (!Array.isArray(input)) {
+    if (typeof input === "string") input = input.split(",");
+    else return [];
+  }
+  return Array.from(
+    new Set((input as unknown[]).map((v) => String(v).trim()).filter(Boolean)),
+  ).slice(0, max);
+}
+
+function normalizeFaqs(input: unknown): BlogFaq[] {
+  if (!Array.isArray(input)) return [];
+  return input
+    .map((raw) => ({
+      q: String((raw as { q?: unknown })?.q ?? "").trim(),
+      a: String((raw as { a?: unknown })?.a ?? "").trim(),
+    }))
+    .filter((faq) => faq.q && faq.a)
+    .slice(0, 12);
+}
+
+function isoDate(value: unknown, fallback: string) {
+  if (typeof value === "string" || value instanceof Date) {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) return date.toISOString().slice(0, 10);
+  }
+  return fallback;
+}
+
+/**
+ * Validate and sanitise a (possibly AI/LLM-generated) blog post into a safe,
+ * fully-typed BlogPost. Returns null if the post lacks the minimum content to
+ * be worth publishing.
+ */
+export function normalizeBlogPost(input: Partial<BlogPost> & Record<string, unknown>): BlogPost | null {
+  const title = String(input.title ?? "").trim();
+  const sections = normalizeSections(input.sections);
+  if (!title || sections.length < 2) return null;
+
+  const slug = slugifyBlog(String(input.slug ?? "") || title);
+  if (!slug) return null;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const publishedAt = isoDate(input.publishedAt, today);
+  const description = String(input.description ?? "").trim().slice(0, 320) ||
+    `${title} — a Shopyacu shopping guide for Kigali and Rwanda.`;
+  const excerpt = String(input.excerpt ?? "").trim().slice(0, 320) || description.slice(0, 160);
+
+  return {
+    slug,
+    title: title.slice(0, 160),
+    metaTitle: (String(input.metaTitle ?? "").trim() || title).slice(0, 70),
+    description,
+    excerpt,
+    keywords: normalizeStringArray(input.keywords),
+    tag: String(input.tag ?? "").trim().slice(0, 40) || "Buying Guide",
+    author: String(input.author ?? "").trim() || AUTHOR,
+    publishedAt,
+    updatedAt: isoDate(input.updatedAt, publishedAt),
+    heroImage: String(input.heroImage ?? "").trim() || "/logo.png",
+    relatedCategorySlugs: normalizeStringArray(input.relatedCategorySlugs, 6),
+    featuredProductSlugs: normalizeStringArray(input.featuredProductSlugs, 8),
+    sections,
+    faqs: normalizeFaqs(input.faqs),
+  };
+}
+
+export function sortPostsByDate(posts: BlogPost[]) {
+  return [...posts].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
 }
 
 const WORDS_PER_MINUTE = 220;
@@ -650,11 +747,13 @@ export function readingTimeMinutes(post: BlogPost) {
   return Math.max(2, Math.round(words / WORDS_PER_MINUTE));
 }
 
-export function getRelatedPosts(slug: string, limit = 3) {
-  const current = getBlogPost(slug);
-  if (!current) return getBlogPosts().slice(0, limit);
+/** Pure related-posts ranking over a provided list (DB- or bundle-backed). */
+export function getRelatedPostsFrom(posts: BlogPost[], slug: string, limit = 3) {
+  const sorted = sortPostsByDate(posts);
+  const current = sorted.find((post) => post.slug === slug);
+  if (!current) return sorted.filter((post) => post.slug !== slug).slice(0, limit);
 
-  return getBlogPosts()
+  return sorted
     .filter((post) => post.slug !== slug)
     .sort((a, b) => {
       const score = (post: BlogPost) =>
