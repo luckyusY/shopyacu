@@ -189,7 +189,7 @@ function CategoryGraphicStrip({
           </span>
           <span className="min-w-0">
             <span className="block truncate text-[10px] font-black uppercase tracking-[0.14em] text-white/70">{promo.tone}</span>
-            <span className="mt-0.5 block truncate text-sm font-black leading-5">{promo.headline}</span>
+            <span className="mt-0.5 block truncate text-sm font-black leading-5">{category}</span>
           </span>
         </span>
         <span className="absolute inset-y-0 right-0 w-28">
