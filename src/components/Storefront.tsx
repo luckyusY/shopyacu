@@ -579,16 +579,16 @@ export function Storefront({
 
   return (
     <main className="min-h-screen bg-paper text-ink">
-      <header className="sticky top-0 z-30 bg-accent shadow-sm">
+      <header className="sticky top-0 z-30 border-b border-ink/10 bg-white shadow-sm">
         <div className="bg-ink px-4 py-2 text-center text-xs font-semibold tracking-wide text-white/80">
           Orders confirmed on WhatsApp <span className="text-accent">{whatsappDisplay}</span>
         </div>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 text-white">
+          <Link href="/" className="flex items-center gap-2 text-ink">
             <Logo priority imgClassName="h-[34px] w-[84px] object-contain sm:h-9 sm:w-auto" />
-            <span className="hidden text-[11px] font-medium uppercase tracking-[0.18em] text-white/80 sm:inline">store</span>
+            <span className="hidden text-[11px] font-bold uppercase tracking-[0.18em] text-ink/55 sm:inline">store</span>
           </Link>
-          <form onSubmit={submitSearch} className="hidden min-w-[280px] flex-1 items-center rounded-full bg-white p-1 shadow-sm lg:flex xl:max-w-lg">
+          <form onSubmit={submitSearch} className="hidden min-w-[280px] flex-1 items-center rounded-full border border-ink/10 bg-surface p-1 shadow-sm lg:flex xl:max-w-lg">
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -600,11 +600,11 @@ export function Storefront({
               Search
             </button>
           </form>
-          <nav className="hidden items-center gap-6 text-sm font-semibold text-white/90 md:flex">
-            <a className="transition hover:text-white" href="#categories">Categories</a>
-            <a className="transition hover:text-white" href="#products">Products</a>
-            <a className="transition hover:text-white" href="#delivery">How it works</a>
-            <a className="transition hover:text-white" href="#contact">Contact</a>
+          <nav className="hidden items-center gap-6 text-sm font-bold text-ink/75 md:flex">
+            <a className="transition hover:text-accent" href="#categories">Categories</a>
+            <a className="transition hover:text-accent" href="#products">Products</a>
+            <a className="transition hover:text-accent" href="#delivery">How it works</a>
+            <a className="transition hover:text-accent" href="#contact">Contact</a>
           </nav>
           <div className="flex items-center gap-2">
             <a
@@ -620,7 +620,7 @@ export function Storefront({
             <button
               type="button"
               onClick={() => setIsMenuOpen((open) => !open)}
-              className="h-11 rounded-full border border-white/50 px-4 text-sm font-semibold text-white transition hover:bg-white hover:text-accent md:hidden"
+              className="h-11 rounded-full border border-ink/15 px-4 text-sm font-bold text-ink transition hover:bg-ink hover:text-white md:hidden"
               aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? "Close" : "Menu"}
@@ -628,7 +628,7 @@ export function Storefront({
             <button
               type="button"
               onClick={() => setCartOpen(true)}
-              className="relative h-11 rounded-full bg-white px-4 text-sm font-bold text-ink transition hover:bg-white/90 sm:px-5"
+              className="relative h-11 rounded-full bg-ink px-4 text-sm font-bold text-white transition hover:bg-ink/85 sm:px-5"
             >
               Cart
               {itemCount > 0 && (
@@ -638,7 +638,7 @@ export function Storefront({
           </div>
         </div>
         <div className="px-4 pb-3 lg:hidden">
-          <form onSubmit={submitSearch} className="flex items-center rounded-full bg-white p-1 shadow-sm">
+          <form onSubmit={submitSearch} className="flex items-center rounded-full border border-ink/10 bg-surface p-1 shadow-sm">
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -652,7 +652,7 @@ export function Storefront({
           </form>
         </div>
         {isMenuOpen && (
-          <div className="grid gap-2 border-t border-white/30 px-4 py-3 md:hidden">
+          <div className="grid gap-2 border-t border-ink/10 bg-white px-4 py-3 md:hidden">
             {[
               ["Categories", "#categories"],
               ["Products", "#products"],
@@ -663,7 +663,7 @@ export function Storefront({
                 key={label}
                 href={href}
                 onClick={() => setIsMenuOpen(false)}
-                className="rounded-xl bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm"
+                className="rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-ink shadow-sm"
               >
                 {label}
               </a>
