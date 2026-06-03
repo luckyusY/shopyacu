@@ -6,6 +6,15 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { ScrollProgressIndicator } from "@/components/ScrollProgressIndicator";
 import { SmoothMotionProvider } from "@/components/SmoothMotionProvider";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_DESCRIPTION,
+  buildOpenGraph,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -28,10 +37,52 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Shopyacu Online Store",
-  description: "Shop practical home, kitchen, bathroom, fitness, office, and outdoor products in Kigali.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "Shopyacu",
+    "online shopping Kigali",
+    "online store Rwanda",
+    "home products Kigali",
+    "kitchen appliances Rwanda",
+    "pay on delivery Kigali",
+    "WhatsApp shopping Rwanda",
+    "marketplace Kigali",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: { canonical: "/" },
+  category: "shopping",
+  verification: {
+    // Drop your Google Search Console token into NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    // to verify the property and submit the sitemap for indexing.
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Shopyacu" },
+  formatDetection: { telephone: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  ...buildOpenGraph({
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    path: "/",
+  }),
 };
 
 export const viewport: Viewport = {
@@ -49,6 +100,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <Script
+          id="ld-organization"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
+        <Script
+          id="ld-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-M7CDRBWQL9"
           strategy="afterInteractive"

@@ -10,6 +10,7 @@ import { Logo } from "@/components/Logo";
 import { WhatsAppLink } from "@/components/WhatsAppLink";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { ShareActions } from "@/components/ShareActions";
+import { absoluteUrl, buildOpenGraph, breadcrumbJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const category = getMarketplaceCategory(slug);
 
-  if (!category) return { title: "Category not found | Shopyacu" };
+  if (!category) return { title: "Category not found" };
+
+  const path = `/categories/${category.slug}`;
+  const title = `${category.label} in Kigali`;
+  const description = `${category.description} Order on WhatsApp with pay-on-delivery across Kigali, Rwanda.`;
 
   return {
-    title: `${category.label} | Shopyacu`,
-    description: category.description,
+    title,
+    description,
+    alternates: { canonical: absoluteUrl(path) },
+    ...buildOpenGraph({ title, description, path, image: category.image }),
   };
 }
 
@@ -46,8 +53,34 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const relatedCategories = showcase.filter((item) => item.slug !== category.slug).slice(0, 6);
   const heroImage = categoryProducts[0]?.image || category.image;
 
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Categories", path: "/categories" },
+    { name: category.label, path: `/categories/${category.slug}` },
+  ]);
+  const itemList = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${category.label} listings on Shopyacu`,
+    numberOfItems: categoryProducts.length,
+    itemListElement: categoryProducts.slice(0, 30).map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`/products/${product.slug}`),
+      name: product.name,
+    })),
+  };
+
   return (
     <main className="min-h-screen bg-paper text-ink">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }}
+      />
       <header className="border-b border-ink/10 bg-paper/85 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center">

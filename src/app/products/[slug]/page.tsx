@@ -16,6 +16,7 @@ import { categoryPath, marketplaceCategories } from "@/lib/categories";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
+import { SITE_NAME, SITE_URL, absoluteUrl, buildOpenGraph, breadcrumbJsonLd } from "@/lib/seo";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -27,12 +28,44 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = await getProductBySlug(slug);
 
   if (!product) {
-    return { title: "Product not found | Shopyacu" };
+    return { title: "Product not found" };
   }
 
+  const path = `/products/${product.slug}`;
+  const title = `${product.name} — Buy in Kigali`;
+  const description = product.description?.slice(0, 160) || `${product.name} available from Shopyacu in Kigali with pay-on-delivery.`;
+
   return {
-    title: `${product.name} | Shopyacu`,
+    title,
+    description,
+    alternates: { canonical: absoluteUrl(path) },
+    ...buildOpenGraph({ title, description, path, image: product.image }),
+  };
+}
+
+function productJsonLd(product: Product) {
+  const hasPrice = Number.isFinite(product.price) && product.price > 0;
+  const inStock = product.stock !== "Out of stock";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
     description: product.description,
+    image: (product.images?.length ? product.images : [product.image]).map((img) => absoluteUrl(img)),
+    sku: product.slug,
+    category: product.category,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    offers: {
+      "@type": "Offer",
+      url: absoluteUrl(`/products/${product.slug}`),
+      priceCurrency: "RWF",
+      ...(hasPrice ? { price: product.price } : {}),
+      availability: inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    },
   };
 }
 
@@ -121,8 +154,23 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const originalPrice = Math.round(product.price * (1 + signal.discount / 100));
   const kinyarwandaTags = ["Yizewe", "Byihuse", "Kigali", "Bikugezeho", "Guhitamo"];
 
+  const marketplacePath = getMarketplacePath(product.category);
+  const breadcrumb = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: product.category, path: marketplacePath },
+    { name: product.name, path: `/products/${product.slug}` },
+  ]);
+
   return (
     <main className="min-h-screen bg-paper pb-28 text-ink lg:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
       <ProductPageTopReset />
       <TrackProductView slug={product.slug} name={product.name} category={product.category} />
       <ProductLeadPopup productName={product.name} priceLabel={formatPrice(product.price)} slug={product.slug} image={product.image} />

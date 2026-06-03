@@ -604,6 +604,7 @@ export function Storefront({
             <a className="transition hover:text-accent" href="#categories">Categories</a>
             <a className="transition hover:text-accent" href="#products">Products</a>
             <a className="transition hover:text-accent" href="#delivery">How it works</a>
+            <Link className="transition hover:text-accent" href="/blog">Blog</Link>
             <a className="transition hover:text-accent" href="#contact">Contact</a>
           </nav>
           <div className="flex items-center gap-2">
@@ -657,6 +658,7 @@ export function Storefront({
               ["Categories", "#categories"],
               ["Products", "#products"],
               ["How it works", "#delivery"],
+              ["Blog", "/blog"],
               ["Contact", "#contact"],
             ].map(([label, href]) => (
               <a
@@ -1213,10 +1215,16 @@ export function Storefront({
         </div>
       </section>
 
-      <footer id="contact" className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm font-medium text-muted sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+      <footer id="contact" className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm font-medium text-muted sm:px-6 md:flex-row md:items-start md:justify-between lg:px-8">
         <div>
           <Logo imgClassName="h-8" />
-          <p className="mt-3 max-w-xl">Home, kitchen, bathroom, office, fitness, and outdoor essentials for everyday use.</p>
+          <p className="mt-3 max-w-xl">Home, kitchen, bathroom, office, fitness, and outdoor essentials for everyday use in Kigali. Order on WhatsApp with pay-on-delivery.</p>
+          <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-ink/70">
+            <Link href="/categories" className="transition hover:text-accent">Categories</Link>
+            <Link href="/blog" className="transition hover:text-accent">Blog</Link>
+            <a href="#products" className="transition hover:text-accent">Products</a>
+            <a href="#delivery" className="transition hover:text-accent">How it works</a>
+          </nav>
         </div>
         <p className="font-display text-lg font-bold text-ink">WhatsApp {whatsappDisplay}</p>
       </footer>

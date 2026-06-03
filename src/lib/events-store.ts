@@ -19,6 +19,7 @@ export type InquirySource =
   | "category"
   | "cart"
   | "header"
+  | "blog"
   | "other";
 
 export type StorefrontEvent = {
@@ -57,6 +58,7 @@ const VALID_SOURCES: InquirySource[] = [
   "category",
   "cart",
   "header",
+  "blog",
   "other",
 ];
 
