@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { slugify, type Product, type ProductMedia } from "@/lib/products";
 import { uploadFilesToCloudinary } from "@/lib/cloudinary-client";
+import { TinyTextarea } from "@/components/admin/TinyTextarea";
 
 type ProductFormProps = {
   mode: "create" | "edit";
@@ -208,9 +209,9 @@ export function ProductForm({ mode, categories, product }: ProductFormProps) {
 
         <label className="grid gap-1.5">
           <span className={labelClass}>Description</span>
-          <textarea
+          <TinyTextarea
             value={form.description}
-            onChange={(e) => set("description", e.target.value)}
+            onChange={(value) => set("description", value)}
             placeholder="Describe the product…"
             className="min-h-28 rounded-xl border border-ink/10 bg-surface px-4 py-3 text-sm font-medium text-ink outline-none transition focus:border-accent focus:bg-white"
           />

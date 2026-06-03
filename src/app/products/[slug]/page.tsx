@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const path = `/products/${product.slug}`;
   const title = `${product.name} — Buy in Kigali`;
-  const description = product.description?.slice(0, 160) || `${product.name} available from Shopyacu in Kigali with pay-on-delivery.`;
+  const description = plainText(product.description)?.slice(0, 160) || `${product.name} available from Shopyacu in Kigali with pay-on-delivery.`;
 
   return {
     title,
@@ -52,7 +52,7 @@ function productJsonLd(product: Product) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description,
+    description: plainText(product.description),
     image: (product.images?.length ? product.images : [product.image]).map((img) => absoluteUrl(img)),
     sku: product.slug,
     category: product.category,
@@ -84,8 +84,12 @@ function productSignal(id: number) {
   };
 }
 
+function plainText(value: string) {
+  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function productText(product: Product) {
-  return `${product.name} ${product.category} ${product.description} ${product.badge || ""}`.toLowerCase();
+  return `${product.name} ${product.category} ${plainText(product.description)} ${product.badge || ""}`.toLowerCase();
 }
 
 function relatedScore(current: Product, item: Product) {
@@ -333,7 +337,10 @@ export default async function ProductPage({
             </p>
 
             <div className="mt-5 border-t border-ink/10 pt-5">
-              <p className="text-base leading-7 text-muted">{product.description}</p>
+              <div
+                className="space-y-3 text-base leading-7 text-muted [&_a]:font-bold [&_a]:text-ink [&_a]:underline [&_li]:ml-5 [&_li]:list-disc [&_ol_li]:list-decimal [&_strong]:text-ink"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
             </div>
           </div>
 
