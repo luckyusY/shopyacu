@@ -57,6 +57,7 @@ type ProductCardProps = {
   onAddToCart?: (product: Product) => void;
   index?: number;
   hideOnMobile?: boolean;
+  productHref?: string;
   /**
    * When true, the card fills its grid cell (no fixed width on large
    * screens). Use this in plain grid layouts. The default is sized for the
@@ -71,6 +72,7 @@ export function ProductCard({
   index = 0,
   hideOnMobile = false,
   fluid = false,
+  productHref,
 }: ProductCardProps) {
   const reduceMotion = useReducedMotion();
   const { rating, reviews, discount, interested } = productSignals(product.id);
@@ -85,6 +87,7 @@ export function ProductCard({
   const askHref = whatsappLink(
     `Hello Shopyacu, I want to ask about ${product.name} (${formatPrice(product.price)}). Is it available?`,
   );
+  const href = productHref || `/products/${product.slug}`;
   const trackAsk = () =>
     trackEvent("inquiry", {
       slug: product.slug,
@@ -120,7 +123,7 @@ export function ProductCard({
         fluid ? "" : "lg:w-48 lg:snap-start"
       } ${hideOnMobile ? "hidden lg:flex" : ""}`}
     >
-      <Link href={`/products/${product.slug}`} className="relative block overflow-hidden bg-surface">
+      <Link href={href} className="relative block overflow-hidden bg-surface">
         <m.div
           whileHover={reduceMotion ? undefined : { scale: 1.08 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -177,7 +180,7 @@ export function ProductCard({
 
       <div className="flex flex-1 flex-col p-3">
         <Link
-          href={`/products/${product.slug}`}
+          href={href}
           className="block min-h-9 text-xs font-semibold leading-4 text-ink transition hover:text-accent sm:text-sm sm:leading-5"
         >
           {product.name}
@@ -248,7 +251,7 @@ export function ProductCard({
         ) : (
           <div className="mt-2.5 grid gap-2">
             <Link
-              href={`/products/${product.slug}`}
+              href={href}
               className="flex h-9 w-full items-center justify-center rounded-full bg-ink px-3 text-center text-xs font-bold text-white transition hover:bg-ink/85"
             >
               View product

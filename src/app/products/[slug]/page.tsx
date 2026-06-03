@@ -13,6 +13,7 @@ import { Logo } from "@/components/Logo";
 import { InstagramProfileCard } from "@/components/InstagramProfileCard";
 import { ShareActions } from "@/components/ShareActions";
 import { categoryPath, marketplaceCategories } from "@/lib/categories";
+import { getProductCollectionBySlug } from "@/lib/collections-store";
 import { getProductBySlug, getProducts } from "@/lib/product-store";
 import { formatPrice, products, type Product, type ProductMedia } from "@/lib/products";
 import { whatsappDisplay, whatsappLink } from "@/lib/whatsapp";
@@ -122,8 +123,15 @@ function getGalleryMedia(product: Product): ProductMedia[] {
   return [cover, ...videos.slice(0, 1), ...images, ...videos.slice(1)];
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ fromCollection?: string }>;
+}) {
   const { slug } = await params;
+  const fromCollection = (await searchParams)?.fromCollection;
   const product = await getProductBySlug(slug);
 
   if (!product) {
@@ -131,6 +139,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   const allProducts = await getProducts();
+  const returnCollection = fromCollection ? await getProductCollectionBySlug(fromCollection) : null;
+  const backHref = returnCollection ? `/collections/${returnCollection.slug}` : "/#products";
+  const backLabel = returnCollection ? `Back to ${returnCollection.title}` : "Back to products";
   const media = getGalleryMedia(product);
   const signal = productSignal(product.id);
   const related = allProducts
@@ -179,9 +190,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-2.5 sm:px-6 sm:py-3 lg:px-8">
           <div className="flex min-w-0 items-center gap-2">
             <Link
-              href="/#products"
+              href={backHref}
               className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-white text-xl font-black text-ink shadow-sm transition hover:bg-ink hover:text-white"
-              aria-label="Back to products"
+              aria-label={backLabel}
             >
               &#8249;
             </Link>
@@ -210,8 +221,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <section className="mx-auto grid max-w-7xl gap-3 px-3 py-3 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-8 lg:py-10 [&>*]:min-w-0">
         <nav className="col-span-full flex flex-wrap items-center gap-2 text-sm font-bold">
-          <Link href="/#products" className="rounded-full border border-ink/15 bg-white px-4 py-2 text-ink shadow-sm transition hover:bg-ink hover:text-white">
-            Back to products
+          <Link href={backHref} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-ink shadow-sm transition hover:bg-ink hover:text-white">
+            {backLabel}
           </Link>
           <Link href={getMarketplacePath(product.category)} className="rounded-full bg-surface px-4 py-2 text-ink/75 transition hover:bg-accent hover:text-ink">
             Browse {product.category}

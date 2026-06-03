@@ -78,6 +78,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
             <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-ink shadow-sm">
               {collectionProducts.length} {collectionProducts.length === 1 ? "product" : "products"}
             </span>
+            <span className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-700 shadow-sm">
+              Pay after delivery
+            </span>
             <a href={whatsappLink(message)} className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-black text-white transition hover:bg-[#1fb458]">
               <WhatsAppIcon className="h-5 w-5" />
               Order this group
@@ -106,10 +109,19 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="mb-5 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800">
+          WISHYURA BIKUGEZEHO: pay after delivery. Confirm availability and delivery on WhatsApp before payment.
+        </div>
         {collectionProducts.length ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {collectionProducts.map((product, index) => (
-              <ProductCard key={product.slug} product={product} index={index} fluid />
+              <ProductCard
+                key={product.slug}
+                product={product}
+                index={index}
+                fluid
+                productHref={`/products/${product.slug}?fromCollection=${collection.slug}`}
+              />
             ))}
           </div>
         ) : (
