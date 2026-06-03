@@ -585,7 +585,7 @@ export function Storefront({
         </div>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 text-white">
-            <Logo priority imgClassName="h-8 sm:h-9" />
+            <Logo priority imgClassName="h-[34px] w-[84px] object-contain sm:h-9 sm:w-auto" />
             <span className="hidden text-[11px] font-medium uppercase tracking-[0.18em] text-white/80 sm:inline">store</span>
           </Link>
           <form onSubmit={submitSearch} className="hidden min-w-[280px] flex-1 items-center rounded-full bg-white p-1 shadow-sm lg:flex xl:max-w-lg">

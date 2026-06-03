@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-const LOGO_WIDTH = 2172;
-const LOGO_HEIGHT = 724;
+const LOGO_WIDTH = 1518;
+const LOGO_HEIGHT = 420;
 
 type LogoProps = {
   className?: string;
@@ -14,7 +14,7 @@ type LogoProps = {
 // orange header.
 export function Logo({ className = "", imgClassName = "h-7", priority = false }: LogoProps) {
   return (
-    <span className={`inline-flex items-center rounded-lg bg-white px-2 py-1 ring-1 ring-black/5 ${className}`}>
+    <span className={`inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 ring-1 ring-black/5 ${className}`}>
       <Image
         src="/logo.png"
         alt="Shopyacu"
