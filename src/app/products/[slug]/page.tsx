@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
+    keywords: product.seoKeywords?.length ? product.seoKeywords : undefined,
     alternates: { canonical: absoluteUrl(path) },
     ...buildOpenGraph({ title, description, path, image: product.image }),
   };
@@ -342,6 +343,34 @@ export default async function ProductPage({
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />
             </div>
+
+            {product.highlights?.length ? (
+              <div className="mt-5 border-t border-ink/10 pt-5">
+                <h2 className="font-display text-lg font-bold text-ink">Why people buy {product.name}</h2>
+                <ul className="mt-3 grid gap-2.5">
+                  {product.highlights.map((point) => (
+                    <li key={point} className="flex gap-3 text-base leading-7 text-muted">
+                      <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {product.howToUse?.length ? (
+              <div className="mt-5 border-t border-ink/10 pt-5">
+                <h2 className="font-display text-lg font-bold text-ink">How to use it</h2>
+                <ol className="mt-3 grid gap-3">
+                  {product.howToUse.map((step, i) => (
+                    <li key={step} className="flex gap-3 text-base leading-7 text-muted">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink text-xs font-black text-accent">{i + 1}</span>
+                      <span className="pt-0.5">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
           </div>
 
           <div className="rounded-2xl border border-ink/10 bg-white p-4 shadow-sm sm:p-5">

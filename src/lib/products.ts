@@ -24,6 +24,12 @@ export type Product = {
   badge?: string;
   tags?: string[];
   description: string;
+  /** AI-enriched bullet points: key uses / benefits of the product. */
+  highlights?: string[];
+  /** AI-enriched short "how to use it" steps. */
+  howToUse?: string[];
+  /** Long-tail / niche SEO keywords for metadata. */
+  seoKeywords?: string[];
   stock?: string;
   active?: boolean;
   featured?: boolean;
@@ -215,6 +221,18 @@ function normalizeTags(tags: Product["tags"] | string | undefined) {
   );
 }
 
+function normalizeTextList(value: string[] | string | undefined, max: number, maxLen: number): string[] | undefined {
+  const values = Array.isArray(value) ? value : typeof value === "string" ? value.split("\n") : [];
+  const cleaned = Array.from(
+    new Set(
+      values
+        .map((item) => String(item).trim().slice(0, maxLen))
+        .filter(Boolean),
+    ),
+  ).slice(0, max);
+  return cleaned.length ? cleaned : undefined;
+}
+
 export function normalizeProduct(product: Partial<Product>): Product {
   const id = Number(product.id) || Date.now();
   const name = product.name?.trim() || `Product ${id}`;
@@ -244,6 +262,9 @@ export function normalizeProduct(product: Partial<Product>): Product {
     badge: product.badge?.trim() || undefined,
     tags: normalizeTags(product.tags),
     description: product.description?.trim() || `${name} is available from Shopyacu for local online ordering and delivery.`,
+    highlights: normalizeTextList(product.highlights, 6, 200),
+    howToUse: normalizeTextList(product.howToUse, 6, 200),
+    seoKeywords: normalizeTextList(product.seoKeywords, 12, 80),
     stock: product.stock || "In stock",
     active: product.active !== false,
     featured: Boolean(product.featured || product.badge),

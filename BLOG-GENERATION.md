@@ -55,6 +55,28 @@ re-running updates rather than duplicating.
 topics sequentially; for hundreds of posts expect several minutes. If you hit
 rate limits, run in smaller batches with `--count`.
 
+## Enriching product descriptions
+
+The same ChatGPT setup can rewrite every product page with a richer SEO
+description, "why people buy it" highlights, "how to use it" steps, and
+long-tail keywords. It uses long-tail / niche keywords so each product ranks for
+more searches.
+
+```bash
+npm run generate:products                 # enrich products missing highlights
+npm run generate:products -- --overwrite  # redo every product
+npm run generate:products -- --count 10   # first 10 only
+npm run generate:products -- --slugs mini-stepper,electric-kettle
+npm run generate:products -- --dry-run    # preview, save nothing
+```
+
+Notes:
+- Wellness / personal-care items are auto-detected and the model is told to make
+  **no medical or results claims** (label-only guidance), to stay compliant.
+- The description is stored as light HTML (`<p>`, `<strong>`) and sanitised; the
+  product page renders highlights and steps in dedicated sections.
+- Re-runs skip already-enriched products unless you pass `--overwrite`.
+
 ## Quality tips for ranking
 
 - Generate in themed batches (e.g. all "kitchen" topics) so internal linking
