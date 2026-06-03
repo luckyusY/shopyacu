@@ -9,6 +9,7 @@ import { Badge, PageHeader, buttonClass } from "@/components/admin/ui";
 type QuickEditState = {
   name: string;
   category: string;
+  customCategory: string;
   price: string;
   badge: string;
   stock: string;
@@ -56,6 +57,7 @@ function quickEditState(product: Product): QuickEditState {
   return {
     name: product.name,
     category: product.category,
+    customCategory: "",
     price: product.price ? String(product.price) : "",
     badge: product.badge || "",
     stock: product.stock || "In stock",
@@ -83,9 +85,12 @@ function QuickEditPanel({
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  const categoryOptions = categories.filter((category) => category !== "All");
+  const selectedCategory = form.category === "__custom" ? form.customCategory.trim() : form.category.trim();
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await onSave(product, form);
+    await onSave(product, { ...form, category: selectedCategory || product.category });
   }
 
   return (
@@ -97,7 +102,14 @@ function QuickEditPanel({
         </label>
         <label className="grid gap-1">
           <span className={quickLabelClass}>Category</span>
-          <input value={form.category} onChange={(event) => set("category", event.target.value)} list="quick-edit-categories" className={quickFieldClass} />
+          <select value={form.category} onChange={(event) => set("category", event.target.value)} className={quickFieldClass}>
+            {categoryOptions.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+            <option value="__custom">+ New category</option>
+          </select>
         </label>
         <label className="grid gap-1">
           <span className={quickLabelClass}>Price</span>
@@ -117,11 +129,18 @@ function QuickEditPanel({
         </label>
       </div>
 
-      <datalist id="quick-edit-categories">
-        {categories.filter((category) => category !== "All").map((category) => (
-          <option key={category} value={category} />
-        ))}
-      </datalist>
+      {form.category === "__custom" ? (
+        <label className="grid gap-1">
+          <span className={quickLabelClass}>New category name</span>
+          <input
+            value={form.customCategory}
+            onChange={(event) => set("customCategory", event.target.value)}
+            placeholder="e.g. Baby Products"
+            className={quickFieldClass}
+            required
+          />
+        </label>
+      ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-4">
@@ -248,8 +267,11 @@ export function ProductsManager({
 
       const updated = (await response.json()) as Product;
       setItems((current) => current.map((item) => (item.slug === product.slug ? updated : item)));
+      if (selectedCategory !== "All" && updated.category !== selectedCategory) {
+        setSelectedCategory(updated.category);
+      }
       setEditingSlug("");
-      setStatus(`${updated.name} saved.`);
+      setStatus(`${updated.name} saved in ${updated.category}.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to save quick edit.");
     } finally {
